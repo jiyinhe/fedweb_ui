@@ -61,7 +61,7 @@ def load_topics(inputfile):
 # qrels: [(qid, docid, rel, site)]
 def get_stats(qrels, dups, sites, topics):
 	qids = sorted(list(set([q[0] for q in qrels])))
-	print 'qid', 'doc_ret', 'rel_ret', '#site', '#category', '#rel_category', 'topic'
+	print 'qid \t doc_ret \t rel_ret \t #site \t #category \t #rel_category \t topic'
 	for q in qids:
 		docs = list(itertools.ifilter(lambda x: x[0] == q, qrels))
 		# reduce duplicate docs
