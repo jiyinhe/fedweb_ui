@@ -1,0 +1,47 @@
+{% load i18n %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+    {% load staticfiles %}
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.css" />
+    <link rel="stylesheet" href="/static/css/fw_base.css" />
+    <script  src="/static/bootstrap/js/bootstrap.js" /></script>
+    <script  src="/static/jquery/jquery-1.10.1.min.js" /></script>
+    {% block head %}
+    <title>{% block title %}fw_userstudy{% endblock %}</title>
+    {% endblock %}
+</head>
+
+<body>
+   {% block header %}
+    <nav class="navbar navbar-inverse navbar-static-top" role="navigation">
+	<a class="navbar-brand" href=".">FedSearch</a>
+	{% if user.is_authenticated %}
+	<div class="navbar-right">
+	<p class="navbar-text">
+	{{ user.username }} 
+	</p>
+	<p class="navbar-text">
+	<a class="navbar-"href="{% url auth_password_change %}">{% trans "Change password" %}</a> 
+	</p>
+	<p class="navbar-text">
+       	<a href="{% url auth_logout %}" >{% trans "Log out" %}</a>
+	</p>
+	</div>
+	{% endif %}
+    </nav>
+   {% endblock %}
+    <div id="content" class="content" >
+        {% block content %}{% endblock %}
+    </div>
+
+    <div id="footer" class="footer">
+    {% block footer %}
+    {% endblock %}
+    </div>
+
+</body>
+
+</html>

@@ -1,4 +1,5 @@
 from django.conf.urls import patterns, include, url
+from fw_userstudy import settings
 
 # Uncomment the next two lines to enable the admin:
 # from django.contrib import admin
@@ -14,4 +15,21 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     # url(r'^admin/', include(admin.site.urls)),
+
+    # Registration	
+    url(r'^accounts/', include('registration.backends.simple.urls')),
+
+    # Task
+#    url(r'^study/', include('fedtask.urls')),
+
+    # Questionnaire
+#    url(r'^question/', include('questionnaire.urls')),
+
 )
+
+#in devlopement mode, serving the static files
+if settings.DEBUG:
+	urlpatterns += patterns ('',
+		url(r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.STATIC_ROOT}),
+	)	
+

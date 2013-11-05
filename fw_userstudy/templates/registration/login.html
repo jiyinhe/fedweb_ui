@@ -1,0 +1,40 @@
+{% extends "fw_base.html" %}
+{% load i18n %}
+
+{% block content %}
+
+<div class="jumbotron jumbotron-white">
+<div class="container">
+	<div class="row">
+	<div class="col-md-6">
+		<div class="alert alert-success">
+			<h2>I already registered!</h2>
+			<form method="post" action="{% url auth_login %}">{% csrf_token %}
+			{% trans form.username.label_tag %}
+
+  			<p><input type="submit" value="{% trans 'Login' %}" /></p>
+			<input type="hidden" name="next" value="{{ next }}" />
+			</form>
+			<p>{% trans "Forget password" %}? <a href="{% url auth_password_reset %}">{% trans "Reset it >> " %}</a></p>
+		</div>
+	</div>
+	<div class="col-md-6">
+		<div class="alert alert-danger">
+		<h2>I am new!</h2>
+		<form method="post" action=".">{% csrf_token %}
+			
+		</form>
+		</div>
+	</div>
+	</div>
+</div>
+</div>
+</div>
+
+
+
+
+
+
+{% endblock %}
+
