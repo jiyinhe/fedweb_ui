@@ -19,3 +19,16 @@ div.space10{
 div.space5{
 	padding:5px;
 }
+
+.err {
+	font-size:13px;
+	color: red;
+}
+
+.errsign-valid {
+	visibility: hidden;
+}
+
+.errsign-err {
+	visibility: visible;
+}

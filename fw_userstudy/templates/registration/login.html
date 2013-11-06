@@ -1,6 +1,10 @@
 {% extends "fw_base.html" %}
 {% load i18n %}
 
+{% block head %}
+    <script  src="/static/js/register.js" /></script>	
+{% endblock %}
+
 {% block content %}
 
 <div class="jumbotron jumbotron-white">
@@ -23,38 +27,48 @@
 	<div class="col-md-6">
 	<div class="alert alert-danger bigbox">
 		<h2>I am new!</h2>
-		<form id="#reg_form">
+		<form id="#reg_form" >
 		<div class="row">
                 <div class="control-group">
                         <label for="reg_username" class="control-label col-sm-3">Username:</label>
                         <div class="controls col-sm-5">
-                        <input type="text" class="form-control" id="reg_email" placeholder="Username">
+                        <input type="text" class="form-control" id="reg_username" name="reg_username" placeholder="Username" >
+			<span class="err" id="err_reg_username"></span>
                         </div>
+			<div class="space5">
+			<span id="errsign_username" class="glyphicon glyphicon-remove errsign-valid" ></span>
+			</div>
                 </div></div>
 		<div class="row">
 		<div class="control-group">
 			<label for="reg_email" class="control-label col-sm-3">Email:</label>
 			<div class="controls col-sm-5">
-      			<input type="email" class="form-control" id="reg_email" placeholder="Email">
+      			<input type="email" class="form-control" id="reg_email" name="email" placeholder="Email" />
 			</div>
 		</div></div>
+
 		<div class="row">
 		<div class="control-group">
-    			<label for="reg_pass" class="control-label col-sm-3">Password:</label>
+    			<label for="reg_pass1" class="control-label col-sm-3">Password:</label>
     			<div class="controls col-sm-5">
-      			<input type="password" class="form-control" id="reg_pass" placeholder="Password">
+      			<input type="password" class="form-control" id="reg_pass1" placeholder="Password" />
     			</div>
 		</div></div>
+
 		<div class="row">
                 <div class="control-group">
-                        <label for="reg_pass" class="col-sm-3">Retype:</label>           
+                        <label for="reg_pass2" class="col-sm-3">Retype:</label>           
 		        <div class="controls col-sm-5">
-                        <input type="password" class="form-control" id="reg_pass2" placeholder="Password">
+                        <input type="password" class="form-control" id="reg_pass2" placeholder="Password" />
                         </div>
                 </div></div>
+
+		<div class="form-actions">
+		<input id="reg_btn" type="button" class="btn btn-primary btn-block" value="{% trans 'Sign me up' %}">		 
+		</div>
+
 		</form>
-		<div class="space10">
-		<input id="reg_btn" type="button" class="btn btn-primary btn-block" value="{% trans 'Sign me up' %}">		  </div>
+
 	</div>
 	</div>
 </div>
