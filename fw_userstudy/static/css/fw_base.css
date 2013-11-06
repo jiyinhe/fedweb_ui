@@ -5,3 +5,17 @@ body {
 .jumbotron-white {
 	background-color:white;
 }
+
+div.bigbox{
+	height:350px;
+}
+
+div.space50{
+	padding:50px;
+}
+div.space10{
+	padding:10px;
+}
+div.space5{
+	padding:5px;
+}

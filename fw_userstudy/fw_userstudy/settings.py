@@ -1,21 +1,40 @@
 # Django settings for fw_userstudy project.
+import os
+import socket
 
+HOSTNAME = socket.gethostname()
+
+# Check if it's local host of product server, and set debug
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
+SITE_ROOT = os.path.dirname(os.path.realpath(__file__)).rsplit('/', 1)[0]
+
+if DEBUG:
+	HOME_ROOT = '/'
+else:
+	HOME_ROOT = '/fwstudy/'
+
+LOGIN_REDIRECT_URL = HOME_ROOT
+
+ABSOLUTE_URL_OVERRIDES={
+	'auth.user': lambda u: '%susers/%s/'%(HOME_ROOT, u.username),
+}
+
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
+    ('Jiyin He', 'jiyinhe@gmail.com'),
 )
 
 MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '',                      # Or path to database file if using sqlite3.
-        'USER': '',                      # Not used with sqlite3.
-        'PASSWORD': '',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+        'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'fw_userstudy',                      # Or path to database file if using sqlite3.
+        'USER': 'jhe',                      # Not used with sqlite3.
+        'PASSWORD': 'jhe',                  # Not used with sqlite3.
+        'HOST': '127.0.0.1',                      # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
     }
 }
@@ -70,6 +89,7 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
+    '%s/%s'%(SITE_ROOT, 'static'),
 )
 
 # List of finder classes that know how to find static files in
@@ -109,6 +129,7 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
+    '%s/%s'%(SITE_ROOT, '/templates/'),	
 )
 
 INSTALLED_APPS = (
@@ -122,6 +143,9 @@ INSTALLED_APPS = (
     # 'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
+    'registration',
+    'questionnaire',
+    'fedtask',	
 )
 
 # A sample logging configuration. The only tangible logging
