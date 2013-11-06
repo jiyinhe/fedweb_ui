@@ -7,24 +7,54 @@
 <div class="container">
 	<div class="row">
 	<div class="col-md-6">
-		<div class="alert alert-success">
-			<h2>I already registered!</h2>
-			<form method="post" action="{% url auth_login %}">{% csrf_token %}
-			{% trans form.username.label_tag %}
-
-  			<p><input type="submit" value="{% trans 'Login' %}" /></p>
-			<input type="hidden" name="next" value="{{ next }}" />
-			</form>
-			<p>{% trans "Forget password" %}? <a href="{% url auth_password_reset %}">{% trans "Reset it >> " %}</a></p>
-		</div>
-	</div>
-	<div class="col-md-6">
-		<div class="alert alert-danger">
-		<h2>I am new!</h2>
-		<form method="post" action=".">{% csrf_token %}
-			
+		<div class="alert alert-success bigbox">
+		<h2>I already registered!</h2>
+		<p>
+		<form class="form-horizontal" method="post" action="{% url auth_login %}">{% csrf_token %}
+		{{form.as_p}}
+               	<input type="submit" class="btn btn-primary btn" value="{% trans 'Log in' %}">
+		<input type="hidden" name="next" value="{{ next }}" />
 		</form>
-		</div>
+		</p>	
+		<p>{% trans "Forget password" %}? <a href="{% url auth_password_reset %}">{% trans "Reset it >> " %}</a></p>
+	</div>
+	</div>
+
+	<div class="col-md-6">
+	<div class="alert alert-danger bigbox">
+		<h2>I am new!</h2>
+		<form id="#reg_form">
+		<div class="row">
+                <div class="control-group">
+                        <label for="reg_username" class="control-label col-sm-3">Username:</label>
+                        <div class="controls col-sm-5">
+                        <input type="text" class="form-control" id="reg_email" placeholder="Username">
+                        </div>
+                </div></div>
+		<div class="row">
+		<div class="control-group">
+			<label for="reg_email" class="control-label col-sm-3">Email:</label>
+			<div class="controls col-sm-5">
+      			<input type="email" class="form-control" id="reg_email" placeholder="Email">
+			</div>
+		</div></div>
+		<div class="row">
+		<div class="control-group">
+    			<label for="reg_pass" class="control-label col-sm-3">Password:</label>
+    			<div class="controls col-sm-5">
+      			<input type="password" class="form-control" id="reg_pass" placeholder="Password">
+    			</div>
+		</div></div>
+		<div class="row">
+                <div class="control-group">
+                        <label for="reg_pass" class="col-sm-3">Retype:</label>           
+		        <div class="controls col-sm-5">
+                        <input type="password" class="form-control" id="reg_pass2" placeholder="Password">
+                        </div>
+                </div></div>
+		</form>
+		<div class="space10">
+		<input id="reg_btn" type="button" class="btn btn-primary btn-block" value="{% trans 'Sign me up' %}">		  </div>
 	</div>
 	</div>
 </div>

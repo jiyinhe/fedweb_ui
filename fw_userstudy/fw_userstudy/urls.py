@@ -17,13 +17,15 @@ urlpatterns = patterns('',
     # url(r'^admin/', include(admin.site.urls)),
 
     # Registration	
+
+   # Overwrite the default registration 	
     url(r'^accounts/', include('registration.backends.simple.urls')),
 
     # Task
 #    url(r'^study/', include('fedtask.urls')),
 
     # Questionnaire
-#    url(r'^question/', include('questionnaire.urls')),
+    url(r'^question/', include('questionnaire.urls')),
 
 )
 

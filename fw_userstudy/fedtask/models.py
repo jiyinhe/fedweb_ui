@@ -22,7 +22,6 @@ class Topic(models.Model):
 
 class Run(models.Model):
 	run_id = models.IntegerField(primary_key=True)
-	topic_id = models.ForeignKey(Topic)
 	# Store the ranklist as a json object
 	ranklist = models.TextField()
 
@@ -45,5 +44,12 @@ class Session(models.Model):
 	stage = models.CharField(max_length=1, choices=ST)
 	# 0: not done; 1: done
 	progress = models.IntegerField()
+
+class bookmark(models.Model):
+	session_id = models.ForeignKey(Session)
+	topic_id = models.ForeignKey(Topic)	
+	doc_id = models.CharField(max_length=50)		
+
+
 
 	
