@@ -28,16 +28,15 @@ class Run(models.Model):
 class Task(models.Model):
 	task_id = models.IntegerField(primary_key=True)
 	# Type of UI
-	ui_id = models.ForeignKey(UI) 
+	ui = models.ForeignKey(UI) 
 	# The ranking
-	run_id = models.ForeignKey(Run)
+	run = models.ForeignKey(Run)
 	# The topic
-	topic_id = models.ForeignKey(Topic)
-
+	topic = models.ForeignKey(Topic)
 
 class Session(models.Model):
 	session_id = models.IntegerField(primary_key=True)
-	experiment_id = models.ForeignKey(Experiment)
+	experiment = models.ForeignKey(Experiment)
 	user_id = models.ForeignKey(User)
 	task_id = models.ForeignKey(Task)
 	ST = (('TR', 'Training'), ('TE', 'Testing'))
@@ -45,10 +44,39 @@ class Session(models.Model):
 	# 0: not done; 1: done
 	progress = models.IntegerField()
 
-class bookmark(models.Model):
-	session_id = models.ForeignKey(Session)
-	topic_id = models.ForeignKey(Topic)	
-	doc_id = models.CharField(max_length=50)		
+# Site classification
+class Site(models.Model):
+	site_id = models.IntegerField(primary_key=True)
+	site_name = models.CharField(max_length=50)
+	site_url = models.TextField()
+	category = models.CharField(max_length=45)
+	
+
+# Pool of all documents (e.g., from qrels)
+class Document(models.Model):
+	doc_id = models.IntegerField(primary_key=True)
+	docno = models.CharField(max_length=50)
+	site = models.ForeignKey(Site)
+	title = models.TextField()
+	summary = models.TextField()
+	url = models.TextField()
+	html_location = models.TextField()
+	
+class Bookmark(models.Model):
+	session = models.ForeignKey(Session)
+	topic = models.ForeignKey(Topic)	
+	doc = models.ForeignKey(Document)		
+
+class Qrels(models.Model):
+	topic = models.ForeignKey(Topic)
+	doc = models.ForeignKey(Document) 
+	relevance = models.IntegerField() 
+
+
+
+
+
+
 
 
 

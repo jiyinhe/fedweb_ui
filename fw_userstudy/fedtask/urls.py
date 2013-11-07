@@ -1,5 +1,7 @@
 from django.conf.urls.defaults import patterns, include, url
 
+# These urls starts with /study/
 urlpatterns = patterns('fedtask.views',
-    (r'^$', 'index'),
+    (r'^task-train/$', 'train'),
+    (r'^task-work/$', 'test'),	
 )

@@ -32,3 +32,8 @@ div.space5{
 .errsign-err {
 	visibility: visible;
 }
+
+.errorlist{
+	font-size:13px;
+	color: red;
+}

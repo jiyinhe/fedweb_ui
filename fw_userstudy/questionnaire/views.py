@@ -31,6 +31,8 @@ def register_user(request):
 
 
 def prequestion(request):
-	c = {}
-	tmplate = 'questionnaire/pre-question.html'
+	c = {'user': request.user}
+	c.update(csrf(request))
+
+	template = 'questionnaire/pre-question.html'
 	return render_to_response(template, c)
