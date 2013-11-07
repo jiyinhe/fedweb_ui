@@ -1,30 +1,29 @@
-// input: array of 
-// { 
-// element - to check
-// options
-// }
-//
-// options for text element:
-// { minlength: x,
-//  required: true/false
-//  email: true/false
-//  equals: element_id
-// }
+/* 
+input: array of 
+ { element_id: options}
+options :
+{ minlength: x,
+  required: true/false,
+  email: true/false,
+  equals: element_id,
+}
+*/
 function validate(eles){
 	errs = {} 
 	for (element in eles ){
 		options = eles[element];
 		//1. required
 		value = $('#'+element).val();
+		value_exists = true;
 		if ('required' in options && options['required'] == true){
-			if (typeof value == 'underfined' || value.trim() == ''){
+			if (typeof value == 'undefined' || value.trim() == ''){
 				msg = 'This field is required.';
 				errs[element] = msg;
+				value_exists = false;
 			}
 		}
 		//2. email
 		if ('email' in options && options['email'] == true){
-			alert(value+' '+validate_email(value));
 			if (!validate_email(value)){
 				msg = 'Please provide a valid email address';
 				errs[element] = msg;
@@ -32,10 +31,20 @@ function validate(eles){
 		}
 		//3. equals
 		if ('equals' in options){
-			
+			target_id = options['equals'];
+			target_val = $('#'+target_id).val();
+			if (target_val != value){
+				msg = 'It should be the same as '+$('#'+target_id).attr('name');
+				errs[element] = msg;
+			}		
 		}
 		//4. minlength
-		//else if ('minlength') 
+		if ('minlength' in options){
+			if (value_exists && value.length < options['minlength']){
+				msg = 'Length of '+$('#'+element).attr('name')+' should >='+options['minlength']
+				errs[element] = msg;
+			}			
+		} 
 	}
 	return errs;
 }

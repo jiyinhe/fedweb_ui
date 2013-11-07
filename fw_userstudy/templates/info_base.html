@@ -1,0 +1,17 @@
+{% extends "fw_base.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="jumbotron jumbotron-white">
+    <div class="container">
+    <div class="row">
+	<div class="col-md-8 col-md-offset-2" >
+         <div class="alert alert-info space50">
+		{% block info %}
+		{% endblock %}
+         </div>
+	</div>
+    </div>
+    </div>
+</div>
+{% endblock %}

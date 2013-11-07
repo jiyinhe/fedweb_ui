@@ -1,7 +1,7 @@
-{% extends "fw_base.html" %}
+{% extends "info_base.html" %}
 {% load i18n %}
 
-{% block content %}
+{% block info %}
 <form method="post" action=".">{% csrf_token %}
   {{ form.as_p }}
 

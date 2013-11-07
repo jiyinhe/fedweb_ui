@@ -13,13 +13,15 @@
 	<div class="col-md-6">
 		<div class="alert alert-success bigbox">
 		<h2>I already registered!</h2>
+		<div class="space10">
 		<p>
-		<form class="form-horizontal" method="post" action="{% url auth_login %}">{% csrf_token %}
+		<form id="loginform" class="form-horizontal" method="post" action="{% url auth_login %}">{% csrf_token %}
 		{{form.as_p}}
                	<input type="submit" class="btn btn-primary btn" value="{% trans 'Log in' %}">
 		<input type="hidden" name="next" value="{{ next }}" />
 		</form>
-		</p>	
+		</p>
+		</div>		
 		<p>{% trans "Forget password" %}? <a href="{% url auth_password_reset %}">{% trans "Reset it >> " %}</a></p>
 	</div>
 	</div>
@@ -27,47 +29,50 @@
 	<div class="col-md-6">
 	<div class="alert alert-danger bigbox">
 		<h2>I am new!</h2>
-		<form id="#reg_form" >
-		<div class="row">
-                <div class="control-group">
-                        <label for="reg_username" class="control-label col-sm-3">Username:</label>
-                        <div class="controls col-sm-5">
-                        <input type="text" class="form-control" id="reg_username" name="reg_username" placeholder="Username" >
-			<span class="err" id="err_reg_username"></span>
-                        </div>
-			<div class="space5">
-			<span id="errsign_username" class="glyphicon glyphicon-remove errsign-valid" ></span>
-			</div>
-                </div></div>
-		<div class="row">
-		<div class="control-group">
-			<label for="reg_email" class="control-label col-sm-3">Email:</label>
-			<div class="controls col-sm-5">
-      			<input type="email" class="form-control" id="reg_email" name="email" placeholder="Email" />
-			</div>
-		</div></div>
+		<div class="space10">
+		<form id="#reg_form" class="form-horizontal" role="form" >
+		  <div class="row">
+    			<label for="user" class="col-sm-4">Username: </label>
+    			<div class="col-sm-7">
+      			    <input name="Username" type="text" class="form-control" id="user" placeholder="Username">
+		  	    <div class="err" id="err_user"></div>	
+    		 	    </div>
+			<div id="errsign_user" class="col-sm-1 glyphicon glyphicon-info-sign errsign-valid"></div>
+ 		  </div>
 
-		<div class="row">
-		<div class="control-group">
-    			<label for="reg_pass1" class="control-label col-sm-3">Password:</label>
-    			<div class="controls col-sm-5">
-      			<input type="password" class="form-control" id="reg_pass1" placeholder="Password" />
+		  <div class="row">
+    			<label for="email" class="col-sm-4">Email:</label>
+    			<div class="col-sm-7">
+      			  <input type="email" class="form-control" id="email" placeholder="Email">
+           	  	  <div class="err" id="err_email"></div>	
     			</div>
-		</div></div>
+			<div id="errsign_email" class="col-sm-1 glyphicon glyphicon-info-sign errsign-valid"></div>
+ 		  </div>	
 
-		<div class="row">
-                <div class="control-group">
-                        <label for="reg_pass2" class="col-sm-3">Retype:</label>           
-		        <div class="controls col-sm-5">
-                        <input type="password" class="form-control" id="reg_pass2" placeholder="Password" />
-                        </div>
-                </div></div>
+		  <div class="row">
+    			<label for="pass1" class="col-sm-4">Password:</label>
+    			<div class="col-sm-7">
+      			    <input name="Password" type="password" class="form-control" id="pass1" placeholder="Password">
+		            <div class="err" id="err_pass1"></div>
+    			</div>
+			<div id="errsign_pass1" class="col-sm-1 glyphicon glyphicon-info-sign errsign-valid"></div>
+		  </div>
+
+		  <div class="row">
+    			<label for="pass2" class="col-sm-4">Retype:</label>
+    			<div class="col-sm-7">
+      			    <input name="Retype" type="password" class="form-control" id="pass2" placeholder="Password">
+		  	    <div class="err" id="err_pass2"></div>
+    			</div>
+			<div id="errsign_pass2" class="col-sm-1 glyphicon glyphicon-info-sign errsign-valid"></div>
+ 		  </div>	
 
 		<div class="form-actions">
 		<input id="reg_btn" type="button" class="btn btn-primary btn-block" value="{% trans 'Sign me up' %}">		 
 		</div>
 
 		</form>
+		</div>
 
 	</div>
 	</div>
