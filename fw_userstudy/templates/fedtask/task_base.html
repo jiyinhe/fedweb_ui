@@ -1,9 +1,44 @@
 {% extends "fw_base.html" %}
 {% load i18n %}
 
+{% block head %}
+    <link rel="stylesheet" href="/static/css/task_base.css" />
+{% endblock %}
+
 {% block content %}
 
-taskbase 
+<div class="container">
+<div class="row">
+	<div class="col-md-2">
+		{% block leftblock %}
+		{% endblock %}
+	</div>
+	<div class="col-md-8">
+		<div class="row">
+		<div class="navbar navbar-static-top topic-display">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+			<div class="topic-info">
+				Please find 
+				<span class="emph"> {{num_docs}} </span> 
+				pages that are relevant to: 
+			</div>
+			</div>	
+			<div class="panel-body">
+			<div class="topic-text">{{topic_text}}</div>
+			</div>	
+		</div>
+		</div>
+		<div class="panel panel-primary">
+		</div>
+
+	</div>
+	<div class="col-md-2">
+		{% block rightblock %}
+		{% endblock %}
+	</div>
+</div>
+</div>
 
 {% endblock %}
 

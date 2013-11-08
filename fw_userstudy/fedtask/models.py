@@ -8,8 +8,7 @@ class Experiment(models.Model):
 	prequestionnaire = models.BooleanField(default=True)
 	postquestionnaire = models.BooleanField(default=False)
 	tutorial = models.BooleanField(default=True)
-	UT = (('L', 'Lab'), ('F', 'Field'), ('C', 'Crowdsource'))
-	exp_type = models.CharField(max_length=1, choices=UT)
+	exp_type = models.CharField(max_length=45)
 
 
 class UI(models.Model):
@@ -22,8 +21,31 @@ class Topic(models.Model):
 
 class Run(models.Model):
 	run_id = models.IntegerField(primary_key=True)
+	description = models.TextField()
+
+class ranklist(models.Model):
+	run = models.ForeignKey(Run)
+	topic = models.ForeignKey(Topic)
 	# Store the ranklist as a json object
 	ranklist = models.TextField()
+
+# Site classification
+class Site(models.Model):
+	site_id = models.CharField(max_length=45, primary_key=True)
+	site_name = models.CharField(max_length=50)
+	site_url = models.TextField()
+	category = models.CharField(max_length=45)
+	
+
+# Pool of all documents (e.g., from qrels)
+class Document(models.Model):
+	doc_id = models.CharField(max_length=50, primary_key=True)
+	site = models.ForeignKey(Site)
+	title = models.TextField()
+	summary = models.TextField()
+	url = models.TextField()
+	html_location = models.TextField()
+
 
 class Task(models.Model):
 	task_id = models.IntegerField(primary_key=True)
@@ -44,23 +66,6 @@ class Session(models.Model):
 	# 0: not done; 1: done
 	progress = models.IntegerField()
 
-# Site classification
-class Site(models.Model):
-	site_id = models.CharField(max_length=45, primary_key=True)
-	site_name = models.CharField(max_length=50)
-	site_url = models.TextField()
-	category = models.CharField(max_length=45)
-	
-
-# Pool of all documents (e.g., from qrels)
-class Document(models.Model):
-	doc_id = models.IntegerField(primary_key=True)
-	docno = models.CharField(max_length=50)
-	site = models.ForeignKey(Site)
-	title = models.TextField()
-	summary = models.TextField()
-	url = models.TextField()
-	html_location = models.TextField()
 	
 class Bookmark(models.Model):
 	session = models.ForeignKey(Session)
