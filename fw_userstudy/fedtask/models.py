@@ -46,7 +46,7 @@ class Session(models.Model):
 
 # Site classification
 class Site(models.Model):
-	site_id = models.IntegerField(primary_key=True)
+	site_id = models.CharField(max_length=45, primary_key=True)
 	site_name = models.CharField(max_length=50)
 	site_url = models.TextField()
 	category = models.CharField(max_length=45)

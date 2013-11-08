@@ -11,6 +11,7 @@ def db_connect(host, user, pwd, db):
 def run_qry(qry, conn):
         try:
                conn.query(qry)
+	       conn.commit()
         except Exception, e:
                conn.ping(True)
                print qry
