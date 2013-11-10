@@ -3,6 +3,12 @@
 
 {% block head %}
     <link rel="stylesheet" href="/static/css/task_base.css" />
+    <script  src="/static/js/fedtask.js" /></script>
+    <script>
+	var results_url = '/study/results/';
+	var topic_id = {{topic_id}};
+	var run_id = {{run_id}};
+    </script>
 {% endblock %}
 
 {% block content %}
@@ -14,9 +20,8 @@
 		{% endblock %}
 	</div>
 	<div class="col-md-8">
-		<div class="row">
 		<div class="navbar navbar-static-top topic-display">
-		<div class="panel panel-primary">
+		<div class="panel panel-primary" id="topic">
 			<div class="panel-heading">
 			<div class="topic-info">
 				Please find 
@@ -29,7 +34,16 @@
 			</div>	
 		</div>
 		</div>
-		<div class="panel panel-primary">
+
+		<div class="panel panel-primary" id="results">
+			{% for d in docs %}
+			<div id="{{d.doc_id}}" class="list-group-item">
+			<div id="{{d.doc_id}}_title" class="list-group-item-heading">
+				<a href="#"><h5>{{d.title}}</h5></a>
+			</div>
+			<div class="list-group-item-text">{{d.summary}}</div>
+			</div>
+			{% endfor %}
 		</div>
 
 	</div>

@@ -4,4 +4,5 @@ from django.conf.urls.defaults import patterns, include, url
 urlpatterns = patterns('fedtask.views',
     (r'^task-train/$', 'train'),
     (r'^task-work/$', 'test'),	
+    (r'^results/$', 'fetch_results'),
 )

@@ -9,7 +9,6 @@ class UserProfileManager(models.Manager):
 		try:
 			self.get(id__exact=user_id) 
 			return True
-
 		except UserProfile.DoesNotExist:
 			return False
 
@@ -33,3 +32,7 @@ class UserProfile(models.Model):
 	EL = (('H', 'Highschool'), ('U', 'University'), ('M', 'Master'), ('D', 'Doctorate'))
 	education = models.CharField(max_length=1, choices=EL)	
 	objects = UserProfileManager()
+
+	
+
+

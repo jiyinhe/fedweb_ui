@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models import Max
+import simplejson as js
 
 # Create your models here.
 class Experiment(models.Model):
@@ -9,7 +11,7 @@ class Experiment(models.Model):
 	postquestionnaire = models.BooleanField(default=False)
 	tutorial = models.BooleanField(default=True)
 	exp_type = models.CharField(max_length=45)
-
+	
 
 class UI(models.Model):
 	ui_id = models.IntegerField(primary_key=True)
@@ -23,11 +25,19 @@ class Run(models.Model):
 	run_id = models.IntegerField(primary_key=True)
 	description = models.TextField()
 
-class ranklist(models.Model):
+class RanklistManager(models.Manager):
+	def get_ranklist(self, topic_id, run_id):
+		res = self.get(topic_id=topic_id, run_id=run_id)
+		ranklist = js.loads(res.ranklist)
+		docs = Document.objects.filter(doc_id__in=ranklist)
+		return docs 
+
+class Ranklist(models.Model):
 	run = models.ForeignKey(Run)
 	topic = models.ForeignKey(Topic)
 	# Store the ranklist as a json object
 	ranklist = models.TextField()
+	objects = RanklistManager()
 
 # Site classification
 class Site(models.Model):
@@ -56,16 +66,50 @@ class Task(models.Model):
 	# The topic
 	topic = models.ForeignKey(Topic)
 
+class SessionManager(models.Manager):
+	# This need to be re-organized	
+	# Get current search session for a user
+	"""
+	def get_current_session(self, user_id):
+		session_id = 0
+		session_type = ''
+		# Check if the user has done a training session		
+		session = self.filter(user_id=user_id, stage = 'train', progress=1)
+		# If no finished training session, then go to training session
+		if len(session) == 0:
+			pass	
+		# Otherwise, directly go to a test session			
+		else:
+			pass
+		# Search for a session that the user has not finished yet	
+		session = self.filter(user_id=user_id, progress=0)
+		if len(session) == 0:
+			# No session found, start a new session
+			max_id = self.all().aggregate(Max('session_id'))
+			if max_id['session_id__max'] == None:
+				session_id = 1
+			else:
+				session_id = max_id['session_id__max'] + 1
+			
+		else:
+			# Otherwise return current unfinished session
+			print session	
+		print session_id, session_type
+		return session_id, session_type
+	"""
+	def get_session(self, session_id):
+		return self.get(session_id__exact=session_id)
+
 class Session(models.Model):
 	session_id = models.IntegerField(primary_key=True)
 	experiment = models.ForeignKey(Experiment)
-	user_id = models.ForeignKey(User)
-	task_id = models.ForeignKey(Task)
-	ST = (('TR', 'Training'), ('TE', 'Testing'))
-	stage = models.CharField(max_length=1, choices=ST)
+	user = models.ForeignKey(User)
+	task = models.ForeignKey(Task)
+	ST = (('train', 'Training'), ('test', 'Testing'))
+	stage = models.CharField(max_length=5, choices=ST)
 	# 0: not done; 1: done
 	progress = models.IntegerField()
-
+	objects = SessionManager()
 	
 class Bookmark(models.Model):
 	session = models.ForeignKey(Session)

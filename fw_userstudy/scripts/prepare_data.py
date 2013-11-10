@@ -40,20 +40,23 @@ docs = '%s/FW13-topics-docs'%settings.DATA_ROOT
 
 # Clear all tables
 def clear_tables():
+	print 'Clear Qrels table'
+	qry = 'delete from fedtask_qrels'
+	db.run_qry(qry, conn)
+	print 'Clear Document table'
+	qry = 'delete from fedtask_document'
+	db.run_qry(qry, conn)
+	print 'Clear ranklist table'
+	qry = 'delete from fedtask_ranklist'
+	db.run_qry(qry, conn)
 	print 'Clear Topic table'
 	qry = 'delete from fedtask_topic'
 	db.run_qry(qry, conn)
 	print 'Clear Site table'
 	qry = 'delete from fedtask_site'
 	db.run_qry(qry, conn)
-	print 'Clear Qrels table'
-	qry = 'delete from fedtask_qrels'
-	db.run_qry(qry, conn)
 	print 'Clear Run table'
 	qry = 'delete from fedtask_run'
-	db.run_qry(qry, conn)
-	print 'Clear Document table'
-	qry = 'delete from fedtask_document'
 	db.run_qry(qry, conn)
 
 
@@ -120,13 +123,13 @@ def fill_run_table(rundir):
 			if not current_q == qid:
 				if not current_q == '':
 					ranklist = simplejson.dumps(docs)
-					qry = "insert into fedtask_ranklist (run_id, topic_id, ranklist) values(%s, %s, '%s')"%(run_id, qid, ranklist)
+					qry = "insert into fedtask_ranklist (run_id, topic_id, ranklist) values(%s, %s, '%s')"%(run_id, current_q, ranklist)
 					db.run_qry(qry, conn)
 					docs = []
 				current_q = qid
 			docs.append(docid)
 		ranklist = simplejson.dumps(docs)
-		qry = "insert into fedtask_ranklist (run_id, topic_id, ranklist) values(%s, %s, '%s')"%(run_id, qid, ranklist)
+		qry = "insert into fedtask_ranklist (run_id, topic_id, ranklist) values(%s, %s, '%s')"%(run_id, current_q, ranklist)
 		db.run_qry(qry, conn)
 		f.close()	
 	
@@ -186,9 +189,9 @@ def fill_doc_table(snippets_loc, docs_loc):
 clear_tables()
 topics = fill_topic_table(topicfile)
 fill_site_table(sitefile)
-fill_qrels_table(qrels)
 fill_run_table(rundir)
 fill_doc_table(snippets, docs)
+fill_qrels_table(qrels)
 
 
 
