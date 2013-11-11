@@ -11,3 +11,15 @@
 span.emph {
 	font-size:20px;
 }
+
+div.doc_title {
+	font-size:17px;
+	color: blue;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+
+div.doc_url {
+	color: green;
+}

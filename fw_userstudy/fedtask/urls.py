@@ -5,4 +5,5 @@ urlpatterns = patterns('fedtask.views',
     (r'^task-train/$', 'train'),
     (r'^task-work/$', 'test'),	
     (r'^results/$', 'fetch_results'),
+    (r'^doc_content/(\w+)/', 'fetch_document'),
 )

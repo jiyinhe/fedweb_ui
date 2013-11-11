@@ -12,12 +12,13 @@ from django.core.servers.basehttp import FileWrapper
 import os
 from fw_userstudy import settings
 
-session_id = 2
+session_id = 1
 current_session = Session.objects.get_session(session_id)
 
 # This is the single entry point after user login
 def index(request):
 	user = request.user
+	print user
 	# If not authenticated, redirect to login
 	if not user.is_authenticated():
 		return redirect('/accounts/login/')	
@@ -87,7 +88,8 @@ def fetch_results(request):
         return response
 
   
-
+def fetch_document(request):
+	pass
 
 
 

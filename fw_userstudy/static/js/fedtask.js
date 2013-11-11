@@ -4,6 +4,10 @@ $('#results').ready(function(){
 //	load_results();
 });
 
+$('.doc_title').click(function(){
+	ele_id = $(this).attr('id');
+	doc_click(ele_id);
+})
 });//document
 
 // get results for given topic_id, run_id
@@ -19,4 +23,9 @@ function load_results(){
         }).done(function(response) {
         });
 
+}
+
+// when a document is clicked, get the html file, set url to "visited"
+function doc_click(ele_id){
+	console.log(ele_id);
 }

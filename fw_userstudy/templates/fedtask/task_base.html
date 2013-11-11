@@ -6,6 +6,7 @@
     <script  src="/static/js/fedtask.js" /></script>
     <script>
 	var results_url = '/study/results/';
+	var document_url = '/study/doc_content/';
 	var topic_id = {{topic_id}};
 	var run_id = {{run_id}};
     </script>
@@ -39,9 +40,10 @@
 			{% for d in docs %}
 			<div id="{{d.doc_id}}" class="list-group-item">
 			<div id="{{d.doc_id}}_title" class="list-group-item-heading">
-				<a href="#"><h5>{{d.title}}</h5></a>
+				<div class="doc_title" id="{{d.doc_id}}" >{{d.title}}</div>
+				<div class="doc_url" id="url_{{d.doc_id}}">{{d.url}}</div>
 			</div>
-			<div class="list-group-item-text">{{d.summary}}</div>
+			<div class="list-group-item-text">{{d.summary|linebreaks}}</div>
 			</div>
 			{% endfor %}
 		</div>
