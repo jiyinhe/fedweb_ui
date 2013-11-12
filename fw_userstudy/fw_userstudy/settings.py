@@ -2,6 +2,11 @@
 import os
 import socket
 
+# Experiment setup
+Experment_id = 1
+# Number of relevant docs to be found
+NumDocs = 10
+
 HOSTNAME = socket.gethostname()
 
 # Check if it's local host of product server, and set debug
@@ -17,12 +22,17 @@ else:
 
 LOGIN_REDIRECT_URL = HOME_ROOT
 
+
 ABSOLUTE_URL_OVERRIDES={
-	'auth.user': lambda u: '%susers/%s/'%(HOME_ROOT, u.username),
+	'auth.user': lambda u: '%susers/%s/'%(HOME_ROOT, u.username)
 }
+
+# Place where large data is stored, in DB, only store the relative path under this root
+DATA_ROOT = '/Users/jiyinhe/Documents/workspace/fedweb_ui/data/'
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
+    ('Jiyin He', 'jiyinhe@gmail.com'),
 )
 
 MANAGERS = ADMINS
@@ -31,7 +41,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': 'fw_userstudy',                      # Or path to database file if using sqlite3.
-        'USER': '',                      # Not used with sqlite3.
+        'USER': 'root',                      # Not used with sqlite3.
         'PASSWORD': '',                  # Not used with sqlite3.
         'HOST': '127.0.0.1',                      # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
