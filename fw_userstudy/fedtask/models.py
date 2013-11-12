@@ -47,6 +47,16 @@ class Site(models.Model):
 	category = models.CharField(max_length=45)
 	
 
+class DocumentManager(models.Manager):
+	# get the html location of the document
+	def get_html_location(self, doc_id):
+		try:
+			doc = self.get(doc_id=doc_id)
+			return doc.html_location 
+		except Document.DoesNotExist:
+			return None	
+
+
 # Pool of all documents (e.g., from qrels)
 class Document(models.Model):
 	doc_id = models.CharField(max_length=50, primary_key=True)
@@ -55,6 +65,7 @@ class Document(models.Model):
 	summary = models.TextField()
 	url = models.TextField()
 	html_location = models.TextField()
+	objects = DocumentManager()
 
 
 class Task(models.Model):

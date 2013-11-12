@@ -23,3 +23,7 @@ div.doc_title {
 div.doc_url {
 	color: green;
 }
+
+.modal-dialog {
+	width: 70%;
+}

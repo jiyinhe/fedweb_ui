@@ -39,20 +39,37 @@
 		<div class="panel panel-primary" id="results">
 			{% for d in docs %}
 			<div id="{{d.doc_id}}" class="list-group-item">
-			<div id="{{d.doc_id}}_title" class="list-group-item-heading">
-				<div class="doc_title" id="{{d.doc_id}}" >{{d.title}}</div>
-				<div class="doc_url" id="url_{{d.doc_id}}">{{d.url}}</div>
+			<a > this is a link </a>
+			<div id="{{d.doc_id}}_title" name="{{d.title}}" class="list-group-item-heading">
+				<div class="doc_title" id="{{d.doc_id}}" data-toggle="modal", data-target="#docModal">
+					{{d.title}}
+				</div>
+				<div class="doc_url" id="url_{{d.doc_id}}" >{{d.url}}</div>
+				
 			</div>
 			<div class="list-group-item-text">{{d.summary|linebreaks}}</div>
 			</div>
+	
 			{% endfor %}
 		</div>
-
 	</div>
 	<div class="col-md-2">
 		{% block rightblock %}
 		{% endblock %}
 	</div>
+	<div class="modal fade" id="docModal" tabindex="-1" role="dialog" aria-labelledby="docModalLabel" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+		<div class="modal-header">
+       			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+			<h3 class="modal-title" id="modal_title"></h3>
+		</div>
+		<div class="modal-body" id="doc_content">
+		</div>
+	    </div>
+	  </div>
+	</div>	
+
 </div>
 </div>
 

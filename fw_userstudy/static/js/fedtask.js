@@ -1,16 +1,22 @@
 $(document).ready(function(){
+
 //load results	
-$('#results').ready(function(){
+//$('#results').ready(function(){
 //	load_results();
-});
+//});
 
 $('.doc_title').click(function(){
 	ele_id = $(this).attr('id');
 	doc_click(ele_id);
+	//set the modal title
+	title = $('#'+ele_id+'_title').attr('name');
+	$('#modal_title').html(title);
 })
 });//document
 
 // get results for given topic_id, run_id
+// This is not currently used.
+// Currently we direct send data when loading the page
 function load_results(){
         $.ajax({
                 type: "POST",
@@ -27,5 +33,20 @@ function load_results(){
 
 // when a document is clicked, get the html file, set url to "visited"
 function doc_click(ele_id){
-	console.log(ele_id);
+	//Request the html file with this docid
+	$.ajax({
+                type: "POST",
+                url: document_url,
+                data: {
+                        ajax_event: 'fetch_document',
+			doc_id: ele_id,
+                }
+        }).done(function(response) {
+		console.log(response);
+		$("#doc_content").html(response);
+        });
+
 }
+
+
+
