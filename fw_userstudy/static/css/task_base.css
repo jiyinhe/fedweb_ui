@@ -56,7 +56,7 @@ a.category {
 	font-weight:bold;
 	color: #DF7401;
 	background-color:#FBF5EF;
-	border-color:white;
+	border-color:#d8d8d8;
 }
 
 .list-group-item.category:hover {
@@ -65,4 +65,8 @@ a.category {
 
 .list-group-item.category .badge{
 	background-color: orange;
+}
+
+.filter-out {
+	visibility: hidden;
 }

@@ -13,12 +13,14 @@
 	<div class="category-area" id="category_area">
 	<ul class="list-group">
   		<a class="list-group-item active category" id="category_all">
+		<span class="glyphicon glyphicon-chevron-right"></span>
     		<span class="badge pull-right">{{total_num_docs}}</span>
 		All categories	
   		</a>
 		{% for c in category %}
 		<!--span class="marker" data-toggle="tooltip" data-placement="auto" title="{{c.description}}"-->
 		<a class="list-group-item category" id="category_{{c.id}}" rel="tooltip" data-original-title="{{c.description}}">
+		<span class="glyphicon glyphicon-chevron-right"></span>
                 <span class="badge pull-right">{{c.doc_count}}</span>
 		<span class="category_name">{{c.name}}</span>
                 </a>

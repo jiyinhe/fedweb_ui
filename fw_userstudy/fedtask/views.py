@@ -75,6 +75,7 @@ def get_parameters():
 		'topic_text': topic_text,
 		'run_id': run_id,
 		'ui_id': ui_id,
+		#'docs_json': simplejson.dumps(docs),
 		'docs': docs,
 		'total_num_docs': len(docs),
 		'category': category,
@@ -104,10 +105,11 @@ def fetch_document(request):
 			doc_id = request.POST['doc_id']
 			# Get the document html location
 			html_loc = Document.objects.get_html_location(doc_id)
-			if html_loc == None:
-				data = 'Sorry, the document is not available.'	
+			if html_loc == None or html_loc == '':
+				data = 'Sorry, this document is not available.'	
 			else:
 				loc = '%s/%s'%(settings.DATA_ROOT, html_loc)
+				print loc
 				f = open(loc)
 				data = clean_html(f.read())
 				f.close()
@@ -120,7 +122,7 @@ def fetch_document(request):
 
 # Input: ranked document objects [(doc_object, rank)...]
 def process_category_info(docs):
-	cates = [(d[0].site.category, d[1], d[0].site.site_name) for d in docs]
+	cates = [(d[1]['category'], d[0], d[1]['site']) for d in docs]
 	cates.sort(key=operator.itemgetter(0))
 	category = []
 	i = 0

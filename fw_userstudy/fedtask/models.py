@@ -33,8 +33,16 @@ class RanklistManager(models.Manager):
 		# To keep the ranking
 		id_ranklist = dict([(ranklist[i], i) for i in range(len(ranklist))])
 		docs = Document.objects.filter(doc_id__in=ranklist)
-		docs = [(d, id_ranklist[d.doc_id]) for d in docs]
-		docs.sort(key=operator.itemgetter(1))
+		docs = [[id_ranklist[d.doc_id], 
+			{
+				'id':d.doc_id, 
+				'title': '.' if d.title=='' else d.title, 
+				'url': d.url, 
+				'summary': d.summary,
+				'site': d.site.site_name,
+				'category': d.site.category,
+			}] for d in docs]
+		docs.sort(key=operator.itemgetter(0))
 		return docs 
 
 class Ranklist(models.Model):
