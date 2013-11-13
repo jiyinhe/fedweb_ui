@@ -18,8 +18,24 @@ $('.bookmark').click(function(){
 	doc_bookmark(ele_id);
 });
 
+// adjust the category area length
+$('#category_area').ready(function(){
+	$('#category_area').height($(window).height());	
+});	
+
+//response to click on category
+$('.category').click(function(){
+	ele_id = $(this).attr('id');
+	category_click(ele_id);
+})
+
+//category tooltip
+$('[rel=tooltip]').tooltip({
+	placement: "auto",
+});
 
 });//document
+
 
 // get results for given topic_id, run_id
 // This is not currently used.
@@ -67,7 +83,21 @@ function doc_bookmark(ele_id){
 	        $('#'+ele_id).removeClass('glyphicon-star');
                 $('#'+ele_id).addClass('glyphicon-star-empty');
 	}
-
 	//send selection to db
 }
+
+
+function category_click(ele_id){
+	//find the previously active one, release active
+	$('#'+current_active_category).toggleClass('active');
+	//set this category to active
+	$('#'+ele_id).toggleClass('active');
+	current_active_category = ele_id;
+	//filter the results
+	var cid = parseInt(ele_id.replace('category_', ''));
+	console.log(cate[cid]["doc_ranks"])
+}
+
+
+
 

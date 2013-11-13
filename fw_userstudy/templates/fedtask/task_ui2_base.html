@@ -1,18 +1,28 @@
 {% extends "fedtask/task_base.html" %}
 {% load i18n %}
+
+{% block globalvar %}
+<script>
+	var cate = eval("("+"{{cate_json|escapejs}}"+")");
+	var current_active_category = 'category_all';
+</script>	
+{% endblock %}
+
 {% block leftblock %}
 	<div class="affix-left" data-spy="affix" data-offset-top="200">
-	<div class="category-area">
+	<div class="category-area" id="category_area">
 	<ul class="list-group">
-  		<a class="list-group-item active category">
+  		<a class="list-group-item active category" id="category_all">
     		<span class="badge pull-right">{{total_num_docs}}</span>
 		All categories	
   		</a>
 		{% for c in category %}
-		<a class="list-group-item category">
+		<!--span class="marker" data-toggle="tooltip" data-placement="auto" title="{{c.description}}"-->
+		<a class="list-group-item category" id="category_{{c.id}}" rel="tooltip" data-original-title="{{c.description}}">
                 <span class="badge pull-right">{{c.doc_count}}</span>
-		<span class="category_name" id="cate_{{c.name}}">{{c.name}}</span>
+		<span class="category_name">{{c.name}}</span>
                 </a>
+		<!--/span-->
 		{% endfor %}
 	</ul>
 	</div>

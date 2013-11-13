@@ -14,6 +14,7 @@ from fw_userstudy import settings
 import re
 import itertools
 import operator
+import simplejson
 
 session_id = 3
 current_session = Session.objects.get_session(session_id)
@@ -77,6 +78,7 @@ def get_parameters():
 		'docs': docs,
 		'total_num_docs': len(docs),
 		'category': category,
+		'cate_json': simplejson.dumps(category),
 	}
 	return c
 
@@ -121,14 +123,19 @@ def process_category_info(docs):
 	cates = [(d[0].site.category, d[1], d[0].site.site_name) for d in docs]
 	cates.sort(key=operator.itemgetter(0))
 	category = []
+	i = 0
 	for k, g in itertools.groupby(cates, lambda x: x[0]):
+		gg = list(g)
+		desc = ', '.join(sorted(list(set([d[2] for d in gg]))))
 		item = {
-			'name': k,
-			'doc_count': len(list(g)),
-			'doc_ranks': sorted([d[1] for d in list(g)]),
-			'description': 'Search results from %s'%','.join(sorted(list(set([d[2] for d in list(g)])))), 
+			"name": k,
+			"doc_count": len(gg),
+			"doc_ranks": sorted([d[1] for d in gg]),
+			"description": 'Search results from %s'%desc, 
+			"id": i,
 		}
 		category.append(item)
+		i += 1
 	return category 
 
 

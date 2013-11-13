@@ -49,5 +49,20 @@ a.category {
 }
 
 .category-area {
-	overflow: scroll;
+	overflow: auto;
+}
+
+.list-group-item.category{
+	font-weight:bold;
+	color: #DF7401;
+	background-color:#FBF5EF;
+	border-color:white;
+}
+
+.list-group-item.category:hover {
+	background-color: white;
+}
+
+.list-group-item.category .badge{
+	background-color: orange;
 }
