@@ -11,7 +11,14 @@ $('.doc_title').click(function(){
 	//set the modal title
 	title = $('#'+ele_id+'_title').attr('name');
 	$('#modal_title').html(title);
-})
+});
+
+$('.bookmark').click(function(){
+	ele_id = $(this).attr('id');
+	doc_bookmark(ele_id);
+});
+
+
 });//document
 
 // get results for given topic_id, run_id
@@ -48,5 +55,19 @@ function doc_click(ele_id){
 
 }
 
+//when a document is bookmarked
+function doc_bookmark(ele_id){
+	//change the class and icon
+	$('#'+ele_id).toggleClass('bookmark-selected');
+	if ($('#'+ele_id).hasClass('glyphicon-star-empty')){
+		$('#'+ele_id).removeClass('glyphicon-star-empty');
+		$('#'+ele_id).addClass('glyphicon-star');
+	}
+	else{
+	        $('#'+ele_id).removeClass('glyphicon-star');
+                $('#'+ele_id).addClass('glyphicon-star-empty');
+	}
 
+	//send selection to db
+}
 

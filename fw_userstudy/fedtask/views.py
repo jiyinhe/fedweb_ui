@@ -13,7 +13,7 @@ import os
 from fw_userstudy import settings
 import re
 
-session_id = 1
+session_id = 3
 current_session = Session.objects.get_session(session_id)
 
 # This is the single entry point after user login
@@ -49,7 +49,7 @@ def train(request):
 
 def test(request):
 	c = {'user': request.user}	
-	context = get_context()
+	context = get_parameters()
 	c.update(context)
 	c.update(csrf(request))
 
