@@ -47,3 +47,7 @@ div.doc_url {
 a.category {
 	cursor: pointer;
 }
+
+.category-area {
+	overflow: scroll;
+}

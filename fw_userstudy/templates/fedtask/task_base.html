@@ -19,11 +19,11 @@
 
 <div class="container">
 <div class="row">
-	<div class="col-md-2">
+	<div class="col-md-3">
 		{% block leftblock %}
 		{% endblock %}
 	</div>
-	<div class="col-md-8">
+	<div class="col-md-7">
 		<div class="panel panel-primary">
 		<div class="panel-heading">
 			<div class="topic-info">
@@ -39,16 +39,16 @@
 
 		<div class="panel panel-primary" id="results">
 			{% for d in docs %}
-			<div id="{{d.doc_id}}" class="list-group-item">
-				<div id="{{d.doc_id}}_title" name="{{d.title}}" class="list-group-item-heading">
-			        <span class="glyphicon glyphicon-star-empty bookmark" id="{{d.doc_id}}_bookmark"></span>
-				<span class="doc_title" id="{{d.doc_id}}" data-toggle="modal", data-target="#docModal">
-				{{d.title}}
+			<!-- d[0] is the document object, d[1] is the rank -->
+			<div id="rank_{{d.1}}" class="list-group-item">
+				<div id="{{d.0.doc_id}}_title" name="{{d.0.title}}" class="list-group-item-heading">
+			        <span class="glyphicon glyphicon-star-empty bookmark" id="{{d.0.doc_id}}_bookmark"></span>
+				<span class="doc_title" id="{{d.0.doc_id}}" data-toggle="modal", data-target="#docModal">
+				{{d.0.title}}
 				</span>
 				</div> <!-- list-group-item-heading -->
-				<div class="doc_url" id="url_{{d.doc_id}}" >{{d.url}}</div>
-				
-				<div class="list-group-item-text">{{d.summary|linebreaks}}</div>
+				<div class="doc_url" id="url_{{d.0.doc_id}}" >{{d.0.url}}</div>
+				<div class="list-group-item-text">{{d.0.summary|linebreaks}}</div>
 			</div><!-- list-group-item -->
 			{% endfor %}
 		</div>
@@ -59,7 +59,7 @@
 			<span class="badge pull-right">10</span>
 			Selected documents
   			</a>
-  			<a class="list-group-item">Current topic: {{topic_text}}</a>
+  			<a class="list-group-item"><strong>Current topic:</strong> {{topic_text}}</a>
 		</div>
 		{% block rightblock %}
 		{% endblock %}

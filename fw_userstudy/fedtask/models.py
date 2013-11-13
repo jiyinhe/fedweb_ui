@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.db.models import Max
 import simplejson as js
+import operator
 
 # Create your models here.
 class Experiment(models.Model):
@@ -29,7 +30,11 @@ class RanklistManager(models.Manager):
 	def get_ranklist(self, topic_id, run_id):
 		res = self.get(topic_id=topic_id, run_id=run_id)
 		ranklist = js.loads(res.ranklist)
+		# To keep the ranking
+		id_ranklist = dict([(ranklist[i], i) for i in range(len(ranklist))])
 		docs = Document.objects.filter(doc_id__in=ranklist)
+		docs = [(d, id_ranklist[d.doc_id]) for d in docs]
+		docs.sort(key=operator.itemgetter(1))
 		return docs 
 
 class Ranklist(models.Model):

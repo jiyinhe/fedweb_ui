@@ -12,6 +12,8 @@ from django.core.servers.basehttp import FileWrapper
 import os
 from fw_userstudy import settings
 import re
+import itertools
+import operator
 
 session_id = 3
 current_session = Session.objects.get_session(session_id)
@@ -64,6 +66,8 @@ def get_parameters():
 	run_id = task.run_id
 	ui_id = task.ui_id
 	docs = Ranklist.objects.get_ranklist(topic_id, run_id)	
+	# Group docs by category
+	category = process_category_info(docs)
 	c = {	
 		'num_docs': settings.NumDocs,
 		'topic_id': topic_id,
@@ -71,7 +75,8 @@ def get_parameters():
 		'run_id': run_id,
 		'ui_id': ui_id,
 		'docs': docs,
-		'num_results': len(docs),
+		'total_num_docs': len(docs),
+		'category': category,
 	}
 	return c
 
@@ -109,6 +114,23 @@ def fetch_document(request):
 	else:
                 return render_to_response('errors/403.html')
         return response
+
+
+# Input: ranked document objects [(doc_object, rank)...]
+def process_category_info(docs):
+	cates = [(d[0].site.category, d[1], d[0].site.site_name) for d in docs]
+	cates.sort(key=operator.itemgetter(0))
+	category = []
+	for k, g in itertools.groupby(cates, lambda x: x[0]):
+		item = {
+			'name': k,
+			'doc_count': len(list(g)),
+			'doc_ranks': sorted([d[1] for d in list(g)]),
+			'description': 'Search results from %s'%','.join(sorted(list(set([d[2] for d in list(g)])))), 
+		}
+		category.append(item)
+	return category 
+
 
 def clean_html(html):
 	f = open('tmp', 'w')
