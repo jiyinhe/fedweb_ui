@@ -48,7 +48,7 @@
 			<div id="rank_{{d.0}}" class="list-group-item" name="doc-item" >
 				<div id="{{d.1.id}}_title" name="{{d.1.title}}" class="list-group-item-heading">
 			        <span class="glyphicon glyphicon-star-empty bookmark" id="{{d.1.id}}_bookmark"></span>
-				<span class="doc_title" id="{{d.1.id}}" data-toggle="modal", data-target="#docModal">
+				<span class="doc_title" id="{{d.1.id}}" data-toggle="modal" data-target="#docModal">
 				{{d.1.title}}
 				</span>
 				</div> <!-- list-group-item-heading -->
@@ -64,7 +64,17 @@
 			<span class="badge pull-right">10</span>
 			Selected documents
   			</a>
-  			<a class="list-group-item"><strong>Current topic:</strong> {{topic_text}}</a>
+
+	  		<a class="list-group-item"><strong>Current topic:</strong> {{topic_text}}
+			</a>
+	
+			<a class="list-group-item">
+			<button type="button" class="btn btn-success btn-block">
+				<strong>Done!</strong>
+				<span class="glyphicon glyphicon-share-alt"></span>
+			</button>
+			</a>
+
 		</div>
 		{% block rightblock %}
 		{% endblock %}

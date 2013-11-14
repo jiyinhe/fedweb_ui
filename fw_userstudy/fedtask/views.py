@@ -99,6 +99,7 @@ def fetch_results(request):
 
   
 def fetch_document(request):
+	print request.POST['doc_id']
 	if request.is_ajax:
 		data = {}
         	if request.POST['ajax_event'] == 'fetch_document':
@@ -109,7 +110,6 @@ def fetch_document(request):
 				data = 'Sorry, this document is not available.'	
 			else:
 				loc = '%s/%s'%(settings.DATA_ROOT, html_loc)
-				print loc
 				f = open(loc)
 				data = clean_html(f.read())
 				f.close()
@@ -142,9 +142,9 @@ def process_category_info(docs):
 
 
 def clean_html(html):
-	f = open('tmp', 'w')
-	f.write(html)
-	f.close()
+#	f = open('tmp', 'w')
+#	f.write(html)
+#	f.close()
 	# Only keep body part
 	reg_body = re.compile('<body.*?>.+?</body>', re.MULTILINE|re.DOTALL)
 	body = reg_body.findall(html)

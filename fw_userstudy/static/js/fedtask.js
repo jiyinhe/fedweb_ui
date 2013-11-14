@@ -97,6 +97,7 @@ function doc_bookmark(ele_id){
 	//send selection to db
 }
 
+/*
 //Documents in array
 //[(rank, doc)]
 function load_documents(docs){
@@ -118,9 +119,9 @@ function load_documents(docs){
 		];
 	    results.push(html.join('\n'));
 	}
-	$('#results').html(results.join('\n'))
+	$('#results').html(results.join('\n'));
 } 
-
+*/
 
 function category_click(ele_id){
 	//find the previously active one, release active
@@ -151,6 +152,21 @@ function category_click(ele_id){
 		$('#results').html(html.join('\n'));
 
 	}
+	//clear the modal section
+	$('#modal_title').html('');
+	$('#doc_content').html('');
+
+	//rebind the listner for clicking documents
+	$('.doc_title').click(function(){
+		ele_id = $(this).attr('id');
+		doc_click(ele_id);
+		//set the modal title
+		title = $('#'+ele_id+'_title').attr('name');
+		$('#modal_title').html(title);
+	});
+
+	//windwo go back to top
+	$('html, body').animate({scrollTop: 0}, 0);	
 }
 
 

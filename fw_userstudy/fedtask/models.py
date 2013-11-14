@@ -37,7 +37,7 @@ class RanklistManager(models.Manager):
 			{
 				'id':d.doc_id, 
 				'title': '.' if d.title=='' else d.title, 
-				'url': d.url, 
+				'url': d.url if len(d.url)<=80 else d.url[0:80]+'...', 
 				'summary': d.summary,
 				'site': d.site.site_name,
 				'category': d.site.category,
