@@ -84,17 +84,32 @@ function doc_click(ele_id){
 
 //when a document is bookmarked
 function doc_bookmark(ele_id){
+    selected=0;
 	//change the class and icon
 	$('#'+ele_id).toggleClass('bookmark-selected');
 	if ($('#'+ele_id).hasClass('glyphicon-star-empty')){
 		$('#'+ele_id).removeClass('glyphicon-star-empty');
 		$('#'+ele_id).addClass('glyphicon-star');
+        selected=1;
 	}
 	else{
 	        $('#'+ele_id).removeClass('glyphicon-star');
-                $('#'+ele_id).addClass('glyphicon-star-empty');
+			$('#'+ele_id).addClass('glyphicon-star-empty');
 	}
 	//send selection to db
+	$.ajax({
+                type: "POST",
+                url: bookmark_url,
+                data: {
+                        ajax_event: 'bookmark_document',
+                        selected_state: selected, 
+                        session_id: session_id,
+                        topic_id: topic_id,
+                        doc_id: ele_id,
+                      }
+        }).done(function(response) {
+		$("#bookmark_count").html(response);
+        });
 }
 
 /*

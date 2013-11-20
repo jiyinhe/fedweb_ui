@@ -7,8 +7,10 @@
     <script>
 	var results_url = '/study/results/';
 	var document_url = '/study/doc_content/';
+	var bookmark_url = '/study/bookmark/';
 	var topic_id = {{topic_id}};
 	var run_id = {{run_id}};
+	var session_id = {{session_id}};
 	var total_num_docs = {{total_num_docs}};
 	//var docs = eval('('+"{{docs_json|escapejs}}"+')');	
     </script>
@@ -61,7 +63,7 @@
 	<div class="col-md-2">
 		<div class="list-group affix-right" data-spy="affix" data-offset-top="200">
   			<a class="list-group-item active">
-			<span class="badge pull-right">10</span>
+            <span id="bookmark_count" class="badge pull-right">{{bookmark_count}}</span>
 			Selected documents
   			</a>
 

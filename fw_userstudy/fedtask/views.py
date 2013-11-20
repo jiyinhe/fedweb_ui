@@ -2,7 +2,7 @@
 from django.shortcuts import render_to_response, get_object_or_404, redirect 
 from django.contrib.auth.models import User
 from questionnaire.models import UserProfile
-from fedtask.models import Session, Ranklist, Document
+from fedtask.models import Session, Ranklist, Document, Bookmark
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.context_processors import csrf
 from django.utils import simplejson
@@ -15,8 +15,9 @@ import re
 import itertools
 import operator
 import simplejson
+import pdb;
 
-session_id = 3
+session_id = 2
 current_session = Session.objects.get_session(session_id)
 
 # This is the single entry point after user login
@@ -62,21 +63,25 @@ def test(request):
 
 def get_parameters():
 	task = current_session.task
+	sess_id = current_session.session_id
 	topic_id = task.topic.topic_id
 	topic_text = task.topic.topic_text
 	run_id = task.run_id
 	ui_id = task.ui_id
 	docs = Ranklist.objects.get_ranklist(topic_id, run_id)	
+	bookmarks = Bookmark.objects.get_bookmark_count(sess_id,topic_id)
 	# Group docs by category
 	category = process_category_info(docs)
 	c = {	
 		'num_docs': settings.NumDocs,
+		'session_id': session_id,
 		'topic_id': topic_id,
 		'topic_text': topic_text,
 		'run_id': run_id,
 		'ui_id': ui_id,
 		#'docs_json': simplejson.dumps(docs),
 		'docs': docs,
+		'bookmark_count': bookmarks,
 		'total_num_docs': len(docs),
 		'category': category,
 		'cate_json': simplejson.dumps(category),
@@ -99,7 +104,6 @@ def fetch_results(request):
 
   
 def fetch_document(request):
-	print request.POST['doc_id']
 	if request.is_ajax:
 		data = {}
         	if request.POST['ajax_event'] == 'fetch_document':
@@ -193,6 +197,34 @@ def clean_html(html):
 	#print text_final
 	return text_final
 
-
-
-
+def register_bookmark(request):
+	if request.is_ajax:
+		data = {}
+		if request.POST['ajax_event'] == 'bookmark_document':
+			d_id = request.POST['doc_id']
+			s_id = request.POST['session_id']
+			t_id = request.POST['topic_id']
+			state = request.POST['selected_state']
+#		    insert bookmark activity
+			if state == "0": # unregister bookmark
+#			first find the bookmarked document
+				b = Bookmark.objects.get(\
+								doc_id=d_id,\
+								session_id=s_id,\
+								topic_id=t_id,\
+								selected_state=1)
+				b.delete()
+			else:
+#			save the new entry for the bookmarked document
+				newb = Bookmark(\
+						doc_id=d_id,\
+						session_id=s_id,\
+						topic_id=t_id,\
+						selected_state=state)
+				newb.save()
+			data = Bookmark.objects.get_bookmark_count(s_id,t_id)
+		json_data = simplejson.dumps(data)		
+		response = HttpResponse(json_data, mimetype="application/json")
+	else:
+		return render_to_response('errors/403.html')
+	return response

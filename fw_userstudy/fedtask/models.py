@@ -134,12 +134,23 @@ class Session(models.Model):
 	# 0: not done; 1: done
 	progress = models.IntegerField()
 	objects = SessionManager()
+
+class BookmarkManager(models.Manager):
+    def get_bookmark_count(self, sess_id, topic_id):
+		try:
+			bookmarks = Bookmark.objects.filter(topic_id=topic_id,session_id=sess_id,selected_state=1)
+			return bookmarks.count()
+		except Bookmark.DoesNotExist:
+			return 0
 	
 class Bookmark(models.Model):
 	session = models.ForeignKey(Session)
 	topic = models.ForeignKey(Topic)	
 	doc = models.ForeignKey(Document)		
-
+	selected_state = models.IntegerField()
+	objects = BookmarkManager()
+    
+	
 class Qrels(models.Model):
 	topic = models.ForeignKey(Topic)
 	doc = models.ForeignKey(Document) 
