@@ -5,9 +5,12 @@ import simplejson as js
 import operator
 
 # Create your models here.
+class ExperimentManager(models.Manager):
+	pass
 class Experiment(models.Model):
 	experiment_id = models.IntegerField(primary_key=True)
 	exp_description = models.TextField()
+	exp_tasks = models.TextField()
 	prequestionnaire = models.BooleanField(default=True)
 	postquestionnaire = models.BooleanField(default=False)
 	tutorial = models.BooleanField(default=True)
@@ -91,7 +94,26 @@ class Task(models.Model):
 	topic = models.ForeignKey(Topic)
 
 class SessionManager(models.Manager):
-	# This need to be re-organized	
+	# Call this the first time a user is registered
+	# a session keeps track of how far a user is in an experiment
+	# for now a user may only partake in one experiment and does only
+	# has one session. We can make this dependent on "stage" to create
+	# a within subject design.
+	def register_session(self, user_id):
+		new_sess = Session(user_id=user_id)
+		return new_sess
+
+	def get_session_stage(self, user_id):
+		# session may be multiple if we have a within subject design
+		# we use stage to keep track of this
+		try:
+			qryset = self.filter(user_id=user_id).order_by(stage)
+			return qryset[-1]
+		except:
+			return 0
+
+
+		
 	# Get current search session for a user
 	"""
 	def get_current_session(self, user_id):

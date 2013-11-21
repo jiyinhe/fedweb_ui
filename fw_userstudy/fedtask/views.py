@@ -2,7 +2,7 @@
 from django.shortcuts import render_to_response, get_object_or_404, redirect 
 from django.contrib.auth.models import User
 from questionnaire.models import UserProfile
-from fedtask.models import Session, Ranklist, Document, Bookmark
+from fedtask.models import Session, Ranklist, Document, Bookmark, Experiment
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.context_processors import csrf
 from django.utils import simplejson
@@ -21,23 +21,101 @@ import pdb;
 #current_session = Session.objects.get_session(session_id)
 
 # This is the single entry point after user login
+# basic user life cycle:
+# 	register -> assign user_id -> assign session -> prequestionnaire
+#	-> assign to experiment ->
+#	-> redirected to task -> update session with finished task
+#	-> start next task -> update session with finished task -> logout
+
+#	login -> check session for prequestionnaire, experiment 
+#	-> if not completed redirect to current task
+#	-> if completed assign new task
+
 def index(request):
 	user = request.user
-	print user
+	user_id = user.id
 	# If not authenticated, redirect to login
 	if not user.is_authenticated():
 		return redirect('/accounts/login/')	
 	
+	sess_mngr = Session.objects
+	# get_session() may be 0 if no session is available
+	sess = sess_mngr.get_session_stage(user_id)
+	if sess: 
+		# we have a session so lookup what we need
+		print "happy days we have a session"
+	else:
+		# no session need to decide what to do
+		# nosession means no prequestionnaire 
+		pre_qstnr = 0
+		# nosession means no experiment assigned
+
+		# we need some logic here for different types of experiments,
+		# e.g., within and between subject.
+
+		# between subject design, 4 conditions, assign based on
+		# user_id. So mod 4 gives us experiments 0,1,2,3
+		expmnt_id = user_id%4
+
+		# we have a within subject design so our stage is -1
+		stage = -1
+
+		# we have not started a task yet, so our progress is 0
+		progress = 0
+
+		# we need to get our first task, we get if from our experiment
+		try:
+			expmnt = Experiment.objects.get(experiment_id=expmnt_id)
+		except Experiment.DoesNotExist:
+			print "we found no experiment"
+			expmnt = Experiment(experiment_id=0,\
+								exp_description = '[1,2]',\
+								prequestionnaire = True,\
+								postquestionnaire = False,\
+								tutorial = True,\
+								exp_type = "between subject")
+	
+		# tasks is a list of tasks
+		tasks = simplejson.loads(expmnt.exp_tasks)
+
+		# create the session
+		sess = Session(session_id=user_id,\
+						experiment_id=expmnt.experiment_id,\
+						user_id = user_id,\
+						stage = stage,\
+						progress = 0,\
+						task_id = tasks[0])# fails if no tasks
+
+	# now we are sure we have a session now we check for
+	# pre questionnaire and prequestionnaire progress
+	# training and training progress
+	# task and task progress
+	# post questionnaire and postquestionnaire progress
+	# to decide where to direct the user
+
+
+	return redirect('/study/task-train/')	
+	# check if prequestionnaire is completed, redirect if not
+	#if ! UserProfile.objects.profile_exists(user.id):
+	#	return redirect('/question/pre/')	
+
+	# prequestionnaire completed, check if an experiment is assigned,
+	# otherwise assign an experiment
+	#	if Experiment.objects.get()
+
+	# is this user assigned to an experiment?
+	# if yes, get the experiment parameters
+	# if no, assign to experiment and get parameters
+
 	# If the user hasn't done the pre-questionnaire
 	# go to questionnaire
 	# Otherwise go to the task page
-	if UserProfile.objects.profile_exists(user.id):
+	#if UserProfile.objects.profile_exists(user.id):
 		# Before go to a task page, 
 		# Get a session_id,  training or testing?
-		#session_id, session_type = Session.objects.get_current_session(user.id)
-		return redirect('/study/task-train/')	
-	else:
-		return redirect('/question/pre/')	
+	#	session_id, session_type = Session.objects.get_current_session(user.id)
+	#	
+	#else:
 
 
 def train(request):
