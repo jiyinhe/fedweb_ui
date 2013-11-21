@@ -17,8 +17,8 @@ import operator
 import simplejson
 import pdb;
 
-session_id = 2
-current_session = Session.objects.get_session(session_id)
+#session_id = 2
+#current_session = Session.objects.get_session(session_id)
 
 # This is the single entry point after user login
 def index(request):
@@ -62,6 +62,8 @@ def test(request):
 
 
 def get_parameters():
+	session_id = 2
+	current_session = Session.objects.get_session(session_id)
 	task = current_session.task
 	sess_id = current_session.session_id
 	topic_id = task.topic.topic_id

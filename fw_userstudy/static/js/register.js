@@ -49,15 +49,16 @@ function register(user, email, pass){
 			pass: pass,
                 }
         }).done(function(response) {
-		console.log(response)
-		if (!response['status']==true){
-			//user exists, set error
-			$('#err_user').html(response['errmsg'])
-			$('#errsign_user').removeClass('errsign-valid').addClass('errsign-err');
-		}
-		$('#id_username').val(user);
-		$('#id_password').val(pass)
-		$('#loginform').submit();
+			if (response['status']==false){
+				//user exists, set error
+				$('#err_user').html(response['errmsg'])
+				$('#errsign_user').removeClass('errsign-valid').addClass('errsign-err');
+			}
+			else{
+				$('#id_username').val(user);
+				$('#id_password').val(pass)
+				$('#loginform').submit();
+			}
         });
 }
 
