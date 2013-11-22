@@ -37,5 +37,16 @@ def prequestion(request):
 	template = 'questionnaire/pre-question.html'
 	return render_to_response(template, c)
 
+def postquestion(request):
+	c = {'user': request.user}
+	c.update(csrf(request))
 
+	template = 'questionnaire/post-question.html'
+	return render_to_response(template, c)
 
+def doneexperiment(request):
+	c = {'user': request.user}
+	c.update(csrf(request))
+
+	template = 'questionnaire/done-experiment.html'
+	return render_to_response(template, c)

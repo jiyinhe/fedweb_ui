@@ -6,15 +6,23 @@ import operator
 
 # Create your models here.
 class ExperimentManager(models.Manager):
-	pass
+	def find_experiment(self, expmnt_id):
+		try:
+			return Experiment.objects.get(experiment_id=expmnt_id)
+		except Experiment.DoesNotExist:
+			print "Error: we found no experiment. Populate the\
+				experiment table first. Or try a different experiment ID"
+			return 0		
+
 class Experiment(models.Model):
 	experiment_id = models.IntegerField(primary_key=True)
 	exp_description = models.TextField()
 	exp_tasks = models.TextField()
-	prequestionnaire = models.BooleanField(default=True)
-	postquestionnaire = models.BooleanField(default=False)
+	pre_qst = models.BooleanField(default=True)
+	post_qst = models.BooleanField(default=False)
 	tutorial = models.BooleanField(default=True)
 	exp_type = models.CharField(max_length=45)
+	objects = ExperimentManager()
 	
 
 class UI(models.Model):
@@ -111,50 +119,23 @@ class SessionManager(models.Manager):
 			return qryset[-1]
 		except:
 			return 0
-
-
 		
-	# Get current search session for a user
-	"""
-	def get_current_session(self, user_id):
-		session_id = 0
-		session_type = ''
-		# Check if the user has done a training session		
-		session = self.filter(user_id=user_id, stage = 'train', progress=1)
-		# If no finished training session, then go to training session
-		if len(session) == 0:
-			pass	
-		# Otherwise, directly go to a test session			
-		else:
-			pass
-		# Search for a session that the user has not finished yet	
-		session = self.filter(user_id=user_id, progress=0)
-		if len(session) == 0:
-			# No session found, start a new session
-			max_id = self.all().aggregate(Max('session_id'))
-			if max_id['session_id__max'] == None:
-				session_id = 1
-			else:
-				session_id = max_id['session_id__max'] + 1
-			
-		else:
-			# Otherwise return current unfinished session
-			print session	
-		print session_id, session_type
-		return session_id, session_type
-	"""
 	def get_session(self, session_id):
 		return self.get(session_id__exact=session_id)
 
 class Session(models.Model):
 	session_id = models.IntegerField(primary_key=True)
 	experiment = models.ForeignKey(Experiment)
+
+	# progress indicates whether a user has completed this step
+	# a zero is not complete, a 1 or higher is complete
+	pre_qst_progress = models.IntegerField() 
+	post_qst_progress = models.IntegerField()
+	training_progress = models.IntegerField()
+	task_progress = models.IntegerField()
+
 	user = models.ForeignKey(User)
-	task = models.ForeignKey(Task)
-	ST = (('train', 'Training'), ('test', 'Testing'))
-	stage = models.CharField(max_length=5, choices=ST)
-	# 0: not done; 1: done
-	progress = models.IntegerField()
+	stage = models.IntegerField()
 	objects = SessionManager()
 
 class BookmarkManager(models.Manager):

@@ -124,8 +124,8 @@ qry = 'delete from fedtask_experiment'
 db.run_qry(qry, conn)
 for e in Experiment_description:
 	qry = 'insert into fedtask_experiment (experiment_id,\
-			exp_description, exp_tasks, exp_type, prequestionnaire,\
-			postquestionnaire, tutorial)\
+			exp_description, exp_tasks, exp_type, pre_qst,\
+			post_qst, tutorial)\
 			values (%s, "%s", "%s", "%s", %s, %s, %s) '%(e['ID'], 
 				e['DESC'], simplejson.dumps(e['TASKS']), e['TYPE'], e['PREQ'], 
 				e['POST'], e['TUT'])
