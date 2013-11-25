@@ -41,10 +41,28 @@ function validate(eles){
 		//4. minlength
 		if ('minlength' in options){
 			if (value_exists && value.length < options['minlength']){
-				msg = 'Length of '+$('#'+element).attr('name')+' should >='+options['minlength']
+				msg = 'Length of '+$('#'+element).attr('name')+' should >='+options['minlength'];
 				errs[element] = msg;
 			}			
 		} 
+		//5 required checkbox for terms
+		if ('checkbox' in options && 'terms' in options){
+			if(! $('#'+element).prop("checked")){
+				msg = "To participate, please indicate that you agree to the terms above";
+				errs[element] = msg;
+			}
+		}
+
+		//6 required radios for background
+		if ('radio' in options){
+			if(! $('[name="'+element+'"]').is(":checked")){
+				msg = "please indicate your choice";
+				errs[element] = msg;
+			}else{
+				errs[element]=false;
+			}
+
+		}
 	}
 	return errs;
 }

@@ -95,6 +95,7 @@ def index(request):
 
 	# now we are sure we have a session now we check for
 	# pre questionnaire  progress
+	# once preqst is finished we set the session flag 
 	if not sess.pre_qst_progress:
 		return redirect('/question/pre/')	
 	

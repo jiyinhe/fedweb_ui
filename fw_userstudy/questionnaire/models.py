@@ -29,8 +29,12 @@ class UserProfile(models.Model):
 	search_exp = models.IntegerField(choices=PROF)	
 	
 	# Education
-	EL = (('H', 'Highschool'), ('U', 'University'), ('M', 'Master'), ('D', 'Doctorate'))
+	EL = (('N', 'No education'),('H', 'Highschool'), ('U', 'University'), ('M', 'Master'), ('D', 'Doctorate'))
 	education = models.CharField(max_length=1, choices=EL)	
+
+	# consent
+	consent = models.BooleanField()
+	
 	objects = UserProfileManager()
 
 	
