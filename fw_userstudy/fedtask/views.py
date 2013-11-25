@@ -2,7 +2,7 @@
 from django.shortcuts import render_to_response, get_object_or_404, redirect 
 from django.contrib.auth.models import User
 from questionnaire.models import UserProfile
-from fedtask.models import Session, Ranklist, Document, Bookmark, Experiment
+from fedtask.models import Session, Ranklist, Document, Bookmark, Experiment, Task
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.context_processors import csrf
 from django.utils import simplejson
@@ -55,8 +55,10 @@ def index(request):
 
 	# load the tasks for this experiment
 	tasks = simplejson.loads(expmnt.exp_tasks)
-
+	print "current session"
+	print sess,user_id
 	if not sess: 
+		print "new session"
 		# nosession means no prequestionnaire 
 		pre_qstnr = 0
 
@@ -143,8 +145,17 @@ def test(request):
 def get_parameters():
 	session_id = 2
 	current_session = Session.objects.get_session(session_id)
-	task = current_session.task
 	sess_id = current_session.session_id
+
+	# to get the task we first get the index of the task our
+	# experiment
+	task_index = current_session.task_progress+current_session.training_progress
+	expmnt = Experiment.objects.get(experiment_id=current_session.experiment_id)
+	tasks = simplejson.loads(expmnt.exp_tasks)
+	# we get the task_id using the task list and index
+	task_id = tasks[task_index]
+	task = Task.objects.get(task_id=task_id)
+
 	topic_id = task.topic.topic_id
 	topic_text = task.topic.topic_text
 	run_id = task.run_id

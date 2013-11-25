@@ -1,4 +1,6 @@
 # Create your views here.
+from pprint import pprint
+from django.db import connection
 from django.shortcuts import render_to_response, get_object_or_404, redirect 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User 
@@ -33,10 +35,7 @@ def register_user(request):
 
 # store the pre questionnaire data, and go to index
 def store_preqst(request):
-	print "store preqst"
-	print request.POST
 	user_id = User.objects.get(username=request.user).id
-	print user_id
 	up = UserProfile(user_id=user_id,
 					IP="11121212",
 					gender=request.POST['gender'],
@@ -45,17 +44,12 @@ def store_preqst(request):
 					english_exp=request.POST['english'],
 					search_exp=request.POST['search'],
 					education=request.POST['education'],
-					consent=request.POST['consent'])
+					consent=request.POST['consent']	)
 	up.save()
+	# update the session, that we finished the prequestionnaire
 	sess = Session.objects.get(session_id=user_id)	
-	print sess.user_id, sess.pre_qst_progress
-	sess.pre_qst_progress = 1
-	print sess.user_id, sess.pre_qst_progress
+	sess.pre_qst_progress=1
 	sess.save()
-	#json_data = simplejson.dumps(data)		
-	#response = HttpResponse(json_data, mimetype="application/json")
-	#else:
-	#		return render_to_response('errors/403.html')
 	return redirect('/')
 
 
