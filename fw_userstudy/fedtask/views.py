@@ -55,10 +55,7 @@ def index(request):
 
 	# load the tasks for this experiment
 	tasks = simplejson.loads(expmnt.exp_tasks)
-	print "current session"
-	print sess,user_id
 	if not sess: 
-		print "new session"
 		# nosession means no prequestionnaire 
 		pre_qstnr = 0
 
@@ -231,13 +228,11 @@ def process_category_info(docs):
 
 def submit_complete_task(request):
 	# is the user still training
-	print request
 	referer = request.META['HTTP_REFERER']
 	if 'task-train' in referer:
 		Task.objects.completed_train_task(request.META['USER'])	
 	else:
 		Task.object.completed_test_task(request.META['USER'])
-	print "submitting completed task"
 	return redirect("/")
 
 
@@ -290,7 +285,6 @@ def clean_html(html):
 	if text_final.strip() == '':
 		text_final =  'Sorry, the content of the document is not available.'
 
-	#print text_final
 	return text_final
 
 def register_bookmark(request):

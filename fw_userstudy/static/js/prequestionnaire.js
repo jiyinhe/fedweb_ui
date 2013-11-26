@@ -21,7 +21,6 @@ function validate_prequestionnaire_form(){
 	success = true;
 	data = {};
 	focus = undefined;
-	return submit_preqst();	 
 	for (r in rules){
 		if (r in errs && errs[r]){
 			//Show error message
