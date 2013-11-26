@@ -113,7 +113,23 @@ function doc_bookmark(ele_id){
                         doc_id: ele_id,
                       }
         }).done(function(response) {
-		$("#bookmark_count").html(response);
+			if (response.feedback == "positive_feedback"){
+				$("#"+ele_id).animate({
+								backgroundColor:"#00ff00",
+								height:"50",
+								width:"50"
+								}, 500);
+			}else if(response.feedback == "negative_feedback"){
+				$("#"+ele_id).animate({
+								backgroundColor:"#ff0000",
+								height:"50",
+								width:"50"
+								}, 500);
+
+			}else{
+				;// no feedback
+			}
+			$("#bookmark_count").html(response.count);
         });
 }
 

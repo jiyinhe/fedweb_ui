@@ -122,7 +122,7 @@ def train(request):
 	user = request.user
 	# prepare contexts 
 	c = {'user': user}	
-	context = get_parameters()
+	context = get_parameters(request)
 	c.update(context)
 	c.update(csrf(request))
 	template = 'fedtask/task_ui%s_train.html'%c['ui_id']
@@ -131,7 +131,7 @@ def train(request):
 
 def test(request):
 	c = {'user': request.user}	
-	context = get_parameters()
+	context = get_parameters(request)
 	c.update(context)
 	c.update(csrf(request))
 
@@ -139,10 +139,9 @@ def test(request):
 	return render_to_response(template, c)
 
 
-def get_parameters():
-	session_id = 2
-	current_session = Session.objects.get_session(session_id)
-	sess_id = current_session.session_id
+def get_parameters(request):
+	current_session = Session.objects.get_session(request)
+	session_id = current_session.session_id
 
 	task = Task.objects.get_session_task(current_session)
 
@@ -151,7 +150,7 @@ def get_parameters():
 	run_id = task.run_id
 	ui_id = task.ui_id
 	docs = Ranklist.objects.get_ranklist(topic_id, run_id)	
-	bookmarks = Bookmark.objects.get_bookmark_count(sess_id,topic_id)
+	bookmarks = Bookmark.objects.get_bookmark_count_outsidepage_contxt(session_id,topic_id)
 	# Group docs by category
 	category = process_category_info(docs)
 	c = {	
@@ -291,28 +290,11 @@ def register_bookmark(request):
 	if request.is_ajax:
 		data = {}
 		if request.POST['ajax_event'] == 'bookmark_document':
-			d_id = request.POST['doc_id']
-			s_id = request.POST['session_id']
-			t_id = request.POST['topic_id']
-			state = request.POST['selected_state']
-#		    insert bookmark activity
-			if state == "0": # unregister bookmark
-#			first find the bookmarked document
-				b = Bookmark.objects.get(\
-								doc_id=d_id,\
-								session_id=s_id,\
-								topic_id=t_id,\
-								selected_state=1)
-				b.delete()
-			else:
-#			save the new entry for the bookmarked document
-				newb = Bookmark(\
-						doc_id=d_id,\
-						session_id=s_id,\
-						topic_id=t_id,\
-						selected_state=state)
-				newb.save()
-			data = Bookmark.objects.get_bookmark_count(s_id,t_id)
+			Bookmark.objects.update_bookmark(request)
+			data['count'] = Bookmark.objects.get_bookmark_count(request)
+			# give feedback on correct/incorrect bookmarked documents
+			# in training fase
+			data['feedback']=Bookmark.objects.training_feedback_bookmark(request)
 		json_data = simplejson.dumps(data)		
 		response = HttpResponse(json_data, mimetype="application/json")
 	else:

@@ -144,11 +144,14 @@ class SessionManager(models.Manager):
 		except Session.DoesNotExist:
 			return 0
 		
-	def get_session(self, session_id):
-		return self.get(session_id__exact=session_id)
+	def get_session(self, request):
+		user_id = User.objects.get(username=request.user).id
+		sess = self.get(session_id=user_id)
+		return sess
 
 	def completed_pre_qst(self, request):
-		sess = self.get(session_id=request.user_id)
+		user_id = User.objects.get(username=request.user).id
+		sess = self.get(session_id=user_id)
 		sess.pre_qst_progress=1
 		sess.save()
 
@@ -168,12 +171,63 @@ class Session(models.Model):
 	objects = SessionManager()
 
 class BookmarkManager(models.Manager):
-    def get_bookmark_count(self, sess_id, topic_id):
+
+	def get_bookmark_count_outsidepage_contxt(self, sess_id, topic_id):
 		try:
 			bookmarks = Bookmark.objects.filter(topic_id=topic_id,session_id=sess_id,selected_state=1)
 			return bookmarks.count()
 		except Bookmark.DoesNotExist:
 			return 0
+
+	def get_bookmark_count(self, request):
+		sess_id=request.POST['session_id']
+		topic_id=request.POST['topic_id']
+		try:
+			bookmarks = Bookmark.objects.filter(topic_id=topic_id,session_id=sess_id,selected_state=1)
+			return bookmarks.count()
+		except Bookmark.DoesNotExist:
+			return 0
+
+	def training_feedback_bookmark(self, request):
+		# only in training
+		if "task-train" in request.META['HTTP_REFERER']:
+			sess_id=request.POST['session_id']
+			topic_id=request.POST['topic_id']
+			doc_id=request.POST['doc_id'].strip("_bookmark")
+			state = request.POST['selected_state']
+			# only feedback if bookmarking not unbookmarking
+			if state:
+				try: # did we bookmark a relevant doc, pos feedback
+					print topic_id,doc_id
+					Qrels.objects.get(topic_id=topic_id,doc_id=doc_id)
+					return "positive_feedback"
+				except Qrels.DoesNotExist: # otherwise neg feedback
+					return "negative_feedback"
+		return "no_feedback"
+
+	def update_bookmark(self, request):
+		d_id = request.POST['doc_id']
+		s_id = request.POST['session_id']
+		t_id = request.POST['topic_id']
+		state = request.POST['selected_state']
+#		   insert bookmark activity
+		if state == "0": # unregister bookmark
+#		   first find the bookmarked document
+			b = Bookmark.objects.get(\
+							doc_id=d_id,\
+							session_id=s_id,\
+							topic_id=t_id,\
+							selected_state=1)
+			b.delete()
+		else:
+#		   save the new entry for the bookmarked document
+			newb = Bookmark(\
+					doc_id=d_id,\
+					session_id=s_id,\
+					topic_id=t_id,\
+					selected_state=state)
+			newb.save()
+	
 	
 class Bookmark(models.Model):
 	session = models.ForeignKey(Session)
@@ -182,11 +236,14 @@ class Bookmark(models.Model):
 	selected_state = models.IntegerField()
 	objects = BookmarkManager()
     
+class QrelsManager(models.Manager):
+	pass
 	
 class Qrels(models.Model):
 	topic = models.ForeignKey(Topic)
 	doc = models.ForeignKey(Document) 
 	relevance = models.IntegerField() 
+	objects = QrelsManager()
 
 
 
