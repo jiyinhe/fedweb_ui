@@ -1,4 +1,4 @@
-from django.db import models
+from django.db import models, connection
 from django.contrib.auth.models import User
 from django.db.models import Max
 import simplejson as js
@@ -196,9 +196,8 @@ class BookmarkManager(models.Manager):
 			doc_id=request.POST['doc_id'].strip("_bookmark")
 			state = request.POST['selected_state']
 			# only feedback if bookmarking not unbookmarking
-			if state:
+			if state == "1":
 				try: # did we bookmark a relevant doc, pos feedback
-					print topic_id,doc_id
 					Qrels.objects.get(topic_id=topic_id,doc_id=doc_id)
 					return "positive_feedback"
 				except Qrels.DoesNotExist: # otherwise neg feedback

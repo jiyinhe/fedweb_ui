@@ -288,7 +288,7 @@ def clean_html(html):
 
 def register_bookmark(request):
 	if request.is_ajax:
-		data = {}
+		data = {'count':0,'feedback':"no feedback"};
 		if request.POST['ajax_event'] == 'bookmark_document':
 			Bookmark.objects.update_bookmark(request)
 			data['count'] = Bookmark.objects.get_bookmark_count(request)

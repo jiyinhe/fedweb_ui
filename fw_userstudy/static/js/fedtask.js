@@ -120,14 +120,17 @@ function doc_bookmark(ele_id){
 								width:"50"
 								}, 500);
 			}else if(response.feedback == "negative_feedback"){
-				$("#"+ele_id).animate({
-								backgroundColor:"#ff0000",
-								height:"50",
-								width:"50"
-								}, 500);
-
+				console.log("negative feedback");// no feedback
+				$("#"+ele_id).append('<span id="tmp_feedback">false</span>')
+				$('#tmp_feedback').animate({
+						fontSize:"25px",
+						fontColor: "red"},
+						500,
+						"swing",
+						function(){$('#tmp_feedback').remove();}
+					);
 			}else{
-				;// no feedback
+				console.log("nothing to do");// no feedback
 			}
 			$("#bookmark_count").html(response.count);
         });
