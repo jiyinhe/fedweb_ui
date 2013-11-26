@@ -8,6 +8,7 @@
 	var results_url = '/study/results/';
 	var document_url = '/study/doc_content/';
 	var bookmark_url = '/study/bookmark/';
+	var submit_complete_task_url = '/study/submit_complete_task/';
 	var topic_id = {{topic_id}};
 	var run_id = {{run_id}};
 	var session_id = {{session_id}};
@@ -71,7 +72,7 @@
 			</a>
 	
 			<a class="list-group-item">
-			<button type="button" class="btn btn-success btn-block">
+			<button type="button" id="done" class="btn btn-success btn-block">
 				<strong>Done!</strong>
 				<span class="glyphicon glyphicon-share-alt"></span>
 			</button>

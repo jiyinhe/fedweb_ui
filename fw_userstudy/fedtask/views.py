@@ -147,14 +147,7 @@ def get_parameters():
 	current_session = Session.objects.get_session(session_id)
 	sess_id = current_session.session_id
 
-	# to get the task we first get the index of the task our
-	# experiment
-	task_index = current_session.task_progress+current_session.training_progress
-	expmnt = Experiment.objects.get(experiment_id=current_session.experiment_id)
-	tasks = simplejson.loads(expmnt.exp_tasks)
-	# we get the task_id using the task list and index
-	task_id = tasks[task_index]
-	task = Task.objects.get(task_id=task_id)
+	task = Task.objects.get_session_task(current_session)
 
 	topic_id = task.topic.topic_id
 	topic_text = task.topic.topic_text
@@ -235,6 +228,17 @@ def process_category_info(docs):
 		category.append(item)
 		i += 1
 	return category 
+
+def submit_complete_task(request):
+	# is the user still training
+	print request
+	referer = request.META['HTTP_REFERER']
+	if 'task-train' in referer:
+		Task.objects.completed_train_task(request.META['USER'])	
+	else:
+		Task.object.completed_test_task(request.META['USER'])
+	print "submitting completed task"
+	return redirect("/")
 
 
 def clean_html(html):

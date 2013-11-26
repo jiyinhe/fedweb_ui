@@ -91,6 +91,29 @@ class Document(models.Model):
 	html_location = models.TextField()
 	objects = DocumentManager()
 
+class TaskManager(models.Manager):
+	def get_session_task(self, sess):
+	    # to get the task we first get the index of the task our
+		# experiment
+		task_index = sess.task_progress + sess.training_progress
+		expmnt = Experiment.objects.get(experiment_id=sess.experiment_id)
+		tasks = js.loads(expmnt.exp_tasks)
+		# we get the task_id using the task list and index
+		task_id = tasks[task_index]
+		task = Task.objects.get(task_id=task_id)
+		return task
+
+	def completed_train_task(self, user):
+		sess_id = User.objects.get(username=user).id
+		sess = Session.objects.get(session_id=sess_id)
+		sess.training_progress +=1
+		sess.save()
+
+	def completed_test_task(self, user):
+		sess_id = User.objects.get(username=user).id
+		sess = Session.objects.get(session_id=sess_id)
+		sess.task_progress +=1
+		sess.save()
 
 class Task(models.Model):
 	task_id = models.IntegerField(primary_key=True)
@@ -100,6 +123,7 @@ class Task(models.Model):
 	run = models.ForeignKey(Run)
 	# The topic
 	topic = models.ForeignKey(Topic)
+	objects = TaskManager()
 
 class SessionManager(models.Manager):
 	# Call this the first time a user is registered
@@ -122,6 +146,11 @@ class SessionManager(models.Manager):
 		
 	def get_session(self, session_id):
 		return self.get(session_id__exact=session_id)
+
+	def completed_pre_qst(self, request):
+		sess = self.get(session_id=request.user_id)
+		sess.pre_qst_progress=1
+		sess.save()
 
 class Session(models.Model):
 	session_id = models.IntegerField(primary_key=True)

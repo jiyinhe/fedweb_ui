@@ -7,6 +7,11 @@ $('#results').ready(function(){
 	cache_results();
 });
 
+// when done button for training task is pressed update session
+$("#done").click(function(){
+	submit_complete_task();	
+});
+
 //When click document title, show document
 $('.doc_title').click(function(){
 	ele_id = $(this).attr('id');
@@ -137,6 +142,11 @@ function load_documents(docs){
 	$('#results').html(results.join('\n'));
 } 
 */
+
+function submit_complete_task(){
+	console.log("submit complete task")
+	window.location = submit_complete_task_url;
+}
 
 function category_click(ele_id){
 	//find the previously active one, release active

@@ -35,21 +35,10 @@ def register_user(request):
 
 # store the pre questionnaire data, and go to index
 def store_preqst(request):
-	user_id = User.objects.get(username=request.user).id
-	up = UserProfile(user_id=user_id,
-					IP="11121212",
-					gender=request.POST['gender'],
-					year_of_birth=request.POST['age'],
-					computer_exp=request.POST['computer'],
-					english_exp=request.POST['english'],
-					search_exp=request.POST['search'],
-					education=request.POST['education'],
-					consent=request.POST['consent']	)
-	up.save()
+	# store the userprofile
+	UserProfile.objects.store_profile(request)
 	# update the session, that we finished the prequestionnaire
-	sess = Session.objects.get(session_id=user_id)	
-	sess.pre_qst_progress=1
-	sess.save()
+	Session.objects.completed_pre_qst(request)
 	return redirect('/')
 
 
