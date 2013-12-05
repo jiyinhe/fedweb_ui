@@ -113,25 +113,22 @@ function doc_bookmark(ele_id){
                         doc_id: ele_id,
                       }
         }).done(function(response) {
+			// get the doc id (remove '_bookmark' from ele_id
+			doc_id = ele_id.substr(0,ele_id.lastIndexOf("_"));
 			if (response.feedback == "positive_feedback"){
-				$("#"+ele_id).animate({
-								backgroundColor:"#00ff00",
-								height:"50",
-								width:"50"
-								}, 500);
+				console.log("positive feedback");
+				$("#"+doc_id+"_title").toggleClass("alert alert-success");
 			}else if(response.feedback == "negative_feedback"){
 				console.log("negative feedback");// no feedback
-				$("#"+ele_id).append('<span id="tmp_feedback">false</span>')
-				$('#tmp_feedback').animate({
-						fontSize:"25px",
-						fontColor: "red"},
-						500,
-						"swing",
-						function(){$('#tmp_feedback').remove();}
-					);
-			}else{
-				console.log("nothing to do");// no feedback
+				$("#"+doc_id+"_title").toggleClass("alert alert-danger");
+			}else if(response.feedback == "delete_feedback"){
+				console.log("removing any alert classes");// no feedback
+				$("#"+doc_id+"_title").removeClass("alert alert-danger alert-success");
 			}
+			else{
+				console.log("no_feedback");		
+			}
+			notify_feedback(response.feedback);
 			$("#bookmark_count").html(response.count);
         });
 }

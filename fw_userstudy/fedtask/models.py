@@ -202,6 +202,8 @@ class BookmarkManager(models.Manager):
 					return "positive_feedback"
 				except Qrels.DoesNotExist: # otherwise neg feedback
 					return "negative_feedback"
+			if state == "0":
+				return "delete_feedback"
 		return "no_feedback"
 
 	def update_bookmark(self, request):
@@ -212,12 +214,21 @@ class BookmarkManager(models.Manager):
 #		   insert bookmark activity
 		if state == "0": # unregister bookmark
 #		   first find the bookmarked document
-			b = Bookmark.objects.get(\
+			try:
+				b = Bookmark.objects.get(\
 							doc_id=d_id,\
 							session_id=s_id,\
 							topic_id=t_id,\
 							selected_state=1)
-			b.delete()
+				b.delete()
+			except Bookmark.MultipleObjectsReturned:
+				print "removing all entries of the bookmarks"
+				b = Bookmark.objects.filter(\
+							doc_id=d_id,\
+							session_id=s_id,\
+							topic_id=t_id,\
+							selected_state=1)
+				b.delete() # delete complete queryset
 		else:
 #		   save the new entry for the bookmarked document
 			newb = Bookmark(\

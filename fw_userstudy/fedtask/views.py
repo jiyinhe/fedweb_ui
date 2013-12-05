@@ -287,8 +287,11 @@ def clean_html(html):
 	return text_final
 
 def register_bookmark(request):
+	print "register bookmark"
+	# TODO: only provide feedback for training, not in test
+	# test whether URL contains "test" or "train"
 	if request.is_ajax:
-		data = {'count':0,'feedback':"no feedback"};
+		data = {'count':0,'feedback':"no_feedback"};
 		if request.POST['ajax_event'] == 'bookmark_document':
 			Bookmark.objects.update_bookmark(request)
 			data['count'] = Bookmark.objects.get_bookmark_count(request)

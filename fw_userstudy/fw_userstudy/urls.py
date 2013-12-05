@@ -28,6 +28,7 @@ urlpatterns = patterns('',
 
     # Questionnaire
     url(r'^question/', include('questionnaire.urls')),
+
 )
 
 #in devlopement mode, serving the static files

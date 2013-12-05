@@ -70,3 +70,7 @@ a.category {
 .filter-out {
 	visibility: hidden;
 }
+
+.panel-hover{
+	background-color:#87CEEB;
+}
