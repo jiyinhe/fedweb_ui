@@ -55,84 +55,108 @@ at any time.</p>
 		</div>
 
 		<div class="col-md-7">
-				
-			<form class="form-horizontal" role="form" id="preqst_form"
-action="/question/store_preqst/" method="POST">{% csrf_token %}
-				<label><p><b>I declare that I have read and understood
-the above and allow the anonimized logs of my activity to be used and
-shared for research purposes. </b><input id="consent" name="consent"
-type="checkbox" value="1">
-				</p></label>
-					<div class="err" id="err_consent"></div>
-					<div id="errsign_consent" class="col-sm-1 glyphicon glyphicon-info-sign errsign-valid"></div>
+		<form class="form-horizontal" role="form" id="preqst_form" action="/question/store_preqst/" method="POST">{% csrf_token %}
+			<label><p><b>I declare that I have read and understood
+			the above and allow the anonimized logs of my activity to be used and
+			shared for research purposes. </b>
+			<input id="consent" name="consent" type="checkbox" value="1">
+			</p>
+			</label>
 
-				<fieldset class="alert alert-info">
-					<label class="qstlabel">gender</label>
-					<select name="gender" id="gender">
-						<option value="">Please select</option>
-						<option value="M">Male</option>
-						<option value="F">Female</option>
-					</select>
-					<div class="err" id="err_gender"></div>
-					<div id="errsign_gender" class="col-sm-1 glyphicon glyphicon-info-sign errsign-valid"></div>
-					</br>
-					<label class="qstlabel">age</label>
-					<select name="age" id="age">
-						<option value="">Please select</option>
-						{% for age in ageoptions %}
-							<option value="{{age}}">{{age}}</option>
-						{% endfor %}
-					</select>
-					<div class="err" id="err_age"></div>
-					<div id="errsign_age" class="col-sm-1 glyphicon glyphicon-info-sign errsign-valid"></div>
-					</br>
-					<label class="qstlabel">level of education</label>
-					<select name="education" id="education">
-						<option value="">Please select</option>
-						<option value="N">No education</option>
-						<option value="H">Highschool</option>
-						<option value="B">Bachelor</option>
-						<option value="M">Master</option>
-						<option value="D">Doctorate</option>
-					</select>
-					<div class="err" id="err_education"></div>
-					<div id="errsign_education" class="col-sm-1 glyphicon glyphicon-info-sign errsign-valid"></div>
+			<div class="alert space5" id="errarea_consent">
+			<span id="errsign_consent" class="glyphicon glyphicon-info-sign errsign-valid"></span>
+			<span class="err" id="err_consent"></span>
+			</div>
 
-				</fieldset>
-				<p>Please indicate the extend to which the following
-statements apply to you on a scale of 1 to 5, where 1 indicates no
-agreement and 5 indicates extreme agreement.</p>
-				<fieldset class="alert alert-info">
+			<fieldset class="alert alert-info">
+			<label class="qstlabel">Gender</label>
+			<select name="gender" id="gender">
+				<option value="">Please select</option>
+				<option value="M">Male</option>
+				<option value="F">Female</option>
+			</select>
+			<div class="alert space5" id="errarea_gender">
+			<span id="errsign_gender" class="glyphicon glyphicon-info-sign errsign-valid"></span>	
+			<span class="err" id="err_gender"></span>
+			</div>
+			<label class="qstlabel">Age</label>
+			<select name="age" id="age">
+				<option value="">Please select</option>
+				{% for age in ageoptions %}
+					<option value="{{age}}">{{age}}</option>
+				{% endfor %}
+			</select>
+			<div class="alert space5" id="errarea_age">
+			<span id="errsign_age" class="glyphicon glyphicon-info-sign errsign-valid"></span>
+			<span class="err" id="err_age"></span>
+			</div>
 
-				<label>I am good with computers:</label>
-				</br>
-					{% for i in likertscale %}
-						<label> {{i}} </label>
-						<input type="radio" name="computer" id="computers_{{i}}" value="{{i}}">
-					{% endfor %}
-					<div class="err" id="err_computer"></div>
-					<div id="errsign_computer" class="col-sm-1 glyphicon glyphicon-info-sign errsign-valid"></div>
+			<label class="qstlabel">Level of education</label>
+			<select name="education" id="education">
+				<option value="">Please select</option>
+				<option value="N">No education</option>
+				<option value="H">Highschool</option>
+				<option value="B">Bachelor</option>
+				<option value="M">Master</option>
+				<option value="D">Doctorate</option>
+			</select>
+			<div class="alert space5" id="errarea_education">
+			<span id="errsign_education" class="glyphicon glyphicon-info-sign errsign-valid"></span>
+			<span class="err" id="err_education"></span>
+			</div>
+			</fieldset>
 
-				<label>I am a fluent speaker of the english language</label>
-				</br>
-					{% for i in likertscale %}
-						<label> {{i}} </label>
-						<input type="radio" name="english"  id="english_{{i}}" value="{{i}}">
-					{% endfor %}
-					<div class="err" id="err_english"></div>
-					<div id="errsign_english" class="col-sm-1 glyphicon glyphicon-info-sign errsign-valid"></div>
-				<label>I am an experienced user of search engines</label>
-				</br>
-					{% for i in likertscale %}
-						<label> {{i}} </label>
-						<input type="radio" name="search" id="search_{{i}}" value="{{i}}">
-					{% endfor %}
-					<div class="err" id="err_search"></div>
-					<div id="errsign_search" class="col-sm-1 glyphicon glyphicon-info-sign errsign-valid"></div>
-				</br>
-				<button type ="submit" id="preqst_btn" class="btn btn-default"
-				>Submit</button>
-			</form>
+			<p>Please indicate the extend to which the following
+			statements apply to you on a scale of 1 to 5, where 1 indicates no
+			agreement and 5 indicates extreme agreement.</p>
+
+			<fieldset class="alert alert-info">
+			<label>I am good with computers:</label>
+			</br>
+			<div class="btn-group" id="computer_btn">	
+				{% for i in likertscale %}
+				<label class="btn btn-warning likert" id="computers_{{i}}">
+    				<input type="radio" name="computer" id="computers_{{i}}" value="{{i}}">
+				{{i}} 
+  				</label>
+				{% endfor %}
+			</div>
+			<div class="alert space5" id="errarea_computer">
+			<span id="errsign_computer" class="glyphicon glyphicon-info-sign errsign-valid"></span>
+			<span class="err" id="err_computer"></span>
+			</div>
+
+			<label>I am a fluent speaker of the english language:</label>
+			</br>
+			<div class="btn-group" id="english_btn">	
+				{% for i in likertscale %}
+				<label class="btn btn-warning likert" id="english_{{i}}">
+    				<input type="radio" name="english" id="english_{{i}}" value="{{i}}">
+				{{i}} 
+  				</label>
+				{% endfor %}
+			</div>
+			<div class="alert space5" id="errarea_english">
+			<span id="errsign_english" class="glyphicon glyphicon-info-sign errsign-valid"></span>
+			<span class="err" id="err_english"></span>
+			</div>
+
+			<label>I am an experienced user of search engines:</label>
+			</br>
+			<div class="btn-group" id="search_btn">	
+				{% for i in likertscale %}
+				<label class="btn btn-warning likert" id="search_{{i}}">
+    				<input type="radio" name="search" id="search_{{i}}" value="{{i}}">
+				{{i}} 
+  				</label>
+				{% endfor %}
+			</div>
+			<div class="alert space5" id="errarea_search">
+			<span id="errsign_search" class="glyphicon glyphicon-info-sign errsign-valid"></span>
+			<span class="err" id="err_search"></span>
+			</div>
+			<button type ="submit" id="preqst_btn" class="btn btn-primary">Submit</button>
+		</form>
 		</div>
 
 		<div class="col-md-2">

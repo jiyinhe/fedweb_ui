@@ -4,7 +4,17 @@ $(document).ready(function () {
 $('#preqst_btn').click(function(){
 	return validate_prequestionnaire_form();	
 });
-
+// Enable buttons
+$('.btn').button();
+$('.likert').click(function(){
+	//set everything to inactive
+	var prefix = $(this).attr('id').split('_')[0];
+	for (var i = 0; i<=5; i++){
+		$('#'+prefix+'_'+i).removeClass('active');
+	}
+	//toggle activated type
+	$(this).addClass('active');
+})
 });//document
 
 function validate_prequestionnaire_form(){
@@ -27,6 +37,8 @@ function validate_prequestionnaire_form(){
 			$('#err_'+r).html(errs[r]);
 			//Show error sign
 			$('#errsign_'+r).removeClass('errsign-valid').addClass('errsign-err');
+			//Show error area
+			$('#errarea_'+r).addClass('alert-danger');
 			success = false;	
 			focus = r;
 		}
@@ -35,12 +47,15 @@ function validate_prequestionnaire_form(){
 			$('#err_'+r).html('');
 			//remove error sign
 			$('#errsign_'+r).removeClass('errsign-err').addClass('errsign-valid');	
-			
+			//remove error area
+			$('#errarea_'+r).removeClass('alert-danger');
+
 			if("radio" in rules[r] || "checkbox" in rules[r]){ 
 				data[r]=$('input[name="'+r+'"]:checked').val();
 			}else{ // get normal value
 				data[r]= $("#"+r).val();
 			}
+			//console.log(data[r])
 		}
 	}	
 	//Try to register, fail if username is taken

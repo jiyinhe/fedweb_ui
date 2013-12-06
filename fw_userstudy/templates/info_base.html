@@ -1,17 +1,62 @@
-{% extends "fw_base.html" %}
 {% load i18n %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
-{% block content %}
-<div class="jumbotron jumbotron-white">
-    <div class="container">
-    <div class="row">
-	<div class="col-md-8 col-md-offset-2" >
-         <div class="alert alert-info space50">
-		{% block info %}
-		{% endblock %}
-         </div>
+<head>
+    {% load staticfiles %}
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.css" />
+    <link rel="stylesheet" href="/static/css/fw_base.css" />
+    <link rel="stylesheet" href="/static/bs-patch/bs-patch.css" />	
+    <link rel="stylesheet" href="/static/css/notify.css" />	
+    <script  src="/static/jquery/jquery-1.10.1.min.js" /></script>
+    <script  src="/static/jquery/jquery.color-2.1.2.min.js" /></script>
+    <script  src="/static/jquery/jquery.corner.js" /></script>
+    <script  src="/static/jquery/jquery.notify.js" /></script>
+    <script  src="/static/bootstrap/js/bootstrap.js" /></script>
+    <script  src="/static/bs-patch/bs-patch.js" /></script>
+    <script  src="/static/js/utils/json2.js" /></script>
+    <script  src="/static/js/utils/setup.js" /></script>
+    <script  src="/static/js/utils/form_validation.js" /></script>
+
+    {% block head %}
+    <title>{% block title %}fw_userstudy{% endblock %}</title>
+    {% endblock %}
+    <script>
+	var register_url = '/question/register_user/';
+    </script>
+</head>
+
+<body>
+   {% block header %}
+    <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+	<a class="navbar-brand">FedSearch</a>
+	{% block navbar %}
+	{% endblock %}	
+	{% if user.is_authenticated %}
+	<div class="navbar-right">
+	<p class="navbar-text">
+	{{ user.username }} 
+	</p>
+	<p class="navbar-text">
+	<a href="{% url auth_password_change %}">{% trans "Change password" %}</a> 
+	</p>
+	<p class="navbar-text">
+       	<a href="{% url auth_logout %}" >{% trans "Log out" %}</a>
+	</p>
 	</div>
+	{% endif %}
+    </nav>
+   {% endblock %}
+    <div id="content" class="content" >
+        {% block content %}{% endblock %}
     </div>
+
+    <div id="footer" class="footer">
+    {% block footer %}
+    {% endblock %}
     </div>
-</div>
-{% endblock %}
+
+</body>
+
+</html>

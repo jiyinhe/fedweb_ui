@@ -41,14 +41,13 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': 'fw_userstudy',                      # Or path to database file if using sqlite3.
-        'OPTIONS': {"init_command":"SET foreign_key_checks = 0;"},
-        'USER': 'root',                      # Not used with sqlite3.
-        'PASSWORD': '',                  # Not used with sqlite3.
+        'USER': 'jhe',                      # Not used with sqlite3.
+        'PASSWORD': 'jhe',                  # Not used with sqlite3.
         'HOST': '127.0.0.1',                      # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+	'OPTIONS': {"init_command":"SET foreign_key_checks = 0;"},
     }
 }
-
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -187,5 +186,3 @@ LOGGING = {
         },
     }
 }
-
-
