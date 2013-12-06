@@ -74,3 +74,25 @@ a.category {
 .panel-hover{
 	background-color:#F7FE2E; /*#E0F2F7;/*#87CEEB*/
 }
+
+.result-item-correct{
+	border-style: solid;
+	border-width: 2px;
+	border-color: #00FF00;
+	padding: 2px;	
+/*	background-color: #EFFBEF;*/
+}
+.result-item-error{
+        border-style: solid;
+        border-width: 2px;
+        border-color: #FF0000;
+	padding: 2px;
+}
+.bookcorrect{
+	color: green;
+	font-size: 40px;
+}
+.bookerror{
+	color: red;
+	font-size: 40px;
+}

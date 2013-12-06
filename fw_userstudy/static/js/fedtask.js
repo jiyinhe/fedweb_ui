@@ -115,20 +115,36 @@ function doc_bookmark(ele_id){
         }).done(function(response) {
 			// get the doc id (remove '_bookmark' from ele_id
 			doc_id = ele_id.substr(0,ele_id.lastIndexOf("_"));
-			if (response.feedback == "positive_feedback"){
-				console.log("positive feedback");
-				$("#"+doc_id+"_title").toggleClass("alert alert-success");
-			}else if(response.feedback == "negative_feedback"){
-				console.log("negative feedback");// no feedback
-				$("#"+doc_id+"_title").toggleClass("alert alert-danger");
-			}else if(response.feedback == "delete_feedback"){
-				console.log("removing any alert classes");// no feedback
-				$("#"+doc_id+"_title").removeClass("alert alert-danger alert-success");
+			// only show feedback when training is true
+			if (training == true){
+				if (response.feedback == "positive_feedback"){
+					console.log("positive feedback");
+					$("#"+doc_id+"_title").toggleClass("alert alert-success");
+					$("#result-item_"+doc_id).toggleClass("result-item-correct");
+					$("#feedback_"+doc_id).html(
+					'<span class="bookcorrect glyphicon glyphicon-ok pull-right"></span>'
+					);
+					//console.log($("#result-item_"+doc_id));
+
+				}else if(response.feedback == "negative_feedback"){
+					console.log("negative feedback");// no feedback
+					$("#"+doc_id+"_title").toggleClass("alert alert-danger");
+					$("#result-item_"+doc_id).toggleClass("result-item-error");
+				        $("#feedback_"+doc_id).html( 
+                                        '<span class="bookerror glyphicon glyphicon-remove pull-right"></span>'
+                                        );   
+
+				}else if(response.feedback == "delete_feedback"){
+					console.log("removing any alert classes");// no feedback
+					$("#"+doc_id+"_title").removeClass("alert alert-danger alert-success");
+					$("#result-item_"+doc_id).removeClass("result-item-correct result-item-error");
+					$("#feedback_"+doc_id).html('');
+				}
+				else{
+					console.log("no_feedback");		
+				}
+				notify_feedback(response.feedback);
 			}
-			else{
-				console.log("no_feedback");		
-			}
-			notify_feedback(response.feedback);
 			$("#bookmark_count").html(response.count);
         });
 }

@@ -21,7 +21,7 @@
 {% endblock %}
 
 {% block navbar %}
-{% endblock%}
+{% endblock %}
 
 {% block content %}
 
@@ -49,14 +49,21 @@
 			{% for d in docs %}
 			<!-- d[1] is the document object, d[0] is the rank -->
 			<div id="rank_{{d.0}}" class="list-group-item" name="doc-item" >
+				<div id="feedback_{{d.1.id}}"></div>
+				<div id="result-item_{{d.1.id}}" class="result-item">
 				<div id="{{d.1.id}}_title" name="{{d.1.title}}" class="list-group-item-heading">
+
 			        <span class="glyphicon glyphicon-star-empty bookmark" id="{{d.1.id}}_bookmark"></span>
 				<span class="doc_title" id="{{d.1.id}}" data-toggle="modal" data-target="#docModal">
 				{{d.1.title}}
 				</span>
+
 				</div> <!-- list-group-item-heading -->
 				<div class="doc_url" id="url_{{d.1.id}}" >{{d.1.url}}</div>
 				<div class="list-group-item-text">{{d.1.summary|linebreaks}}</div>
+				</div>
+
+
 			</div><!-- list-group-item -->
 			{% endfor %}
 		</div>
