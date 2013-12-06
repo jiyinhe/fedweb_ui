@@ -138,10 +138,10 @@ class SessionManager(models.Manager):
 	def get_session_stage(self, user_id):
 		# session may be multiple if we have a within subject design
 		# we use stage to keep track of this
-		try:
-			qryset = self.filter(user_id=user_id).order_by('-stage')
+		qryset = self.filter(user_id=user_id).order_by('-stage')
+		if qryset:
 			return qryset[0]
-		except Session.DoesNotExist:
+		else:
 			return 0
 		
 	def get_session(self, request):
