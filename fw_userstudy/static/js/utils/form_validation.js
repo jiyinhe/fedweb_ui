@@ -56,7 +56,7 @@ function validate(eles){
 		//6 required radios for background
 		if ('radio' in options){
 			if(! $('[name="'+element+'"]').is(":checked")){
-				msg = "please indicate your choice";
+				msg = "Please indicate your choice";
 				errs[element] = msg;
 			}else{
 				errs[element]=false;

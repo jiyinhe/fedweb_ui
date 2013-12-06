@@ -1,4 +1,4 @@
-.ui-notify { width:250px; position:relative; top:10px; right:10px; }
+.ui-notify { width:200px; position:relative; top:10px; right:10px; }
 .ui-notify-message { padding:10px; margin-bottom:15px;
 -moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px }
 .ui-notify-message h1 { font-size:14px; margin:0; padding:0 }
