@@ -9,6 +9,7 @@
 {% block globalvar_ui2 %}{% endblock %}
 {% endblock %}
 
+
 {% block leftblock %}
 	<div class="affix-left" data-spy="affix" data-offset-top="200">
 	<div class="category-area" id="category_area">
@@ -20,7 +21,8 @@
   		</a>
 		{% for c in category %}
 		<!--span class="marker" data-toggle="tooltip" data-placement="auto" title="{{c.description}}"-->
-		<a class="list-group-item category" id="category_{{c.id}}" rel="tooltip" data-original-title="{{c.description}}">
+		<a class="list-group-item category" id="category_{{c.id}}"
+rel="tooltip" data-original-title="{{c.description}}">
 		<span class="glyphicon glyphicon-chevron-right"></span>
                 <span class="badge pull-right">{{c.doc_count}}</span>
 		<span class="category_name">{{c.name}}</span>
