@@ -58,6 +58,47 @@ function notify_onstart(){
 			$("#rank_0").find(".doc_title").removeClass("panel-hover");
 		});
 	}
+
+	if (typeof block_notifications.category == 'undefined'){
+		$("#notification_container").notify("create","category-notification",{
+				title:'Category filtering', 
+				text:'By clicking on a category only documents that belong in that category remain in the result list. The number indicates how many documents remain.'
+			},{
+				close: function(){
+					block_notifications.category=true;
+					$("#category_0").removeClass("panel-hover").addClass("category");
+				},
+				expires: false
+		});
+
+		$(".category-notification").mouseenter(function(){
+			$("#category_0").addClass("panel-hover").removeClass("category");
+		});
+		$(".category-notification").mouseleave(function(){
+			$("#category_0").removeClass("panel-hover").addClass("category");
+		});
+	}
+
+	if (typeof block_notifications.done == 'undefined'){
+		$("#notification_container").notify("create","done-notification",{
+				title:'Selected documents', 
+				html: true,
+				text:'Indicates how many documents you have found. When you have found 10, the tasks stops automatically. If you really can not find any more relevant documents you can press <b>Done!</b>.'
+			},{
+				close: function(){
+					block_notifications.done=true;
+					$(".selected_documents").removeClass("panel-hover");
+				},
+				expires: false
+		});
+
+		$(".done-notification").mouseenter(function(){
+			$(".selected_documents").addClass("panel-hover");
+		});
+		$(".done-notification").mouseleave(function(){
+			$(".selected_documents").removeClass("panel-hover");
+		});
+	}
 }
 
 function notify_feedback(feedback){
