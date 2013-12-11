@@ -52,8 +52,12 @@
 				<div id="feedback_{{d.1.id}}"></div>
 				<div id="result-item_{{d.1.id}}" class="result-item">
 				<div id="{{d.1.id}}_title" name="{{d.1.title}}" class="list-group-item-heading">
-
+				{% if d.1.bookmarked %}
+			        <span class="glyphicon glyphicon-star bookmark
+bookmark-selected" id="{{d.1.id}}_bookmark"></span>
+				{% else %}
 			        <span class="glyphicon glyphicon-star-empty bookmark" id="{{d.1.id}}_bookmark"></span>
+				{% endif %}
 				<span class="doc_title" id="{{d.1.id}}" data-toggle="modal" data-target="#docModal">
 				{{d.1.title}}
 				</span>

@@ -2,6 +2,8 @@ from django.db import models, connection
 from django.contrib.auth.models import User
 from django.db.models import Max
 from django.http import HttpRequest, QueryDict
+from whoosh.highlight import highlight, Highlighter, WholeFragmenter, HtmlFormatter
+from whoosh.analysis import FancyAnalyzer
 import simplejson as js
 import operator
 
@@ -39,20 +41,35 @@ class Run(models.Model):
 	description = models.TextField()
 
 class RanklistManager(models.Manager):
-	def get_ranklist(self, topic_id, run_id):
+	def get_ranklist(self, topic_id, run_id, session_id):
 		res = self.get(topic_id=topic_id, run_id=run_id)
+		frag = WholeFragmenter()
+		analyzer = FancyAnalyzer()
+		format = HtmlFormatter(tagname="b")
+
+		print 'here'
+		print highlight(u"lol bla lol bla lol", ['bla'], analyzer, frag, format)
+		print 'here'
 		ranklist = js.loads(res.ranklist)
 		# To keep the ranking
 		id_ranklist = dict([(ranklist[i], i) for i in range(len(ranklist))])
 		docs = Document.objects.filter(doc_id__in=ranklist)
+		bookmarks = Bookmark.objects.filter(topic_id=topic_id,
+										session_id=session_id)
+		# get the docids
+		bookmarks = [b.doc_id.strip("_bookmark") for b in bookmarks]
+		bookmarks = set(bookmarks) # faster lookup
 		docs = [[id_ranklist[d.doc_id], 
 			{
 				'id':d.doc_id, 
 				'title': '.' if d.title=='' else d.title, 
 				'url': d.url if len(d.url)<=80 else d.url[0:80]+'...', 
-				'summary': d.summary,
+				'summary': '...',
+#				'summary': highlight(d.summary.replace('\n',' '),
+#'bla',analyzer,frag,format) if len(d.summary)<=350 else highlight(d.summary[0:350].replace('\n',' '), 'bla',analyzer,frag,format)+'...',
 				'site': d.site.site_name,
 				'category': d.site.category,
+				'bookmarked': 1 if d.doc_id in bookmarks else 0
 			}] for d in docs]
 		docs.sort(key=operator.itemgetter(0))
 		return docs 

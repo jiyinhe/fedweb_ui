@@ -149,7 +149,7 @@ def get_parameters(request):
 	topic_text = task.topic.topic_text
 	run_id = task.run_id
 	ui_id = task.ui_id
-	docs = Ranklist.objects.get_ranklist(topic_id, run_id)	
+	docs = Ranklist.objects.get_ranklist(topic_id, run_id, session_id)	
 	bookmarks = Bookmark.objects.get_bookmark_count_wrap(session_id,topic_id)
 	# Group docs by category
 	category = process_category_info(docs)
@@ -171,12 +171,13 @@ def get_parameters(request):
 
 # This is currently not used. Results are sent when loading the page
 def fetch_results(request):
+	sess_id = Session.objects.get_session(request)
 	if request.is_ajax:
 		data = {}
         	if request.POST['ajax_event'] == 'fetch_results':
 			topic_id = request.POST['topic_id']
 			run_id = request.POST['run_id']
-			data = Ranklist.objects.get_ranklist(topic_id, run_id)	
+			data = Ranklist.objects.get_ranklist(topic_id, run_id, sess_id)	
 		json_data = simplejson.dumps(data)		
 		response = HttpResponse(json_data, mimetype="application/json")
 	else:
