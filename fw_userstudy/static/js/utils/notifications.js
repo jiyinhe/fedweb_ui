@@ -1,7 +1,9 @@
 // basic
 $(document).ready(function(){
-	$("#notification_container").notify();
-	notify_onstart();
+	if (training == true){
+		$("#notification_container").notify();
+		notify_onstart();
+	}
 });
 
 var block_notifications = {};
@@ -60,23 +62,26 @@ function notify_onstart(){
 	}
 
 	if (typeof block_notifications.category == 'undefined'){
-		$("#notification_container").notify("create","category-notification",{
-				title:'Category filtering', 
-				text:'By clicking on a category only documents that belong in that category remain in the result list. The number indicates how many documents remain.'
-			},{
-				close: function(){
-					block_notifications.category=true;
-					$("#category_0").removeClass("panel-hover").addClass("category");
-				},
-				expires: false
-		});
+// ui1 does not have categories so only show this for ui 2
+		if ($(".category-notification").length != 0){ 
+			$("#notification_container").notify("create","category-notification",{
+					title:'Category filtering', 
+					text:'By clicking on a category only documents that belong in that category remain in the result list. The number indicates how many documents remain.'
+				},{
+					close: function(){
+						block_notifications.category=true;
+						$("#category_0").removeClass("panel-hover").addClass("category");
+					},
+					expires: false
+			});
 
-		$(".category-notification").mouseenter(function(){
-			$("#category_0").addClass("panel-hover").removeClass("category");
-		});
-		$(".category-notification").mouseleave(function(){
-			$("#category_0").removeClass("panel-hover").addClass("category");
-		});
+			$(".category-notification").mouseenter(function(){
+				$("#category_0").addClass("panel-hover").removeClass("category");
+			});
+			$(".category-notification").mouseleave(function(){
+				$("#category_0").removeClass("panel-hover").addClass("category");
+			});
+		}
 	}
 
 	if (typeof block_notifications.done == 'undefined'){
@@ -102,46 +107,49 @@ function notify_onstart(){
 }
 
 function notify_feedback(feedback){
-	console.log(block_notifications.positive_feedback);
-	console.log(block_notifications.negative_feedback);
-	console.log(block_notifications.delete_feedback);
-	if (feedback == "positive_feedback"){	
-		if (typeof block_notifications.positive_feedback == 'undefined'){
-			$("#notification_container").notify("create",{
-					title:'Bookmarking documents', 
-					text:'Great, you bookmarked one of the documents relevant to the topic!'
-				},{
-					close: function(){
-						block_notifications.positive_feedback=true;
-					},
-					speed: 1000
-			});
+	if (training == true){
+		console.log(block_notifications.positive_feedback);
+		console.log(block_notifications.negative_feedback);
+		console.log(block_notifications.delete_feedback);
+		if (feedback == "positive_feedback"){	
+			if (typeof block_notifications.positive_feedback == 'undefined'){
+				$("#notification_container").notify("create",{
+						title:'Bookmarking documents', 
+						text:'Great, you bookmarked one of the documents relevant to the topic!'
+					},{
+						close: function(){
+							block_notifications.positive_feedback=true;
+						},
+						speed: 1000
+				});
+			}
 		}
-	}
-	if (feedback == "negative_feedback"){
-		if (typeof block_notifications.negative_feedback == 'undefined'){
-			$("#notification_container").notify("create",{
-					title:'Bookmarking documents', 
-					text:'Hmm, you bookmarked a document that does not seem very relevant to the topic. '
-				},{
-					close: function(){
-						block_notifications.negative_feedback=true;
-					},
-					speed: 1000
-			});
+		if (feedback == "negative_feedback"){
+			if (typeof block_notifications.negative_feedback == 'undefined'){
+				$("#notification_container").notify("create",{
+						title:'Bookmarking documents', 
+						text:'Hmm, you bookmarked a document that does not seem very relevant to the topic. '
+					},{
+						close: function(){
+							block_notifications.negative_feedback=true;
+						},
+						speed: 1000
+				});
+			}
 		}
-	}
-	if (feedback == "delete_feedback"){
-		if (typeof block_notifications.delete_feedback == 'undefined'){
-			$("#notification_container").notify("create",{
-					title:'Bookmarking documents', 
-					text:'Yes, by clicking the bookmark button again you can delete previously bookmarked documents.'
-				},{
-					close: function(){
-						block_notifications.delete_feedback=true;
-					},
-					speed: 1000
-			});
+		if (feedback == "delete_feedback"){
+			if (typeof block_notifications.delete_feedback == 'undefined'){
+				$("#notification_container").notify("create",{
+						title:'Bookmarking documents', 
+						text:'Yes, by clicking the bookmark button again you can delete previously bookmarked documents.'
+					},{
+						close: function(){
+							block_notifications.delete_feedback=true;
+						},
+						speed: 1000
+				});
+			}
 		}
 	}
 }
+

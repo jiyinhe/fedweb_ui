@@ -146,6 +146,10 @@ function doc_bookmark(ele_id){
 				notify_feedback(response.feedback);
 			}
 			$("#bookmark_count").html(response.count);
+
+			if (response.done == true){
+				submit_complete_task()	
+			}
         });
 }
 

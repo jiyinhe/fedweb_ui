@@ -1,6 +1,7 @@
 from django.db import models, connection
 from django.contrib.auth.models import User
 from django.db.models import Max
+from django.http import HttpRequest, QueryDict
 import simplejson as js
 import operator
 
@@ -172,18 +173,19 @@ class Session(models.Model):
 
 class BookmarkManager(models.Manager):
 
-	def get_bookmark_count_outsidepage_contxt(self, sess_id, topic_id):
-		try:
-			bookmarks = Bookmark.objects.filter(topic_id=topic_id,session_id=sess_id,selected_state=1)
-			return bookmarks.count()
-		except Bookmark.DoesNotExist:
-			return 0
+	# wrapper in case request does not have session_id and topic_id
+	# (i.e., on page load)
+	def get_bookmark_count_wrap(self, sess_id, t_id):
+		request = HttpRequest()	
+		request.POST=QueryDict('session_id='+str(sess_id)+'&topic_id='+str(t_id))
+		return self.get_bookmark_count(request)
 
 	def get_bookmark_count(self, request):
 		sess_id=request.POST['session_id']
 		topic_id=request.POST['topic_id']
 		try:
 			bookmarks = Bookmark.objects.filter(topic_id=topic_id,session_id=sess_id,selected_state=1)
+				
 			return bookmarks.count()
 		except Bookmark.DoesNotExist:
 			return 0
@@ -231,12 +233,18 @@ class BookmarkManager(models.Manager):
 				b.delete() # delete complete queryset
 		else:
 #		   save the new entry for the bookmarked document
-			newb = Bookmark(\
+			try:
+				b = Bookmark.objects.get(\
+							doc_id=d_id,\
+							session_id=s_id,\
+							topic_id=t_id)
+			except Bookmark.DoesNotExist:				
+				b = Bookmark(\
 					doc_id=d_id,\
 					session_id=s_id,\
 					topic_id=t_id,\
 					selected_state=state)
-			newb.save()
+				b.save()
 	
 	
 class Bookmark(models.Model):

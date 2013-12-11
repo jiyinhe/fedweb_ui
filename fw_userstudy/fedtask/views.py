@@ -3,7 +3,7 @@ from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.contrib.auth.models import User
 from questionnaire.models import UserProfile
 from fedtask.models import Session, Ranklist, Document, Bookmark, Experiment, Task
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, HttpRequest
 from django.core.context_processors import csrf
 from django.utils import simplejson
 from django.core import serializers
@@ -150,7 +150,7 @@ def get_parameters(request):
 	run_id = task.run_id
 	ui_id = task.ui_id
 	docs = Ranklist.objects.get_ranklist(topic_id, run_id)	
-	bookmarks = Bookmark.objects.get_bookmark_count_outsidepage_contxt(session_id,topic_id)
+	bookmarks = Bookmark.objects.get_bookmark_count_wrap(session_id,topic_id)
 	# Group docs by category
 	category = process_category_info(docs)
 	c = {	
@@ -229,9 +229,9 @@ def submit_complete_task(request):
 	# is the user still training
 	referer = request.META['HTTP_REFERER']
 	if 'task-train' in referer:
-		Task.objects.completed_train_task(request.META['USER'])	
+		Task.objects.completed_train_task(request.user)	
 	else:
-		Task.object.completed_test_task(request.META['USER'])
+		Task.object.completed_test_task(request.user)
 	return redirect("/")
 
 
@@ -291,10 +291,12 @@ def register_bookmark(request):
 	# TODO: only provide feedback for training, not in test
 	# test whether URL contains "test" or "train"
 	if request.is_ajax:
-		data = {'count':0,'feedback':"no_feedback"};
+		data = {'done':False,'count':0,'feedback':"no_feedback"};
 		if request.POST['ajax_event'] == 'bookmark_document':
 			Bookmark.objects.update_bookmark(request)
 			data['count'] = Bookmark.objects.get_bookmark_count(request)
+			if data['count'] >= 10:
+				data['done'] = True
 			# give feedback on correct/incorrect bookmarked documents
 			# in training fase
 			data['feedback']=Bookmark.objects.training_feedback_bookmark(request)
