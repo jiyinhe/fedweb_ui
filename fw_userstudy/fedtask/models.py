@@ -32,9 +32,14 @@ class UI(models.Model):
 	ui_id = models.IntegerField(primary_key=True)
 	ui_description = models.TextField()
 
+class TopicManager(models.Manager):
+	pass
+	
+
 class Topic(models.Model):
 	topic_id = models.IntegerField(primary_key=True)
 	topic_text = models.TextField()
+	objects = TopicManager()
 
 class Run(models.Model):
 	run_id = models.IntegerField(primary_key=True)
@@ -47,32 +52,43 @@ class RanklistManager(models.Manager):
 		analyzer = FancyAnalyzer()
 		format = HtmlFormatter(tagname="b")
 
-		print 'here'
-		print highlight(u"lol bla lol bla lol", ['bla'], analyzer, frag, format)
-		print 'here'
 		ranklist = js.loads(res.ranklist)
 		# To keep the ranking
 		id_ranklist = dict([(ranklist[i], i) for i in range(len(ranklist))])
 		docs = Document.objects.filter(doc_id__in=ranklist)
 		bookmarks = Bookmark.objects.filter(topic_id=topic_id,
 										session_id=session_id)
+		# get the query for highlighting
+		query = [q.text for q in analyzer(Topic.objects.get(topic_id=topic_id).topic_text)]
 		# get the docids
 		bookmarks = [b.doc_id.strip("_bookmark") for b in bookmarks]
 		bookmarks = set(bookmarks) # faster lookup
+		ids = [(d.summary, d.doc_id) for d in docs]	
+		for (sum,id) in ids[:10]:
+			print 
 		docs = [[id_ranklist[d.doc_id], 
 			{
 				'id':d.doc_id, 
 				'title': '.' if d.title=='' else d.title, 
 				'url': d.url if len(d.url)<=80 else d.url[0:80]+'...', 
-				'summary': '...',
-#				'summary': highlight(d.summary.replace('\n',' '),
-#'bla',analyzer,frag,format) if len(d.summary)<=350 else highlight(d.summary[0:350].replace('\n',' '), 'bla',analyzer,frag,format)+'...',
+				'summary':self.get_highlighted_summary(d.summary,query,analyzer,frag,format),
 				'site': d.site.site_name,
 				'category': d.site.category,
 				'bookmarked': 1 if d.doc_id in bookmarks else 0
 			}] for d in docs]
 		docs.sort(key=operator.itemgetter(0))
+		
 		return docs 
+
+	def get_highlighted_summary(self,summary,query, analyzer,frag,format):
+		summary = unicode(summary.replace('\n', ' '))
+		if len(summary) > 350:
+			summary = unicode(summary.replace('\n', ' '))[0:350]+'...'
+		hl = highlight(summary,query,analyzer,frag,format)
+		if hl:
+			return hl
+		else:
+			return summary
 
 class Ranklist(models.Model):
 	run = models.ForeignKey(Run)
@@ -282,10 +298,3 @@ class Qrels(models.Model):
 
 
 
-
-
-
-
-
-
-	
