@@ -52,15 +52,19 @@
 				<div id="feedback_{{d.1.id}}"></div>
 				<div id="result-item_{{d.1.id}}" class="result-item">
 				<div id="{{d.1.id}}_title" name="{{d.1.title}}" class="list-group-item-heading">
-
+				{% if d.1.bookmarked %}
+			        <span class="glyphicon glyphicon-star bookmark
+bookmark-selected" id="{{d.1.id}}_bookmark"></span>
+				{% else %}
 			        <span class="glyphicon glyphicon-star-empty bookmark" id="{{d.1.id}}_bookmark"></span>
+				{% endif %}
 				<span class="doc_title" id="{{d.1.id}}" data-toggle="modal" data-target="#docModal">
 				{{d.1.title}}
 				</span>
 
 				</div> <!-- list-group-item-heading -->
 				<div class="doc_url" id="url_{{d.1.id}}" >{{d.1.url}}</div>
-				<div class="list-group-item-text">{{d.1.summary|linebreaks}}</div>
+				<div class="list-group-item-text">{{d.1.summary|safe}}</div>
 				</div>
 
 
@@ -75,40 +79,17 @@
 			Selected documents
   			</a>
 
-	  		<a class="list-group-item"><strong>Current topic:</strong> {{topic_text}}
+	  		<a class="list-group-item selected_documents"><strong>Current topic:</strong> {{topic_text}}
 			</a>
 	
-			<a class="list-group-item">
+			<a class="list-group-item selected_documents">
 			<button type="button" id="done" class="btn btn-success btn-block">
 				<strong>Done!</strong>
 				<span class="glyphicon glyphicon-share-alt"></span>
 			</button>
 			</a>
-
-		<!--- place holder for the notifications -->
-		<div id="notification_container" style="top:auto; left:0; bottom:0; margin:0 0 10px 10px" >
-			<div id="basic-template">
-			  <a class="ui-notify-cross ui-notify-close" href="#">x</a>
-			  </br>
-			  <h1>#{title}</h1>
-			  <p style="margin-top:10px;text-align:left">#{text}</p>
-			</div>
-
-			<div id="topic-panel-notification" class="topic-panel-notification">
-			  <a class="ui-notify-cross ui-notify-close" href="#">x</a>
-			  </br>
-			  <h1>#{title}</h1>
-			  <p style="margin-top:10px;text-align:left">#{text}</p>
-			</div>
-
-			<div id="docview-notification" class="docview-notification">
-			  <a class="ui-notify-cross ui-notify-close" href="#">x</a>
-			  </br>
-			  <h1>#{title}</h1>
-			  <p style="margin-top:10px;text-align:left">#{text}</p>
-			</div>
-
-		</div>
+		{% block notification %}
+		{% endblock %}
 		</div>
 		{% block rightblock %}
 		{% endblock %}

@@ -1,6 +1,9 @@
 from django.db import models, connection
 from django.contrib.auth.models import User
 from django.db.models import Max
+from django.http import HttpRequest, QueryDict
+from whoosh.highlight import highlight, Highlighter, WholeFragmenter, HtmlFormatter
+from whoosh.analysis import FancyAnalyzer
 import simplejson as js
 import operator
 
@@ -29,32 +32,63 @@ class UI(models.Model):
 	ui_id = models.IntegerField(primary_key=True)
 	ui_description = models.TextField()
 
+class TopicManager(models.Manager):
+	pass
+	
+
 class Topic(models.Model):
 	topic_id = models.IntegerField(primary_key=True)
 	topic_text = models.TextField()
+	objects = TopicManager()
 
 class Run(models.Model):
 	run_id = models.IntegerField(primary_key=True)
 	description = models.TextField()
 
 class RanklistManager(models.Manager):
-	def get_ranklist(self, topic_id, run_id):
+	def get_ranklist(self, topic_id, run_id, session_id):
 		res = self.get(topic_id=topic_id, run_id=run_id)
+		frag = WholeFragmenter()
+		analyzer = FancyAnalyzer()
+		format = HtmlFormatter(tagname="b")
+
 		ranklist = js.loads(res.ranklist)
 		# To keep the ranking
 		id_ranklist = dict([(ranklist[i], i) for i in range(len(ranklist))])
 		docs = Document.objects.filter(doc_id__in=ranklist)
+		bookmarks = Bookmark.objects.filter(topic_id=topic_id,
+										session_id=session_id)
+		# get the query for highlighting
+		query = [q.text for q in analyzer(Topic.objects.get(topic_id=topic_id).topic_text)]
+		# get the docids
+		bookmarks = [b.doc_id.strip("_bookmark") for b in bookmarks]
+		bookmarks = set(bookmarks) # faster lookup
+		ids = [(d.summary, d.doc_id) for d in docs]	
+		for (sum,id) in ids[:10]:
+			print 
 		docs = [[id_ranklist[d.doc_id], 
 			{
 				'id':d.doc_id, 
 				'title': '.' if d.title=='' else d.title, 
 				'url': d.url if len(d.url)<=80 else d.url[0:80]+'...', 
-				'summary': d.summary,
+				'summary':self.get_highlighted_summary(d.summary,query,analyzer,frag,format),
 				'site': d.site.site_name,
 				'category': d.site.category,
+				'bookmarked': 1 if d.doc_id in bookmarks else 0
 			}] for d in docs]
 		docs.sort(key=operator.itemgetter(0))
+		
 		return docs 
+
+	def get_highlighted_summary(self,summary,query, analyzer,frag,format):
+		summary = unicode(summary.replace('\n', ' '))
+		if len(summary) > 350:
+			summary = unicode(summary.replace('\n', ' '))[0:350]+'...'
+		hl = highlight(summary,query,analyzer,frag,format)
+		if hl:
+			return hl
+		else:
+			return summary
 
 class Ranklist(models.Model):
 	run = models.ForeignKey(Run)
@@ -172,18 +206,19 @@ class Session(models.Model):
 
 class BookmarkManager(models.Manager):
 
-	def get_bookmark_count_outsidepage_contxt(self, sess_id, topic_id):
-		try:
-			bookmarks = Bookmark.objects.filter(topic_id=topic_id,session_id=sess_id,selected_state=1)
-			return bookmarks.count()
-		except Bookmark.DoesNotExist:
-			return 0
+	# wrapper in case request does not have session_id and topic_id
+	# (i.e., on page load)
+	def get_bookmark_count_wrap(self, sess_id, t_id):
+		request = HttpRequest()	
+		request.POST=QueryDict('session_id='+str(sess_id)+'&topic_id='+str(t_id))
+		return self.get_bookmark_count(request)
 
 	def get_bookmark_count(self, request):
 		sess_id=request.POST['session_id']
 		topic_id=request.POST['topic_id']
 		try:
 			bookmarks = Bookmark.objects.filter(topic_id=topic_id,session_id=sess_id,selected_state=1)
+				
 			return bookmarks.count()
 		except Bookmark.DoesNotExist:
 			return 0
@@ -231,12 +266,18 @@ class BookmarkManager(models.Manager):
 				b.delete() # delete complete queryset
 		else:
 #		   save the new entry for the bookmarked document
-			newb = Bookmark(\
+			try:
+				b = Bookmark.objects.get(\
+							doc_id=d_id,\
+							session_id=s_id,\
+							topic_id=t_id)
+			except Bookmark.DoesNotExist:				
+				b = Bookmark(\
 					doc_id=d_id,\
 					session_id=s_id,\
 					topic_id=t_id,\
 					selected_state=state)
-			newb.save()
+				b.save()
 	
 	
 class Bookmark(models.Model):
@@ -257,10 +298,3 @@ class Qrels(models.Model):
 
 
 
-
-
-
-
-
-
-	
