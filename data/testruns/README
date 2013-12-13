@@ -1,0 +1,7 @@
+We have 3 test runs:
+
+run13.ql: query likelihood
+run13.bst: boost based on resource ranking
+run13.ia: diversify over resources using IA-select
+
+in nodup: runs with duplication removed.
