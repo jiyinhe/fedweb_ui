@@ -226,7 +226,7 @@ function category_click(ele_id){
 		$('#modal_title').html(title);
 	});
 
-	//windwo go back to top
+	//window go back to top
 	$('html, body').animate({scrollTop: 0}, 0);	
 }
 

@@ -70,6 +70,22 @@ bookmark-selected" id="{{d.1.id}}_bookmark"></span>
 
 			</div><!-- list-group-item -->
 			{% endfor %}
+			<div class="pagination">
+				<span class="step-links">
+					{% if docs.has_previous %}
+						<a href="?page={{ docs.previous_page_number
+			}}">previous</a>
+					{% endif %}
+
+					<span class="current">
+						Page {{ docs.number }} of {{ docs.paginator.num_pages }}.
+					</span>
+
+					{% if docs.has_next %}
+						<a href="?page={{ docs.next_page_number }}">next</a>
+					{% endif %}
+				</span>
+			</div>
 		</div>
 	</div>
 	<div class="col-md-2">

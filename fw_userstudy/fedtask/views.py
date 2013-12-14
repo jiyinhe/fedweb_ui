@@ -5,6 +5,7 @@ from questionnaire.models import UserProfile
 from fedtask.models import Session, Ranklist, Document, Bookmark, Experiment, Task
 from django.http import HttpResponseRedirect, HttpResponse, HttpRequest
 from django.core.context_processors import csrf
+from django.core.paginator import Paginator
 from django.utils import simplejson
 from django.core import serializers
 import mimetypes
@@ -150,6 +151,7 @@ def get_parameters(request):
 	run_id = task.run_id
 	ui_id = task.ui_id
 	docs = Ranklist.objects.get_ranklist(topic_id, run_id, session_id)	
+	paginator = Paginator(docs,10)
 	bookmarks = Bookmark.objects.get_bookmark_count_wrap(session_id,topic_id)
 	# Group docs by category
 	category = process_category_info(docs)
@@ -162,6 +164,7 @@ def get_parameters(request):
 		'ui_id': ui_id,
 		#'docs_json': simplejson.dumps(docs),
 		'docs': docs,
+		'paginator':paginator.page(1), # deliver 1st page
 		'bookmark_count': bookmarks,
 		'total_num_docs': len(docs),
 		'category': category,
