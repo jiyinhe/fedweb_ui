@@ -22,12 +22,17 @@ urlpatterns = patterns('',
     url(r'^accounts/', include('registration.backends.simple.urls')),
 
     # Task
-    url(r'^study/', include('fedtask.urls')),
+    #url(r'^study/', include('fedtask.urls')),
+
     # Redirect to the index page	
-    url(r'^$', 'fedtask.views.index'),
+    #url(r'^$', 'fedtask.views.index'),
 
     # Questionnaire
-    url(r'^question/', include('questionnaire.urls')),
+    #url(r'^question/', include('questionnaire.urls')),
+
+    # Judgement
+    url(r'^$', 'judgement.views.index'),
+    url(r'^judge/', include('judgement.urls')),
 
 )
 
