@@ -33,7 +33,8 @@ urlpatterns = patterns('',
     # Judgement
     url(r'^$', 'judgement.views.index'),
     url(r'^judge/', include('judgement.urls')),
-
+    # For register user
+    url(r'^question/register_user/', 'questionnaire.views.register_user'),
 )
 
 #in devlopement mode, serving the static files
