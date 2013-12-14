@@ -1,9 +1,10 @@
 {% extends "fw_base.html" %}
 {% load i18n %}
+{% load staticfiles %}
 
 {% block head %}
-    <link rel="stylesheet" href="/static/css/task_base.css" />
-    <script  src="/static/js/fedtask.js" /></script>
+    <link rel="stylesheet" href="{% static "css/task_base.css" %}" />
+    <script  src="{% static "js/fedtask.js" %}" /></script>
     <script>
 	var results_url = '/study/results/';
 	var document_url = '/study/doc_content/';
