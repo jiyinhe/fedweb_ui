@@ -11,7 +11,7 @@ Includes:
 import sys
 import os
 import db_util as db
-# To import the database setting
+# to import the database setting
 sys.path.append(os.path.abspath('../fw_userstudy/').rsplit('/', 1)[0])
 from fw_userstudy import settings
 import simplejson

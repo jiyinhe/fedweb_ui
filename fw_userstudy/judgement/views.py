@@ -2,7 +2,7 @@
 from django.shortcuts import render_to_response, get_object_or_404, redirect 
 from django.contrib.auth.models import User
 from questionnaire.models import UserProfile
-from judgement.models import Page, Result, Judgement  
+from judgement.models import Page, Result, Judgement, Query, Crawl
 from django.http import HttpResponseRedirect, HttpResponse, HttpRequest
 from django.core.context_processors import csrf
 from django.utils import simplejson
@@ -17,6 +17,9 @@ import operator
 import simplejson
 import pdb;
 
+# Tmp var
+current_qid = 32
+current_crawl = 2
 
 # This is the single entry point after user login
 def index(request):
@@ -28,7 +31,11 @@ def index(request):
 	
 	return redirect('/judge/')	
 
+
 def judgement(request):
+	# Get current crawl, and query
+	crawl_id = current_crawl
+	qid = current_qid
 	c = {'user': request.user}	
 	context = get_parameters(request)
 	c.update(context)
@@ -38,6 +45,28 @@ def judgement(request):
 	return render_to_response(template, c)
 
 def get_parameters(request):
-	c = {}
+	topicnum, topictext = Query.objects.get_query(current_qid) 
+	crawl_ids = Crawl.objects.get_crawl_ids() 
+	c = {
+		'topic_num': topicnum,
+		'topic_text': topictext,
+		'qid': current_qid,
+		'crawls': crawl_ids,
+		'current_crawl': current_crawl,
+		'current_query': current_qid,
+		}
 	return c
 
+def load_results(request):
+	if request.is_ajax:
+		crawl_id = request.POST['current_crawl']
+		qid = request.POST['current_query']
+
+		data = {}
+		data = Result.objects.get_results(crawl_id, qid)
+
+		json_data = simplejson.dumps(data)		
+		response = HttpResponse(json_data, mimetype="application/json")
+	else:
+		return render_to_response('errors/403.html')
+	return response

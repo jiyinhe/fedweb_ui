@@ -1,2 +1,118 @@
 {% extends "fw_base.html" %}
 {% load i18n %}
+{% load staticfiles %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static "css/task_base.css" %}" />
+    <link rel="stylesheet" href="{% static "css/judge.css" %}">
+    <script src="{% static "js/judge.js" %}" ></script>
+    <script>
+	var current_crawl = {{current_crawl}};
+	var current_query = {{current_query}};
+	var load_results_url = "/judge/load_results/";
+    </script>
+   {% block globalvar %}
+   {% endblock %}
+
+{% endblock %}
+
+{% block navbar %}
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+<div class="row">
+	<div class="col-md-10">
+		<div  id="topic-panel" class="panel panel-primary">
+		<div class="panel-heading">
+			<div class="topic-info">
+			Please assign a relevance score to the snippets and documents 
+			retrieved for the following topic:	
+			</div>
+		</div>	
+		<div class="panel-body">
+			<div class="topic-text">Topic {{topic_num}}: {{topic_text}}</div>
+		</div>
+		<div class="panel-footer">
+			<p>Scale of relevance scores:<p> 
+			<span class="label label-primary">Nav</span> This page represents 
+				a home page of an entity directly named by the query; 
+				the user may be searching for this specific page or site.<br/>
+			<span class="label label-success">Key</span> 
+				This page or site is dedicated to the topic; 
+				authoritative and comprehensive, it is worthy of being a top 
+				result in a web search engine.<br/>
+			<span class="label label-info">HRel</span>
+				The content of this page provides substantial information on 
+				the topic. <br/>
+		        <span class="label label-warning">Rel</span>
+				The content of this page provides some information on the 
+				topic, which may be minimal; the relevant information must be 
+				on that page, not just promising-looking anchor 
+				text pointing to a possibly useful page.<br/>
+			<span class="label label-danger">Non</span>
+				The content of this page does not provide useful information 
+				on the topic, but may provide useful information on other topics, 
+				including other interpretations of the same query.<br/>
+			<span class="label label-default">Spam</span>
+				This page does not appear to be useful for any reasonable purpose; 
+				it may be spam.
+		</div>	
+		</div>
+
+		<div class="panel panel-primary" id="results">
+			<div class="list-group-item">
+			<ul class="pagination">
+				<li class="disabled"><span>Crawls</span></li>
+				{% for c in crawls %}
+  				<li id="crawl_li{{c}}">
+				<span id="crawl_tab{{c}}" class="crawl_tab" value="{{c}}">{{c}}</span>
+				</li>
+				{% endfor %}
+			</ul>	
+			</div>
+			<div id="documents"></div>
+
+		</div>
+	</div>
+	<div class="col-md-2">
+		<div class="list-group affix-right" data-spy="affix" data-offset-top="200">
+  			<a class="list-group-item active">
+            <!--span id="bookmark_count" class="badge pull-right">{{bookmark_count}}</span-->
+			Topic {{topic_num}} 	
+  			</a>
+	  		<a class="list-group-item selected_documents">
+			{{topic_text}}
+			</a>
+	
+			<a class="list-group-item selected_documents">
+			<button type="button" id="done" class="btn btn-success btn-block">
+				<strong>Done!</strong>
+				<span class="glyphicon glyphicon-share-alt"></span>
+			</button>
+			</a>
+		{% block notification %}
+		{% endblock %}
+		</div>
+		{% block rightblock %}
+		{% endblock %}
+	</div>
+	<div class="modal fade" id="docModal" tabindex="-1" role="dialog" aria-labelledby="docModalLabel" aria-hidden="true">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+		<div class="modal-header">
+       			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+			<h3 class="modal-title" id="modal_title"></h3>
+		</div>
+		<div class="modal-body" id="doc_content">
+		</div>
+	    </div>
+	  </div>
+	</div>	
+
+</div>
+</div>
+
+{% endblock %}
+
