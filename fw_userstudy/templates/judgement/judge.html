@@ -68,10 +68,11 @@
 				<li class="disabled"><span>Crawls</span></li>
 				{% for c in crawls %}
   				<li id="crawl_li{{c}}">
-				<span id="crawl_tab{{c}}" class="crawl_tab" value="{{c}}">{{c}}</span>
+				<span id="crawl_tab{{c}}" class="crawl_tab" value="{{c}}">{{c}}
+				</span>
 				</li>
 				{% endfor %}
-			</ul>	
+			</ul>
 			</div>
 			<div id="documents"></div>
 
@@ -81,12 +82,39 @@
 		<div class="list-group affix-right" data-spy="affix" data-offset-top="200">
   			<a class="list-group-item active">
             <!--span id="bookmark_count" class="badge pull-right">{{bookmark_count}}</span-->
-			Topic {{topic_num}} 	
+			Topic <span id="topic_num">{{topic_num}}</span>:  	
+			Crawl <span id="crawl_id">{{current_crawl}}</span>
   			</a>
 	  		<a class="list-group-item selected_documents">
 			{{topic_text}}
 			</a>
 	
+			<a class="list-group-item selected_documents">
+			Snippet progress: <span id="pg_s"></span>
+			<div class="progress">
+  				<div class="progress-bar progress-bar-info" 
+					id="pgbar_s"
+					role="progressbar" 
+					aria-valuenow="0" 
+					aria-valuemin="0" 
+					aria-valuemax="100" 
+					style="width: 0%">
+				</div>
+  			</div>
+			Page progress: <span id="pg_p"></span>
+			<div class="progress">
+  				<div class="progress-bar progress-bar-info" 
+					id="pgbar_p"
+					role="progressbar" 
+					aria-valuenow="0" 
+					aria-valuemin="0" 
+					aria-valuemax="100" 
+					style="width: 0%">
+				</div>
+  			</div>
+
+			</a>
+
 			<a class="list-group-item selected_documents">
 			<button type="button" id="done" class="btn btn-success btn-block">
 				<strong>Next topic</strong>

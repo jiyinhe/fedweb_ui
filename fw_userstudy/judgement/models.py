@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 import operator
 from whoosh.highlight import highlight, Highlighter, WholeFragmenter, HtmlFormatter
 from whoosh.analysis import FancyAnalyzer
+import utils
 
 # Create your models here.
 # This is an auto-generated Django model module.
@@ -69,6 +70,41 @@ class Site(models.Model):
     	class Meta:
         	db_table = u'site'
 
+class JudgementManager(models.Manager):
+	def save_judgement(self, user_id, result_id, judge_value, judge_type):
+		# global variable
+		levels = {'Nav': 6, 'Key': 5, 'HRel': 4, 'Rel': 3, 'Non': 2, 'Spam': 1};
+
+		#print updated_values
+		try:
+			judge = self.get(user_id = user_id, result_id = result_id)
+			if judge_type == 'snippet':
+				judge.relevance_snippet = levels[judge_value]
+			elif judge_type == 'page':
+				judge.relevance_doc = levels[judge_value]
+			judge.save()
+
+		except Judgement.DoesNotExist:
+			if judge_type == 'snippet':
+				rel_s = levels[judge_value]
+				if rel_s < 3:
+					rel_d = rel_s
+				else:
+					rel_d = 0 
+			elif judge_type == 'page':
+				rel_s = 0	
+				rel_d = levels[judge_value]
+			
+			judge = self.create(user_id=user_id, result_id=result_id, \
+				relevance_snippet = rel_s, relevance_doc = rel_d)
+		res = {
+			'relevance_doc': judge.relevance_doc,
+			'relevance_snippet': judge.relevance_snippet,
+			}	
+
+		return res 
+
+
 class ResultManager(models.Manager):
 	def get_results(self, crawl_id, qid, user_id):
 		crawl_id = int(crawl_id)
@@ -102,6 +138,9 @@ class ResultManager(models.Manager):
 			page = page_url[u]			
 			r = page_res[page.page_id]
 			site = Site.objects.get(sid = r.sid) 
+			summary = page.summary
+			#summary = utils.clean_snippet(summary)
+			#self.get_highlighted_summary(summary,query,analyzer,frag,format)
 			# Get judgements, if any
 			try:
 				j = Judgement.objects.get(user_id = user_id, result_id = r.id)		
@@ -116,7 +155,7 @@ class ResultManager(models.Manager):
 				'site_name': site.name,
 				'title': page.title, 
 				'url': page.url,
-				'summary': self.get_highlighted_summary(page.summary,query,analyzer,frag,format),
+				'summary': summary, 
 				'location': page.location.split('fedsearch_crawl/')[1],
 				'rank': r.rank,
 				'id': r.id,
@@ -157,39 +196,7 @@ class Result(models.Model):
     	class Meta:
         	db_table = u'result'
 
-class JudgementManager(models.Manager):
-	def save_judgement(self, user_id, result_id, judge_value, judge_type):
-		# global variable
-		levels = {'Nav': 6, 'Key': 5, 'HRel': 4, 'Rel': 3, 'Non': 2, 'Spam': 1};
 
-		#print updated_values
-		try:
-			judge = self.get(user_id = user_id, result_id = result_id)
-			if judge_type == 'snippet':
-				judge.relevance_snippet = levels[judge_value]
-			elif judge_type == 'page':
-				judge.relevance_doc = levels[judge_value]
-			judge.save()
-
-		except Judgement.DoesNotExist:
-			if judge_type == 'snippet':
-				rel_s = levels[judge_value]
-				if rel_s < 3:
-					rel_d = rel_s
-				else:
-					rel_d = 0 
-			elif judge_type == 'page':
-				rel_s = 0	
-				rel_d = levels[judge_value]
-
-			judge = self.create(user_id=user_id, result_id=result_id, \
-				relevance_snippet = rel_s, relevance_doc = rel_d)
-		res = {
-			'relevance_doc': judge.relevance_doc,
-			'relevance_snippet': judge.relevance_snippet,
-			}	
-
-		return res 
 
 class Judgement(models.Model):
 	result = models.ForeignKey(Result)
@@ -197,3 +204,19 @@ class Judgement(models.Model):
     	relevance_doc = models.IntegerField()	
     	user = models.ForeignKey(User)
 	objects = JudgementManager()     
+
+class UserProgress(models.Model):
+	user = models.ForeignKey(User)
+	query = models.ForeignKey(Query)
+	crawl = models.ForeignKey(Crawl)
+	status = models.IntegerField()
+
+
+	
+
+
+
+	
+	
+	
+

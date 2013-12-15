@@ -17,9 +17,6 @@ import operator
 import simplejson
 import pdb;
 
-# Tmp var
-current_qid = 32
-current_crawl = 2
 
 # This is the single entry point after user login
 def index(request):
@@ -47,7 +44,7 @@ def judgement(request):
 def get_parameters(request):
 	topicnum, topictext = Query.objects.get_query(current_qid) 
 	crawl_ids = Crawl.objects.get_crawl_ids() 
-	#crawl_info = Crawl.objects.get_crawl_info(current_qid, request.user.id)
+	current_qid, current_crawl = Judgement.assign_task(request.user.id)  	
 	c = {
 		'topic_num': topicnum,
 		'topic_text': topictext,
