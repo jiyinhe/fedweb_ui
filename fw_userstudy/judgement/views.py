@@ -47,7 +47,7 @@ def judgement(request):
 def get_parameters(request):
 	topicnum, topictext = Query.objects.get_query(current_qid) 
 	crawl_ids = Crawl.objects.get_crawl_ids() 
-	crawl_info = Crawl.objects.get_crawl_info(current_qid, request.user.id)
+	#crawl_info = Crawl.objects.get_crawl_info(current_qid, request.user.id)
 	c = {
 		'topic_num': topicnum,
 		'topic_text': topictext,

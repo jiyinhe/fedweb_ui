@@ -83,10 +83,9 @@
             <!--span id="bookmark_count" class="badge pull-right">{{bookmark_count}}</span-->
 			Topic {{topic_num}} 	
   			</a>
-	  		<a class="list-group-item">
+	  		<a class="list-group-item selected_documents">
 			{{topic_text}}
 			</a>
-
 	
 			<a class="list-group-item selected_documents">
 			<button type="button" id="done" class="btn btn-success btn-block">
@@ -94,6 +93,17 @@
 				<span class="glyphicon glyphicon-share-alt"></span>
 			</button>
 			</a>
+
+			<a class="list-group-item selected_documents">
+			<button type="button" id="hide_nonrel" 
+				class="btn btn-warning btn-block" 
+				rel="tooltip" 
+				data-original-title="Filter out snippets 
+				that are judged non-relevant or spam.">
+				<strong>Filter snippets</strong>
+			</button>
+			</a>
+
 		{% block notification %}
 		{% endblock %}
 		</div>
