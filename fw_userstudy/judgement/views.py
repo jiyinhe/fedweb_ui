@@ -2,7 +2,7 @@
 from django.shortcuts import render_to_response, get_object_or_404, redirect 
 from django.contrib.auth.models import User
 from questionnaire.models import UserProfile
-from judgement.models import Page, Result, Judgement, Query, Crawl
+from judgement.models import Page, Result, Judgement, Query, Crawl, UserProgress
 from django.http import HttpResponseRedirect, HttpResponse, HttpRequest
 from django.core.context_processors import csrf
 from django.utils import simplejson
@@ -31,8 +31,6 @@ def index(request):
 
 def judgement(request):
 	# Get current crawl, and query
-	crawl_id = current_crawl
-	qid = current_qid
 	c = {'user': request.user}	
 	context = get_parameters(request)
 	c.update(context)
@@ -42,9 +40,9 @@ def judgement(request):
 	return render_to_response(template, c)
 
 def get_parameters(request):
-	topicnum, topictext = Query.objects.get_query(current_qid) 
 	crawl_ids = Crawl.objects.get_crawl_ids() 
-	current_qid, current_crawl = Judgement.assign_task(request.user.id)  	
+	current_qid, current_crawl = UserProgress.objects.assign_task(request.user.id)  	
+	topicnum, topictext = Query.objects.get_query(current_qid) 
 	c = {
 		'topic_num': topicnum,
 		'topic_text': topictext,
@@ -74,9 +72,10 @@ def save_judge(request):
 		result_id = request.POST['result_id']
 		judge_value = request.POST['judge']
 		judge_type = request.POST['judge_type']
+		progress = (request.POST['total_docs'], request.POST['s_count'], request.POST['p_count'])
 		
-		data = Judgement.objects.save_judgement(request.user.id, result_id, judge_value, judge_type)
-
+		data = Judgement.objects.save_judgement(request.user.id, result_id, judge_value, judge_type, progress)
+		print data
 		json_data = simplejson.dumps(data)		
 		response = HttpResponse(json_data, mimetype="application/json")
 	else:

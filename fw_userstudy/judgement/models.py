@@ -4,7 +4,8 @@ import operator
 from whoosh.highlight import highlight, Highlighter, WholeFragmenter, HtmlFormatter
 from whoosh.analysis import FancyAnalyzer
 import utils
-
+import itertools
+import operator
 # Create your models here.
 # This is an auto-generated Django model module.
 # You'll have to do the following manually to clean this up:
@@ -71,27 +72,40 @@ class Site(models.Model):
         	db_table = u'site'
 
 class JudgementManager(models.Manager):
-	def save_judgement(self, user_id, result_id, judge_value, judge_type):
+	def save_judgement(self, user_id, result_id, judge_value, judge_type, progress):
 		# global variable
 		levels = {'Nav': 6, 'Key': 5, 'HRel': 4, 'Rel': 3, 'Non': 2, 'Spam': 1};
 
 		#print updated_values
+		# Upate
+		s_count = int(progress[1])
+		p_count = int(progress[2])
+		total = int(progress[0])
 		try:
 			judge = self.get(user_id = user_id, result_id = result_id)
 			if judge_type == 'snippet':
+				if judge.relevance_snippet == 0:
+					s_count += 1
 				judge.relevance_snippet = levels[judge_value]
 			elif judge_type == 'page':
+				# In case snippet/doc was added first
+				if judge.relevance_doc == 0:
+					p_count += 1
 				judge.relevance_doc = levels[judge_value]
 			judge.save()
 
+		# Add new judgement
 		except Judgement.DoesNotExist:
 			if judge_type == 'snippet':
+				s_count += 1
 				rel_s = levels[judge_value]
 				if rel_s < 3:
 					rel_d = rel_s
+					p_count += 1
 				else:
 					rel_d = 0 
 			elif judge_type == 'page':
+				p_count += 1
 				rel_s = 0	
 				rel_d = levels[judge_value]
 			
@@ -100,8 +114,15 @@ class JudgementManager(models.Manager):
 		res = {
 			'relevance_doc': judge.relevance_doc,
 			'relevance_snippet': judge.relevance_snippet,
+			's_count': s_count,
+			'p_count': p_count,
 			}	
-
+		# update user progress
+		if res['s_count'] == total and res['p_count'] == total:
+			# finished, update the progress table
+			p = UserProgress.get(user_id = user_id, crawl_id=judge.result.cid, query_id=judge.result.qid)
+			p.status = 1
+			p.save()
 		return res 
 
 
@@ -205,12 +226,47 @@ class Judgement(models.Model):
     	user = models.ForeignKey(User)
 	objects = JudgementManager()     
 
+class UserProgressManager(models.Manager):
+	def assign_task(self, user_id):
+		# Check if there are unfinished assignment
+		res = self.filter(user_id = user_id, status=0)
+		if len(res)>0:
+			return res[0].query.qid, res[0].crawl.cid
+		else:
+			# If not, find a new task, and register it
+			done = self.filter(user_id=user_id, status=1)
+			done_task = [(d.query.qid, d.crawl.cid) for d in done]
+			done_task.sort(key=operator.itemgetter(0))
+			qid = -1
+			crawl = -1
+			all_crawls = Crawl.objects.get_crawl_ids()			
+			# Check if certain crawl is not finished
+			for k, g in itertools.groupby(done, lambda x: x[0]):
+				done_crawls = list(g)
+				remain_crawls = list(set(all_crawls)-set(done_crawls))
+				if len(remain_crawls)>0:
+					remain_crawls.sort()
+					qid = k
+					crawl = sorted(remain_crawls)[0]
+			# If all crawls in these queries are done
+			# find a new query
+			all_querys = [q.qid for q in Query.objects.all()]
+			remain_queries = set(all_querys) - set([d[0] for d in done_task])
+			if len(remain_queries) > 0:
+				qid = sorted(list(remain_queries))[0]
+				crawl = 1
+			if not qid == -1:
+				# Craete a progress profile
+				p = UserProgress(user_id=user_id, crawl_id = crawl, query_id = qid, status=0)
+				p.save()
+			return qid, crawl
+
 class UserProgress(models.Model):
 	user = models.ForeignKey(User)
 	query = models.ForeignKey(Query)
 	crawl = models.ForeignKey(Crawl)
 	status = models.IntegerField()
-
+	objects = UserProgressManager()
 
 	
 

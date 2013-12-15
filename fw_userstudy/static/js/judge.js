@@ -76,6 +76,7 @@ function show_results(docs){
 	result_html.push('<span class="doc_title" id="'+r['id']+'" data-toggle="modal" data-target="#docModal">');
 	result_html.push(r['title']);
 	result_html.push('</span>');
+	result_html.push('<span class="pull-right">#'+(i+1)+'</span>')	
 	result_html.push('</div>'); //Group heading
 	result_html.push('<div class="doc_url" id="url_'+r['id']+'" >'+r['url']+'</div>');
 	result_html.push('<div class="judge" id="judge_snippet_'+r['id']+'">'+'</div>');
@@ -177,7 +178,7 @@ function rel_click(id){
 	}
 	$('#'+id).addClass('active');
 	$('#radio_'+id).prop('checked', true);
-	
+
 	//save the click
  	$.ajax({
                 type: "POST",
@@ -188,8 +189,16 @@ function rel_click(id){
 			result_id: strs[1],
 			judge_type: strs[2],
 			judge: strs[0],
-                }
+			total_docs: total_docs,
+			s_count: judged_s,
+			p_count: judged_p,
+	}
         }).done(function(response) {
+		//get the progress
+		judged_s = response['s_count'];
+		judged_p = response['p_count'];
+		//console.log(judged_s+' '+judged_p);
+
 		label_idx = rel_levels.indexOf(strs[0]);
 		saved_value = ['<span class="label label-'+colors[label_idx]+' pull-right save_label">'];
 		saved_value.push(strs[0])
@@ -262,12 +271,10 @@ function set_progress_bar(){
 
 function update_progress_bar(judge_type){
 	if (judge_type == 'snippet'){
-		judged_s += 1;
 		$('#pg_s').html(judged_s+'/'+total_docs);
 		$('#pgbar_s').attr('aria-valuenow', judged_s/total_docs*100).css('width', judged_s/total_docs*100+'%');
 	}
 	else if (judge_type == 'page'){
-		judged_p += 1;
 		$('#pg_p').html(judged_p+'/'+total_docs);
 		$('#pgbar_p').attr('aria-valuenow', judged_p/total_docs*100).css('width', judged_p/total_docs*100+'%');	
 	}
