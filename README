@@ -1,0 +1,7 @@
+This is used for judge crawled fedweb pages
+The interface is adapted from the fw_userstudy interface.
+The code is a branch "fedsearch_judge" of the original code in the github.
+
+- the app is called judgement
+- database: fedsearch, which contains the crawled data
+- data: should be the crawled pages (be careful with the path stored in the database) 
