@@ -10,6 +10,7 @@
 	var current_crawl = {{current_crawl}};
 	var current_query = {{current_query}};
 	var load_results_url = "/judge/load_results/";
+	var save_judge_url = "/judge/save_judge/";
     </script>
    {% block globalvar %}
    {% endblock %}
@@ -82,13 +83,14 @@
             <!--span id="bookmark_count" class="badge pull-right">{{bookmark_count}}</span-->
 			Topic {{topic_num}} 	
   			</a>
-	  		<a class="list-group-item selected_documents">
+	  		<a class="list-group-item">
 			{{topic_text}}
 			</a>
+
 	
 			<a class="list-group-item selected_documents">
 			<button type="button" id="done" class="btn btn-success btn-block">
-				<strong>Done!</strong>
+				<strong>Next topic</strong>
 				<span class="glyphicon glyphicon-share-alt"></span>
 			</button>
 			</a>

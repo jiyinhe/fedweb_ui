@@ -47,6 +47,7 @@ def judgement(request):
 def get_parameters(request):
 	topicnum, topictext = Query.objects.get_query(current_qid) 
 	crawl_ids = Crawl.objects.get_crawl_ids() 
+	crawl_info = Crawl.objects.get_crawl_info(current_qid, request.user.id)
 	c = {
 		'topic_num': topicnum,
 		'topic_text': topictext,
@@ -63,10 +64,26 @@ def load_results(request):
 		qid = request.POST['current_query']
 
 		data = {}
-		data = Result.objects.get_results(crawl_id, qid)
+		data = Result.objects.get_results(crawl_id, qid, request.user.id)
 
 		json_data = simplejson.dumps(data)		
 		response = HttpResponse(json_data, mimetype="application/json")
 	else:
 		return render_to_response('errors/403.html')
 	return response
+
+def save_judge(request):
+	if request.is_ajax:
+		result_id = request.POST['result_id']
+		judge_value = request.POST['judge']
+		judge_type = request.POST['judge_type']
+		
+		data = Judgement.objects.save_judgement(request.user.id, result_id, judge_value, judge_type)
+
+		json_data = simplejson.dumps(data)		
+		response = HttpResponse(json_data, mimetype="application/json")
+	else:
+		return render_to_response('errors/403.html')
+	return response
+
+	

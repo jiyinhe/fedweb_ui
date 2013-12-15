@@ -19,7 +19,7 @@ from django.db import models
 class CrawlManager(models.Manager):
 	def get_crawl_ids(self):
 		return [r.cid for r in self.all()]
-		
+
 
 class Crawl(models.Model):
 	status = models.IntegerField(null=True, blank=True)
@@ -70,7 +70,7 @@ class Site(models.Model):
         	db_table = u'site'
 
 class ResultManager(models.Manager):
-	def get_results(self, crawl_id, qid):
+	def get_results(self, crawl_id, qid, user_id):
 		crawl_id = int(crawl_id)
 		qid = int(qid)
 
@@ -102,6 +102,15 @@ class ResultManager(models.Manager):
 			page = page_url[u]			
 			r = page_res[page.page_id]
 			site = Site.objects.get(sid = r.sid) 
+			# Get judgements, if any
+			try:
+				j = Judgement.objects.get(user_id = user_id, result_id = r.id)		
+				judge = {'relevance_snippet': j.relevance_snippet, 
+					'relevance_doc': j.relevance_doc,
+					}
+			except Judgement.DoesNotExist:
+				judge = {'relevance_snippet': 0, 'relevance_doc': 0} 	
+
 			item = {
 				'site_id':r.sid, 
 				'site_name': site.name,
@@ -111,6 +120,7 @@ class ResultManager(models.Manager):
 				'location': page.location.split('fedsearch_crawl/')[1],
 				'rank': r.rank,
 				'id': r.id,
+				'judge': judge,
 				} 
 			new_res.append((item, r.sid, r.rank))
 		return sorted(new_res, key=operator.itemgetter(1, 2))
@@ -147,9 +157,43 @@ class Result(models.Model):
     	class Meta:
         	db_table = u'result'
 
+class JudgementManager(models.Manager):
+	def save_judgement(self, user_id, result_id, judge_value, judge_type):
+		# global variable
+		levels = {'Nav': 6, 'Key': 5, 'HRel': 4, 'Rel': 3, 'Non': 2, 'Spam': 1};
+
+		#print updated_values
+		try:
+			judge = self.get(user_id = user_id, result_id = result_id)
+			if judge_type == 'snippet':
+				judge.relevance_snippet = levels[judge_value]
+			elif judge_type == 'page':
+				judge.relevance_doc = levels[judge_value]
+			judge.save()
+
+		except Judgement.DoesNotExist:
+			if judge_type == 'snippet':
+				rel_s = levels[judge_value]
+				if rel_s < 3:
+					rel_d = rel_s
+				else:
+					rel_d = 0 
+			elif judge_type == 'page':
+				rel_s = 0	
+				rel_d = levels[judge_value]
+
+			judge = self.create(user_id=user_id, result_id=result_id, \
+				relevance_snippet = rel_s, relevance_doc = rel_d)
+		res = {
+			'relevance_doc': judge.relevance_doc,
+			'relevance_snippet': judge.relevance_snippet,
+			}	
+
+		return res 
+
 class Judgement(models.Model):
 	result = models.ForeignKey(Result)
      	relevance_snippet = models.IntegerField()	
     	relevance_doc = models.IntegerField()	
     	user = models.ForeignKey(User)
-     
+	objects = JudgementManager()     
