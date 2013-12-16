@@ -112,16 +112,7 @@
 					style="width: 0%">
 				</div>
   			</div>
-
 			</a>
-
-			<a class="list-group-item selected_documents">
-			<button type="button" id="done" class="btn btn-success btn-block">
-				<strong>Next topic</strong>
-				<span class="glyphicon glyphicon-share-alt"></span>
-			</button>
-			</a>
-
 			<a class="list-group-item selected_documents">
 			<button type="button" id="hide_nonrel" 
 				class="btn btn-warning btn-block" 
@@ -131,6 +122,22 @@
 				<strong>Filter snippets</strong>
 			</button>
 			</a>
+			<a class="list-group-item selected_documents">
+			<button type="button" class="btn btn-success btn-block" 
+				data-toggle="collapse" data-target="#queries">
+				Change Query
+			</button>
+			</a>
+			<div class="collapse in" id="queries">
+				<div class="list-group">
+				<form action="." method="post" id="query">
+				{% for q in all_queries %}
+  				<a  class="list-group-item query-item" id="q_{{q.0}}">{{q.1}}: {{q.2}}</a>
+				{% endfor %}
+				<input type="hidden" name="query">
+				</form>
+				</div>
+			</div>	
 
 		{% block notification %}
 		{% endblock %}

@@ -24,7 +24,19 @@ $(document).ready(function(){
 			$(this).text('Filter snippets');
 		}
 	});
+	//dropwdown
+	$('.collapse').collapse()
+
+	//change query
+	$('.query-item').click(function(){
+		change_query($(this));
+	});
 });
+
+// adjust the category area length
+$('.affix-right').ready(function(){
+	$('.affix-right').height($(window).height()-70);	
+});	
 
 //global variable
 
@@ -280,5 +292,10 @@ function update_progress_bar(judge_type){
 	}
 }
 
+
+function change_query(query_item){
+	qid = query_item.attr('id').split('_')[1];
+				
+}
 
 

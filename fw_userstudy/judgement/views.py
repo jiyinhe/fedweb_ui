@@ -43,6 +43,8 @@ def get_parameters(request):
 	crawl_ids = Crawl.objects.get_crawl_ids() 
 	current_qid, current_crawl = UserProgress.objects.assign_task(request.user.id)  	
 	topicnum, topictext = Query.objects.get_query(current_qid) 
+	all_queries = Query.objects.get_all_queries()
+
 	c = {
 		'topic_num': topicnum,
 		'topic_text': topictext,
@@ -50,6 +52,7 @@ def get_parameters(request):
 		'crawls': crawl_ids,
 		'current_crawl': current_crawl,
 		'current_query': current_qid,
+		'all_queries': all_queries,
 		}
 	return c
 

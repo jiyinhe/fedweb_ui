@@ -52,6 +52,9 @@ class QueryManager(models.Manager):
 		else:
 			return res[0].topicnum, res[0].text
 
+	def get_all_queries(self):
+		return [(q.qid, q.topicnum, q.text) for q in self.all()]		
+
 class Query(models.Model):
     	qid = models.IntegerField(primary_key=True)
     	topicnum = models.CharField(max_length=765, blank=True)

@@ -5,3 +5,9 @@
 .hidden {
 	display: none;
 }
+.affix-right{
+	overflow: auto; 
+}
+.query-item{
+	cursor: pointer;
+}
