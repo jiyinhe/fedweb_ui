@@ -24,7 +24,7 @@ def index(request):
 	user_id = user.id
 	# If not authenticated, redirect to login
 	if not user.is_authenticated():
-		return redirect('/accounts/login/')	
+        	return redirect('%saccounts/login/'%settings.LOGIN_REDIRECT_URL)
 	
 	return redirect('/judge/')	
 
