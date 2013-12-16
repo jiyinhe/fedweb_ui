@@ -222,18 +222,23 @@ function category_click(ele_id){
 }
 
 function update_pagination(ele_id){
+	var docs = ALLRANKS
+	if (typeof(current_active_category) != 'undefined'){	
+		if (current_active_category != 'category_all'){
+			docs = cate[1+parseInt(current_active_category.replace('category_',''))]['doc_ranks'];
+		}
+	}
 	if (ele_id == 'pagination_first'){CURRENTPAGE = 1;}
 	if (ele_id == 'pagination_last'){
-		var docs = ALLRANKS
-		if (typeof(current_active_category) != 'undefined'){	
-			if (current_active_category != 'category_all'){
-				docs = cate[1+parseInt(current_active_category.replace('category_',''))]['doc_ranks'];
-			}
-		}
 		CURRENTPAGE = Math.ceil(docs.length/10);
 	}
-	if (ele_id == 'pagination_prev'){CURRENTPAGE--;}
-	if (ele_id == 'pagination_next'){CURRENTPAGE++;}
+	if (ele_id == 'pagination_prev'){
+		if (CURRENTPAGE > 1){CURRENTPAGE--;}}
+	if (ele_id == 'pagination_next'){
+		if (CURRENTPAGE < Math.ceil(docs.length/10)){
+			CURRENTPAGE++;
+		}
+	}
 	pagination();
 }
 

@@ -25,6 +25,34 @@
     <script  src="{% static "jquery/jquery.notify.js" %}" /></script>
     <script  src="{% static "jquery/jquery.validate.js" %}" /></script>
 
+	<script>
+		// Including this enables logging
+		(function() {
+			var script = document.createElement('script');
+			script.async = true;
+			script.src ="{% static "js/ilpslogging-0.2.min.js" %}";
+			var entry = document.getElementsByTagName('script')[0];
+			entry.parentNode.insertBefore(script, entry);
+		})();
+
+		var ILPSLogging_ready = ILPSLogging_ready || [];
+		ILPSLogging_ready.push(function(){
+			var config = {
+				api_url: 'http://ilpslogging.staging.dispectu.com',
+				project_key:'UCZHpwQzCG5TQd2hNWbiPhwCHsjJndBpG8FLnsKTklk',
+				log_mouse_movements: false,
+				log_mouse_clicks: true,
+				post_events_queue_on_browser_close: true,
+				log_browser_close: true,
+				debug: false,
+			};
+			ILPSLogging.init(config, function(){
+				console.log('ready for action');
+			});
+		});
+	</script>
+    <script  src="{% static "js/utils/logging.js" %}" /></script>
+
 
     {% block head %}
     <title>{% block title %}fw_userstudy{% endblock %}</title>
@@ -46,10 +74,10 @@
 	{{ user.username }} 
 	</p>
 	<p class="navbar-text">
-	<a href="{% url auth_password_change %}">{% trans "Change password" %}</a> 
+	<a  data-ilpslogging-groupid='change_password' href="{% url auth_password_change %}">{% trans "Change password" %}</a> 
 	</p>
 	<p class="navbar-text">
-       	<a href="{% url auth_logout %}" >{% trans "Log out" %}</a>
+       	<a data-ilpslogging-groupid='logout' id="logout_link" href="{% url auth_logout %}" >{% trans "Log out" %}</a>
 	</p>
 	</div>
 	{% endif %}

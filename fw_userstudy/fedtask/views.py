@@ -238,7 +238,7 @@ def submit_complete_task(request):
 	if 'task-train' in referer:
 		Task.objects.completed_train_task(request.user)	
 	else:
-		Task.object.completed_test_task(request.user)
+		Task.objects.completed_test_task(request.user)
 	return redirect("/")
 
 
