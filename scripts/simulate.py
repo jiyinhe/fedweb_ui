@@ -1,27 +1,16 @@
 """
 User effort best cases in terms of moves
 """
+import trec_util
 
 # Number of relevant document to be found
 count_rel = 1
+runfile = '../data/testruns/nodup/run13.ql.nodup'
+qrelsfile = '../data/FW13-QRELS-RM.txt'
 
+ 
 
-"""
-x: #rel_docs to be found
-
-If users scan through a document, minimum effort is
-rel(x)
-the rank of the xth document 
-"""
-def UI_basic():
-	pass
-
-
-"""
-x: #rel_docs to be found
-
-user can switch to category at any moment,
-the minimum effort is when user  
-"""
-def UI_category():
-			
+if __name__ == '__main__':
+	run = trec_util.load_TREC_run(runfile)		
+	qrels = trec_util.load_qrels(qrelsfile)
+	trec_util.judged_ranklist(run, qrels)
