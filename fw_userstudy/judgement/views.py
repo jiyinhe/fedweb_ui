@@ -41,7 +41,13 @@ def judgement(request):
 
 def get_parameters(request):
 	crawl_ids = Crawl.objects.get_crawl_ids() 
-	current_qid, current_crawl = UserProgress.objects.assign_task(request.user.id)  	
+	# Get a task	
+	current_qid = request.POST.get('query', -1)
+	if current_qid == -1:
+		current_qid, current_crawl = UserProgress.objects.assign_task(request.user.id)  	
+	else:
+		current_crawl = 1
+
 	topicnum, topictext = Query.objects.get_query(current_qid) 
 	all_queries = Query.objects.get_all_queries()
 

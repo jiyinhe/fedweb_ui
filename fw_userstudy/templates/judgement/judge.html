@@ -130,11 +130,11 @@
 			</a>
 			<div class="collapse in" id="queries">
 				<div class="list-group">
-				<form action="." method="post" id="query">
+				<form action="." method="post" id="query">{% csrf_token %}
 				{% for q in all_queries %}
   				<a  class="list-group-item query-item" id="q_{{q.0}}">{{q.1}}: {{q.2}}</a>
 				{% endfor %}
-				<input type="hidden" name="query">
+				<input type="hidden" name="query" id="query_select">
 				</form>
 				</div>
 			</div>	

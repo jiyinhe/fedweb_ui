@@ -163,7 +163,7 @@ class ResultManager(models.Manager):
 			r = page_res[page.page_id]
 			site = Site.objects.get(sid = r.sid) 
 			summary = page.summary
-			#summary = utils.clean_snippet(summary)
+			summary = utils.clean_snippet(summary)
 			#self.get_highlighted_summary(summary,query,analyzer,frag,format)
 			# Get judgements, if any
 			try:
@@ -263,6 +263,8 @@ class UserProgressManager(models.Manager):
 				p = UserProgress(user_id=user_id, crawl_id = crawl, query_id = qid, status=0)
 				p.save()
 			return qid, crawl
+	
+		
 
 class UserProgress(models.Model):
 	user = models.ForeignKey(User)

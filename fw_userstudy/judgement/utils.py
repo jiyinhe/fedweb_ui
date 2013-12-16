@@ -1,12 +1,20 @@
 import re
+import urllib
+reg_img = re.compile('"http://.+?"')
+reg_tag = re.compile('<.+?>', re.MULTILINE|re.DOTALL)
 def clean_snippet(s):
-	reg_tag = re.compile('<.+?>', re.MULTILINE|re.DOTALL)
 	tags = reg_tag.findall(s)	
 	for t in tags:
-		#Only keep images
+		#Only keep images that are available
+		rmv = 1
 		if t.startswith('<img') and 'http' in t:
-			continue
-		else:
+			img = reg_img.findall(t)	
+			if len(img)>0:
+				url = img[0].replace('"', '')
+				if urllib.urlopen(url).getcode() == 200:
+					rmv = 0	
+					s = s.replace(t, '<br/>%s<br/>'%t)
+		if rmv == 1:
 			s = s.replace(t, ' ')
 	return s
 			

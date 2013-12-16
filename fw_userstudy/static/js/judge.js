@@ -60,6 +60,10 @@ function change_crawl(crawl_id){
 	load_docs();
 }
 function load_docs(){
+	if (current_crawl == -1 || current_query == -1){
+		$('#documents').html('You have completed judging current query and crawl, thank you!');
+	}
+	
 	//send selection to db
 	$.ajax({
                 type: "POST",
@@ -76,6 +80,9 @@ function load_docs(){
 
 function show_results(docs){	
     var html = []
+    if (docs.length == 0)
+	$('#document').html('No results were crawled.');
+
     for (var i = 0; i<docs.length; i++){
 	r = docs[i][0]
 	result_html = []
@@ -294,8 +301,11 @@ function update_progress_bar(judge_type){
 
 
 function change_query(query_item){
-	qid = query_item.attr('id').split('_')[1];
-				
+	qid = query_item.attr('id').split('_')[1];	
+	//set the form value
+	$('#query_select').attr('value', qid);
+	//submit the form to the same url
+	$('#query').submit();
 }
 
 
