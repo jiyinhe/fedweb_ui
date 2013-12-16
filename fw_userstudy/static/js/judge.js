@@ -60,6 +60,9 @@ function change_crawl(crawl_id){
 	load_docs();
 }
 function load_docs(){
+	//first clear all
+	$('#documents').html('')
+	// Then check the crawl and query
 	if (current_crawl == -1 || current_query == -1){
 		$('#documents').html('You have completed judging current query and crawl, thank you!');
 	}
@@ -218,6 +221,7 @@ function rel_click(id){
 		judged_p = response['p_count'];
 		//console.log(judged_s+' '+judged_p);
 
+		//show the saved snippet label
 		label_idx = rel_levels.indexOf(strs[0]);
 		saved_value = ['<span class="label label-'+colors[label_idx]+' pull-right save_label">'];
 		saved_value.push(strs[0])
@@ -237,7 +241,7 @@ function rel_click(id){
 				//also update the button selection
 				//set all others to inactive, and set the selected one to active
 				for (i in rel_levels){
-					idx = [rel_levels[i], strs[1], 'page'].join('_');
+					idx = [rel_levels[label_idx], strs[1], 'page'].join('_');
 					$('#'+idx).removeClass('active');
 					$('#radio_'+idx).prop('checked', false);
 				}

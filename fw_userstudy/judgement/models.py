@@ -79,21 +79,16 @@ class JudgementManager(models.Manager):
 		# global variable
 		levels = {'Nav': 6, 'Key': 5, 'HRel': 4, 'Rel': 3, 'Non': 2, 'Spam': 1};
 
-		#print updated_values
 		# Upate
 		s_count = int(progress[1])
 		p_count = int(progress[2])
 		total = int(progress[0])
+		# If it's already exists, update the value
 		try:
 			judge = self.get(user_id = user_id, result_id = result_id)
 			if judge_type == 'snippet':
-				if judge.relevance_snippet == 0:
-					s_count += 1
 				judge.relevance_snippet = levels[judge_value]
 			elif judge_type == 'page':
-				# In case snippet/doc was added first
-				if judge.relevance_doc == 0:
-					p_count += 1
 				judge.relevance_doc = levels[judge_value]
 			judge.save()
 
@@ -104,16 +99,19 @@ class JudgementManager(models.Manager):
 				rel_s = levels[judge_value]
 				if rel_s < 3:
 					rel_d = rel_s
-					p_count += 1
 				else:
 					rel_d = 0 
 			elif judge_type == 'page':
-				p_count += 1
 				rel_s = 0	
 				rel_d = levels[judge_value]
 			
 			judge = self.create(user_id=user_id, result_id=result_id, \
 				relevance_snippet = rel_s, relevance_doc = rel_d)
+		# Counts
+		current_q = judge.result.qid
+		current_c = judge.result.cid
+		s_count = Judgement.filter(user_id = user_id, result.qid = current_q, result.cid = current_c, relevance_snippet__lt=0).count()
+		p_count = Judgement.filter(user_id = user_id, result.qid = current_q, result.cid = current_c, relevance_doc__lt=0).count()
 		res = {
 			'relevance_doc': judge.relevance_doc,
 			'relevance_snippet': judge.relevance_snippet,

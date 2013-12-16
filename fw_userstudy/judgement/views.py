@@ -26,7 +26,7 @@ def index(request):
 	if not user.is_authenticated():
         	return redirect('%saccounts/login/'%settings.LOGIN_REDIRECT_URL)
 	
-	return redirect('/judge/')	
+	return redirect('%sjudge/'%settings.LOGIN_REDIRECT_URL)	
 
 
 def judgement(request):

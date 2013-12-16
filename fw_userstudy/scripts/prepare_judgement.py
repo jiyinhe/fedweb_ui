@@ -14,7 +14,7 @@ conn = db.db_connect(host, user, passwd, database)
 
 
 def fix_table_results():
-	qry = 'alter table Result add column `id` int(10) unsigned primary KEY AUTO_INCREMENT;'
+	qry = 'alter table result add column `id` int(10) unsigned primary KEY AUTO_INCREMENT;'
 	db.run_qry(qry, conn)
 
 if __name__ == '__main__':

@@ -9,8 +9,8 @@
     <script>
 	var current_crawl = {{current_crawl}};
 	var current_query = {{current_query}};
-	var load_results_url = "/judge/load_results/";
-	var save_judge_url = "/judge/save_judge/";
+	var load_results_url = "{% url judgement.views.load_results %}";
+	var save_judge_url = "{% url judgement.views.save_judge %}";
     </script>
    {% block globalvar %}
    {% endblock %}

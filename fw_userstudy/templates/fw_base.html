@@ -29,7 +29,8 @@
     <title>{% block title %}fw_userstudy{% endblock %}</title>
     {% endblock %}
     <script>
-	var register_url = '/question/register_user/';
+	//var register_url = '/question/register_user/';
+	var register_url = "{% url questionnaire.views.register_user %}"
     </script>
 </head>
 
