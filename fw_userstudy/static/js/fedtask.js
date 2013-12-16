@@ -1,30 +1,14 @@
-var resultlist = [];
+var RESULTLIST = [];
+var ALLRANKS = [];
+var CURRENTPAGE = 1;
+var PAGESIZE = 10;
 
 $(document).ready(function(){
 
-//prepare results	
-$('#results').ready(function(){
-	cache_results();
-});
 
 // when done button for training task is pressed update session
 $("#done").click(function(){
 	submit_complete_task();	
-});
-
-//When click document title, show document
-$('.doc_title').click(function(){
-	ele_id = $(this).attr('id');
-	doc_click(ele_id);
-	//set the modal title
-	title = $('#'+ele_id+'_title').attr('name');
-	$('#modal_title').html(title);
-});
-
-//When click bookmark, bookmark document
-$('.bookmark').click(function(){
-	ele_id = $(this).attr('id');
-	doc_bookmark(ele_id);
 });
 
 // adjust the category area length
@@ -44,32 +28,100 @@ $('[rel=tooltip]').tooltip({
 });
 
 
+load_results(); // also caches the results
+
+bind_resultlist_listeners();
+//When click document title, show document
 });//document
 
+function bind_resultlist_listeners(){
+	$('.doc_title').click(function(){
+		ele_id = $(this).attr('id');
+		doc_click(ele_id);
+		//set the modal title
+		title = $('#'+ele_id+'_title').attr('name');
+		$('#modal_title').html(title);
+	});
+	//When click bookmark, bookmark document
+	$('.bookmark').click(function(){
+		ele_id = $(this).attr('id');
+		doc_bookmark(ele_id);
+	});
+	$('.pagination').click(function(){
+		ele_id = $(this).attr('id');
+		update_pagination(ele_id);
+	});
+}
 
-// get results for given topic_id, run_id
-// This is not currently used.
-// Currently we direct send data when loading the page
+// get all results for given topic_id, run_id
 function load_results(){
-        $.ajax({
-                type: "POST",
+        $.ajax({type: "POST",
                 url: results_url,
-                data: {
-                        ajax_event: 'fetch_results',
-			topic_id: topic_id,
-			run_id: run_id,
+                data: { ajax_event: 'fetch_results',
+						topic_id: topic_id,
+						run_id: run_id,
+						page: 1,
                 }
         }).done(function(response) {
+			RESULTLIST = create_resultlist(response);
+			for (var i = 0; i < RESULTLIST.length; i++) {
+				ALLRANKS.push(i);
+			}
+			$('#results').html(RESULTLIST.slice(0,PAGESIZE).join('\n'));
+			// create_pagination expects a parameter, so we pass
+			// response, it is just to get the lenght
+			$('#pagination').html(create_pagination(response));
+			//clear the modal section
+			$('#modal_title').html('');
+			$('#doc_content').html('');
+
+			//rebind the listner for clicking documents
+			bind_resultlist_listeners();
+			//window go back to top
+			$('html, body').animate({scrollTop: 0}, 0);
         });
-
 }
 
-function cache_results(){
-	for (var i = 0; i < total_num_docs; i++){
-		ele = document.getElementById('rank_'+i);	
-		resultlist.push(ele);
+//function cache_results(){
+//	RESULTLIST = $('div[id^="rank_"]');
+//}
+
+function create_resultlist(response){
+	var reslist=[];
+	for (var i=0; i<response.length; i++){
+		var d = response[i];
+		// choose bookmarked / not bookmarked glyph style
+		var bookmark = "";
+		if (d[1].bookmarked == 1){
+			// t is the template
+	    	t='<span class="glyphicon glyphicon-star bookmark bookmark-selected" id="{0}_bookmark"></span>'
+			bookmark = $.validator.format(t,d[1].id);
+		}else{
+			t='<span class="glyphicon glyphicon-star-empty bookmark" id="{0}_bookmark"></span>'
+			bookmark = $.validator.format(t,d[1].id);
+		}
+
+		// setup templates and fillers for formatting of a result snippet
+		var doc= [
+['<div id="rank_{0}" class="list-group-item" name="doc-item">',d[0]],
+['<div id="result-item_{0}" class="result-item">',d[1].id],
+['<div id="{0}_title" name="{1}"class="list-group-item-heading">',[d[1].id,d[1].title]],
+['{0}',bookmark],
+['<span class="doc_title" id="{0}"data-toggle="modal" data-target="#docModal">{1}</span></div>',[d[1].id,d[1].title]],
+['<div class="doc_url" id="url_{0}">{1}</div>',[d[1].id,d[1].url]],
+['<div class="list-group-item-text">{0}</div></div></div>',d[1].summary]];
+	
+		// format the result snippet
+		var lines = [];
+		for (var j=0; j<doc.length; j++){
+			lines.push($.validator.format(doc[j][0],doc[j][1]));
+		}
+		// push snippet on result list stack
+		reslist.push(lines.join('\n'));	
 	}
+	return reslist
 }
+
 
 // when a document is clicked, get the html file, set url to "visited"
 function doc_click(ele_id){
@@ -118,16 +170,13 @@ function doc_bookmark(ele_id){
 			// only show feedback when training is true
 			if (training == true){
 				if (response.feedback == "positive_feedback"){
-					console.log("positive feedback");
 					$("#"+doc_id+"_title").toggleClass("alert alert-success");
 					$("#result-item_"+doc_id).toggleClass("result-item-correct");
 					$("#feedback_"+doc_id).html(
 					'<span class="bookcorrect glyphicon glyphicon-ok pull-right"></span>'
 					);
-					//console.log($("#result-item_"+doc_id));
 
 				}else if(response.feedback == "negative_feedback"){
-					console.log("negative feedback");// no feedback
 					$("#"+doc_id+"_title").toggleClass("alert alert-danger");
 					$("#result-item_"+doc_id).toggleClass("result-item-error");
 				        $("#feedback_"+doc_id).html( 
@@ -135,7 +184,6 @@ function doc_bookmark(ele_id){
                                         );   
 
 				}else if(response.feedback == "delete_feedback"){
-					console.log("removing any alert classes");// no feedback
 					$("#"+doc_id+"_title").removeClass("alert alert-danger alert-success");
 					$("#result-item_"+doc_id).removeClass("result-item-correct result-item-error");
 					$("#feedback_"+doc_id).html('');
@@ -150,34 +198,15 @@ function doc_bookmark(ele_id){
 			if (response.done == true){
 				submit_complete_task()	
 			}
+			// update resultlist cache
+			rankid = $('#result-item_'+doc_id).parent().attr('id');
+			rankindex = parseInt(rankid.replace('rank_',''));
+			item = '<div id="'+rankid+'" class="list-group-item" name="doc-item">';
+			item += $('#'+rankid).html();
+			item += '</div>';
+			RESULTLIST[rankindex]=item;
         });
 }
-
-/*
-//Documents in array
-//[(rank, doc)]
-function load_documents(docs){
-	results = []
-	for (d in docs){
-	    var rank = d;
-	    var doc = docs[d][1];
-	    var html = [
-		'<div id="rank_'+rank+'" class="list-group-item">',
-		'<div id="'+doc['id']+'_title" name="'+doc['title']+'" class="list-group-item-heading">',
-	        '<span class="glyphicon glyphicon-star-empty bookmark" id="'+doc['id']+'_bookmark"></span>',
-		'<span class="doc_title" id="'+doc['id']+'" data-toggle="modal", data-target="#docModal">',
-		doc['title'],
-		'</span>',
-		'</div>',
-		'<div class="doc_url" id="url_'+doc['id']+'" >'+doc['url']+'</div>',
-		'<div class="list-group-item-text">'+doc['summary']+'</div>',
-		'</div>',
-		];
-	    results.push(html.join('\n'));
-	}
-	$('#results').html(results.join('\n'));
-} 
-*/
 
 function submit_complete_task(){
 	console.log("submit complete task")
@@ -185,51 +214,86 @@ function submit_complete_task(){
 }
 
 function category_click(ele_id){
-	//find the previously active one, release active
 	$('#'+current_active_category).toggleClass('active');
 	//set this category to active
 	$('#'+ele_id).toggleClass('active');
 	current_active_category = ele_id;
-	if (current_active_category == 'category_all'){
-		//set everyone to be active
-		var html = [];
-		for (r in resultlist){
-			content = '<div id="rank_"+' + r + '" class="list-group-item" name="doc-item">';
-			content += resultlist[r].innerHTML;
-			content += '</div>';
-			html.push(content);		
-		}
-		$('#results').html(html.join('\n'));
-	}
-	else{
-		var html = [];
-		var docs = cate[parseInt(ele_id.replace('category_', ''))]['doc_ranks'];
-		for (d in docs){
-			content = '<div id="rank_' + docs[d] + '" class="list-group-item" name="doc-item">';
-			content += resultlist[docs[d]].innerHTML;
-			content += '</div>';
-			html.push(content);		
-		}
-		$('#results').html(html.join('\n'));
-
-	}
-	//clear the modal section
-	$('#modal_title').html('');
-	$('#doc_content').html('');
-
-	//rebind the listner for clicking documents
-	$('.doc_title').click(function(){
-		ele_id = $(this).attr('id');
-		doc_click(ele_id);
-		//set the modal title
-		title = $('#'+ele_id+'_title').attr('name');
-		$('#modal_title').html(title);
-	});
-
-	//window go back to top
-	$('html, body').animate({scrollTop: 0}, 0);	
+	pagination();
 }
 
+function update_pagination(ele_id){
+	if (ele_id == 'pagination_first'){CURRENTPAGE = 1;}
+	if (ele_id == 'pagination_last'){
+		var docs = ALLRANKS
+		if (typeof(current_active_category) != 'undefined'){	
+			if (current_active_category != 'category_all'){
+				docs = cate[1+parseInt(current_active_category.replace('category_',''))]['doc_ranks'];
+			}
+		}
+		CURRENTPAGE = Math.ceil(docs.length/10);
+	}
+	if (ele_id == 'pagination_prev'){CURRENTPAGE--;}
+	if (ele_id == 'pagination_next'){CURRENTPAGE++;}
+	pagination();
+}
 
+function pagination(){
+	var docs = ALLRANKS; // category_all
+	if (typeof(current_active_category) != 'undefined'){	
+		if (current_active_category != 'category_all'){
+			docs = cate[1+parseInt(current_active_category.replace('category_',''))]['doc_ranks'];
+		}
+	}
+	var html = [];
 
+	pagination_html = create_pagination(docs);
 
+	startindex = (CURRENTPAGE-1) * PAGESIZE;
+	endindex = CURRENTPAGE * PAGESIZE;
+	if (endindex > docs.length){ endindex = docs.length;}
+	docs = docs.slice(startindex,endindex);
+	for (d in docs){
+		content = RESULTLIST[docs[d]];
+		html.push(content);
+	}
+	$('#results').html(html.join('\n'));
+	$('#pagination').html(pagination_html);
+	bind_resultlist_listeners()
+
+    $('html, body').animate({scrollTop: 0}, 0);
+}
+
+function create_pagination(docs){
+	var prevpage = '-';
+	if (CURRENTPAGE > 1){ prevpage = CURRENTPAGE - 1; }
+	
+	var nextpage = '-';
+	if (CURRENTPAGE < docs.length/10){ nextpage = CURRENTPAGE + 1;}
+	html = [
+	'<ul class="pager">',
+	  '<li><a id="pagination_first" class="pagination"><span',
+			'class="pull-left">First</span><span class="badge',
+			'pull-right">1</span></a></li>',
+	  '<li><a id="pagination_prev" class="pagination"><span',
+			'class="pull-left">Prev</span><span class="badge',
+			' pull-right">',
+			prevpage,
+			' </span></a></li>',
+	  '<li><a id="pagination_page" class="pagination"><span',
+			'class="pull-left">Page</span><span class="badge',
+			' pull-right">',
+			CURRENTPAGE,
+			'</span></a></li>',
+	  '<li><a id="pagination_next" class="pagination"><span',
+			'class="pull-left">Next</span><span class="badge',
+			' pull-right">',
+			nextpage,
+			'</span></a></li>',
+	  '<li><a id="pagination_last" class="pagination"><span',
+			'class="pull-left">Last</span><span class="badge',
+			' pull-right">',
+			Math.ceil(docs.length/PAGESIZE),
+			'</span></a></li>',
+	  '</ul>']
+	return 	html.join( '\n');
+}

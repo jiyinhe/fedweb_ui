@@ -63,7 +63,7 @@ function notify_onstart(){
 
 	if (typeof block_notifications.category == 'undefined'){
 // ui1 does not have categories so only show this for ui 2
-		if ($(".category-notification").length != 0){ 
+		if ($(".category-area").length != 0){ 
 			$("#notification_container").notify("create","category-notification",{
 					title:'Category filtering', 
 					text:'By clicking on a category only documents that belong in that category remain in the result list. The number indicates how many documents remain.'

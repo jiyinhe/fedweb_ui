@@ -96,3 +96,6 @@ a.category {
 	color: red;
 	font-size: 40px;
 }
+.pagination{
+	width: 125px;
+}

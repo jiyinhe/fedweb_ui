@@ -34,59 +34,22 @@
 	</div>
 	<div class="col-md-7">
 		<div  id="topic-panel" class="panel panel-primary">
-		<div class="panel-heading">
-			<div class="topic-info">
-			Please find 
-			<span class="emph"> {{num_docs}} </span> 
-			pages that are relevant to: 
-			</div>
-		</div>	
-		<div class="panel-body">
-			<div class="topic-text">{{topic_text}}</div>
-		</div>	
+			<div class="panel-heading">
+				<div class="topic-info">
+				Please find 
+				<span class="emph"> {{num_docs}} </span> 
+				pages that are relevant to: 
+				</div>
+			</div>	
+			<div class="panel-body">
+				<div class="topic-text">{{topic_text}}</div>
+			</div>	
 		</div>
 
 		<div class="panel panel-primary" id="results">
-			{% for d in docs %}
-			<!-- d[1] is the document object, d[0] is the rank -->
-			<div id="rank_{{d.0}}" class="list-group-item" name="doc-item" >
-				<div id="feedback_{{d.1.id}}"></div>
-				<div id="result-item_{{d.1.id}}" class="result-item">
-				<div id="{{d.1.id}}_title" name="{{d.1.title}}" class="list-group-item-heading">
-				{% if d.1.bookmarked %}
-			        <span class="glyphicon glyphicon-star bookmark
-bookmark-selected" id="{{d.1.id}}_bookmark"></span>
-				{% else %}
-			        <span class="glyphicon glyphicon-star-empty bookmark" id="{{d.1.id}}_bookmark"></span>
-				{% endif %}
-				<span class="doc_title" id="{{d.1.id}}" data-toggle="modal" data-target="#docModal">
-				{{d.1.title}}
-				</span>
+		</div>
 
-				</div> <!-- list-group-item-heading -->
-				<div class="doc_url" id="url_{{d.1.id}}" >{{d.1.url}}</div>
-				<div class="list-group-item-text">{{d.1.summary|safe}}</div>
-				</div>
-
-
-			</div><!-- list-group-item -->
-			{% endfor %}
-			<div class="pagination">
-				<span class="step-links">
-					{% if docs.has_previous %}
-						<a href="?page={{ docs.previous_page_number
-			}}">previous</a>
-					{% endif %}
-
-					<span class="current">
-						Page {{ docs.number }} of {{ docs.paginator.num_pages }}.
-					</span>
-
-					{% if docs.has_next %}
-						<a href="?page={{ docs.next_page_number }}">next</a>
-					{% endif %}
-				</span>
-			</div>
+		<div class="panel panel-primary" id="pagination">
 		</div>
 	</div>
 	<div class="col-md-2">

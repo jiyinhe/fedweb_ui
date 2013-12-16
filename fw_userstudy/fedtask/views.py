@@ -18,9 +18,6 @@ import operator
 import simplejson
 import pdb;
 
-#session_id = 2
-#current_session = Session.objects.get_session(session_id)
-
 # set required number of training tasks
 REQ_TRAIN_TASKS=3
 
@@ -129,7 +126,6 @@ def train(request):
 	template = 'fedtask/task_ui%s_train.html'%c['ui_id']
 	return render_to_response(template, c)
 
-
 def test(request):
 	c = {'user': request.user}	
 	context = get_parameters(request)
@@ -138,7 +134,6 @@ def test(request):
 
 	template = 'fedtask/task_ui%s_test.html'%c['ui_id']
 	return render_to_response(template, c)
-
 
 def get_parameters(request):
 	current_session = Session.objects.get_session(request)
@@ -162,7 +157,6 @@ def get_parameters(request):
 		'topic_text': topic_text,
 		'run_id': run_id,
 		'ui_id': ui_id,
-		#'docs_json': simplejson.dumps(docs),
 		'docs': docs,
 		'paginator':paginator.page(1), # deliver 1st page
 		'bookmark_count': bookmarks,
@@ -172,26 +166,26 @@ def get_parameters(request):
 	}
 	return c
 
-# This is currently not used. Results are sent when loading the page
 def fetch_results(request):
-	sess_id = Session.objects.get_session(request)
-	if request.is_ajax:
-		data = {}
-        	if request.POST['ajax_event'] == 'fetch_results':
-			topic_id = request.POST['topic_id']
-			run_id = request.POST['run_id']
-			data = Ranklist.objects.get_ranklist(topic_id, run_id, sess_id)	
-		json_data = simplejson.dumps(data)		
-		response = HttpResponse(json_data, mimetype="application/json")
-	else:
-                return render_to_response('errors/403.html')
-        return response
+	current_session = Session.objects.get_session(request)
+	session_id = current_session.session_id
+	topic_id = request.POST['topic_id']
+	run_id = request.POST['run_id']
+	docs = Ranklist.objects.get_ranklist(topic_id, run_id, session_id)	
+	if 'category' in request.POST:
+		cat = request.POST['category'].replace("category_",'')
+		if cat != 'all':
+			category = process_category_info(docs)
+			docs = [docs[i] for i in category[int(cat)+1]['doc_ranks']]
+	json_data = simplejson.dumps(docs)
+	response = HttpResponse(json_data, mimetype="application/json")
+	return response
 
   
 def fetch_document(request):
 	if request.is_ajax:
 		data = {}
-        	if request.POST['ajax_event'] == 'fetch_document':
+		if request.POST['ajax_event'] == 'fetch_document':
 			doc_id = request.POST['doc_id']
 			# Get the document html location
 			html_loc = Document.objects.get_html_location(doc_id)
@@ -213,8 +207,16 @@ def fetch_document(request):
 def process_category_info(docs):
 	cates = [(d[1]['category'], d[0], d[1]['site']) for d in docs]
 	cates.sort(key=operator.itemgetter(0))
-	category = []
 	i = 0
+	all_category = {
+		"name": "All categories",
+		"doc_count": len(docs),
+		"doc_ranks": sorted([d[0] for d in docs]),
+		"description": 'all documents are available', 
+		"id": 'all',
+		"active": 'active',
+	}
+	category = [all_category]
 	for k, g in itertools.groupby(cates, lambda x: x[0]):
 		gg = list(g)
 		desc = ', '.join(sorted(list(set([d[2] for d in gg]))))
@@ -224,6 +226,7 @@ def process_category_info(docs):
 			"doc_ranks": sorted([d[1] for d in gg]),
 			"description": 'Search results from %s'%desc, 
 			"id": i,
+			"active": '',
 		}
 		category.append(item)
 		i += 1
