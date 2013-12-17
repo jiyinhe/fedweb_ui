@@ -321,6 +321,7 @@ function pagination(){
 			docs = cate[1+parseInt(current_active_category.replace('category_',''))]['doc_ranks'];
 		}
 	}
+	$('#n_query_results').html(docs.length);
 	// all future log events wiil have the updated list
 	var state = ILPSLogging.getState();
 	state['results_list'] = docs;
