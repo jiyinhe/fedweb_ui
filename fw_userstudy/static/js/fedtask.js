@@ -27,14 +27,18 @@ $('[rel=tooltip]').tooltip({
 	placement: "auto",
 });
 
-
 load_results(); // also caches the results
 
 bind_resultlist_listeners();
-//When click document title, show document
+// log on close listener
+$("#docModal").on("hidden.bs.modal", function(){
+	var docid = $('#modal_title').html();
+	ILPSLogging.logEvent("doc_close",{"node_id":docid});
+});
 });//document
 
 function bind_resultlist_listeners(){
+	//When click document title, show document
 	$('.doc_title').click(function(){
 		ele_id = $(this).attr('id');
 		doc_click(ele_id);
@@ -55,6 +59,7 @@ function bind_resultlist_listeners(){
 
 // get all results for given topic_id, run_id
 function load_results(){
+		var startRequest = Date.now();
         $.ajax({type: "POST",
                 url: results_url,
                 data: { ajax_event: 'fetch_results',
@@ -63,11 +68,39 @@ function load_results(){
 						page: 1,
                 }
         }).done(function(response) {
+			var responseTime = Date.now() - startRequest;
 			RESULTLIST = create_resultlist(response);
 			for (var i = 0; i < RESULTLIST.length; i++) {
 				ALLRANKS.push(i);
 			}
-			$('#results').html(RESULTLIST.slice(0,PAGESIZE).join('\n'));
+			var page1_snippetlist = RESULTLIST.slice(0,PAGESIZE);
+			$('#results').html(page1_snippetlist.join('\n'));
+
+			// log login
+			var state = ILPSLogging.getState();
+
+			state['current_category']="";
+			if (typeof(current_active_category) != "undefined"){
+				state['current_category']=current_active_category;
+			};
+			state['topic_id']=topic_id;
+			state['run_id']=run_id;
+			state['session_id']=session_id;
+			state['results_list'] = ALLRANKS.slice(0,PAGESIZE);
+			state['study_mode'] = 'test';
+			state['query'] = {'query_string':topic_id,
+							  'current_page_n':CURRENTPAGE,};
+			if (training == true){
+				state['study_mode'] = 'training';
+			}
+			ILPSLogging.setState(state);
+			ILPSLogging.userLogin(username,{
+				'n_total_results':RESULTLIST.length, 
+				'n_displayed_results':ALLRANKS.slice(0,PAGESIZE).length,
+				'query_time_ms':responseTime,
+			},false);
+
+			ILPSLogging.queryResults
 			// create_pagination expects a parameter, so we pass
 			// response, it is just to get the lenght
 			$('#pagination').html(create_pagination(response));
@@ -125,7 +158,9 @@ function create_resultlist(response){
 
 // when a document is clicked, get the html file, set url to "visited"
 function doc_click(ele_id){
+	ILPSLogging.logEvent("doc_view_try",{"node_id":ele_id});	
 	//Request the html file with this docid
+	var startRequest = Date.now();
 	$.ajax({
                 type: "POST",
                 url: document_url,
@@ -134,7 +169,10 @@ function doc_click(ele_id){
 			doc_id: ele_id,
                 }
         }).done(function(response) {
-		$("#doc_content").html(response);
+			var responseTime = Date.now() - startRequest;
+			ILPSLogging.logEvent("doc_view",{"node_id":ele_id,
+									"query_time_ms":responseTime,});	
+			$("#doc_content").html(response);
         });
 
 }
@@ -148,12 +186,16 @@ function doc_bookmark(ele_id){
 		$('#'+ele_id).removeClass('glyphicon-star-empty');
 		$('#'+ele_id).addClass('glyphicon-star');
         selected=1;
+		ILPSLogging.logEvent("bookmark_try",{"node_id":ele_id});	
+//		state = ILPSLogging.getState();
 	}
 	else{
-	        $('#'+ele_id).removeClass('glyphicon-star');
-			$('#'+ele_id).addClass('glyphicon-star-empty');
+		$('#'+ele_id).removeClass('glyphicon-star');
+		$('#'+ele_id).addClass('glyphicon-star-empty');
+		ILPSLogging.logEvent("unbookmark_try",{"node_id":ele_id});	
 	}
 	//send selection to db
+	var startRequest = Date.now();
 	$.ajax({
                 type: "POST",
                 url: bookmark_url,
@@ -165,6 +207,16 @@ function doc_bookmark(ele_id){
                         doc_id: ele_id,
                       }
         }).done(function(response) {
+			var responseTime = Date.now() - startRequest;
+			if (selected == 1){
+				ILPSLogging.logEvent("bookmark",{"node_id":ele_id,
+												"query_time_ms":responseTime,
+												 "response":response});
+			}else{
+				ILPSLogging.logEvent("unbookmark",{"node_id":ele_id,
+												"query_time_ms":responseTime,
+												"response":response});
+			}
 			// get the doc id (remove '_bookmark' from ele_id
 			doc_id = ele_id.substr(0,ele_id.lastIndexOf("_"));
 			// only show feedback when training is true
@@ -210,6 +262,7 @@ function doc_bookmark(ele_id){
 
 function submit_complete_task(){
 	console.log("submit complete task")
+	ILPSLogging.logEvent("done",{});
 	window.location = submit_complete_task_url;
 }
 
@@ -217,7 +270,13 @@ function category_click(ele_id){
 	$('#'+current_active_category).toggleClass('active');
 	//set this category to active
 	$('#'+ele_id).toggleClass('active');
+	// log category click
+	ILPSLogging.logEvent("category_filter",{"node_id": ele_id});
+	// change current category in state
 	current_active_category = ele_id;
+	var state = ILPSLogging.getState();
+	state['current_category'] = ele_id;
+	ILPSLogging.setState(state);
 	pagination();
 }
 
@@ -228,18 +287,31 @@ function update_pagination(ele_id){
 			docs = cate[1+parseInt(current_active_category.replace('category_',''))]['doc_ranks'];
 		}
 	}
-	if (ele_id == 'pagination_first'){CURRENTPAGE = 1;}
+	if (ele_id == 'pagination_first'){
+		ILPSLogging.paginate(1,CURRENTPAGE);
+		CURRENTPAGE = 1;
+		pagination();
+	}
 	if (ele_id == 'pagination_last'){
-		CURRENTPAGE = Math.ceil(docs.length/10);
+		var lastpage = Math.ceil(docs.length/10);
+		ILPSLogging.paginate(lastpage, CURRENTPAGE);
+		CURRENTPAGE = lastpage;
+		pagination();
 	}
 	if (ele_id == 'pagination_prev'){
-		if (CURRENTPAGE > 1){CURRENTPAGE--;}}
-	if (ele_id == 'pagination_next'){
-		if (CURRENTPAGE < Math.ceil(docs.length/10)){
-			CURRENTPAGE++;
+		if (CURRENTPAGE > 1){
+			ILPSLogging.paginate(CURRENTPAGE-1, CURRENTPAGE);
+			CURRENTPAGE--;
+			pagination();
 		}
 	}
-	pagination();
+	if (ele_id == 'pagination_next'){
+		if (CURRENTPAGE < Math.ceil(docs.length/10)){
+			ILPSLogging.paginate(CURRENTPAGE+1, CURRENTPAGE);
+			CURRENTPAGE++;
+			pagination();
+		}
+	}
 }
 
 function pagination(){
@@ -249,6 +321,11 @@ function pagination(){
 			docs = cate[1+parseInt(current_active_category.replace('category_',''))]['doc_ranks'];
 		}
 	}
+	// all future log events wiil have the updated list
+	var state = ILPSLogging.getState();
+	state['results_list'] = docs;
+	ILPSLogging.setState(state);
+
 	var html = [];
 
 	pagination_html = create_pagination(docs);
