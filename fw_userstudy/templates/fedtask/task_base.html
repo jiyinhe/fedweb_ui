@@ -9,7 +9,7 @@
 	var results_url = '{% url fedtask.views.fetch_results %}';
 	var document_url = '{% url fedtask.views.fetch_document %}';
 	var bookmark_url = '{% url fedtask.views.register_bookmark %}';
-	var submit_complete_task_url = '{% url fedtask.submit_complete_task %}';
+	var submit_complete_task_url = '{% url fedtask.views.submit_complete_task %}';
 	var topic_id = {{topic_id}};
 	var run_id = {{run_id}};
 	var username = "{{user.username}}";
