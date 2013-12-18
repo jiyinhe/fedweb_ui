@@ -137,6 +137,7 @@ function create_resultlist(response){
 		// setup templates and fillers for formatting of a result snippet
 		var doc= [
 ['<div id="rank_{0}" class="list-group-item" name="doc-item">',d[0]],
+['<div id="feedback_{0}"></div>', d[1].id],
 ['<div id="result-item_{0}" class="result-item">',d[1].id],
 ['<div id="{0}_title" name="{1}"class="list-group-item-heading">',[d[1].id,d[1].title]],
 ['{0}',bookmark],
