@@ -37,7 +37,7 @@ def index(request):
 	user_id = user.id
 	# If not authenticated, redirect to login
 	if not user.is_authenticated():
-		return redirect('/accounts/login/')	
+		return redirect('%saccounts/login/'%settings.HOME_ROOT)	
 	
 	sess_mngr = Session.objects
 	# get_session() may be 0 if no session is available
@@ -94,27 +94,27 @@ def index(request):
 	# pre questionnaire  progress
 	# once preqst is finished we set the session flag 
 	if not sess.pre_qst_progress:
-		return redirect('/question/pre/')	
+		return redirect('%squestion/pre/'%settings.HOME_ROOT)	
 	
 	# training and training progress, user does 3 training tasks
 	# for now: these are the first X tasks in the experiment task
 	# list. Could make a separate field. Now we use progress as an
 	# index into the task list. (HACKY)
 	if sess.training_progress < REQ_TRAIN_TASKS:
-		return redirect('/study/task-train/')
+		return redirect('%sstudy/task-train/'%settings.HOME_ROOT)
 		
 	# task and task progress, task progress + train progress is an
 	# index in the experiment.exp_tasks list. 
 	if sess.task_progress+sess.training_progress < len(tasks):
-		return redirect('/study/task-work/')
+		return redirect('%sstudy/task-work/'%settings.HOME_ROOT)
 
 	# When all tasks have been done we check whether a post
 	# questionnaire is required
 	if not sess.post_qst_progress:
-		return redirect('/question/post/')
+		return redirect('%squestion/post/'%settings.HOME_ROOT)
 
 	# finally we thank the user for participating
-	return redirect('/question/done/')	
+	return redirect('%squestion/done/'%settings.HOME_ROOT)	
 
 def train(request):
 	user = request.user
