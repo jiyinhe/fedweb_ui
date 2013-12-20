@@ -9,6 +9,7 @@ from fedtask.models import Session
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.context_processors import csrf
 from django.utils import simplejson
+from fw_userstudy import settings
 
 # Register the user, and go to the pre-questionnaire page
 def register_user(request):
@@ -39,7 +40,7 @@ def store_preqst(request):
 	UserProfile.objects.store_profile(request)
 	# update the session, that we finished the prequestionnaire
 	Session.objects.completed_pre_qst(request)
-	return redirect('/')
+	return redirect('%s'%settings.HOME_ROOT)
 
 
 def prequestion(request):

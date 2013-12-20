@@ -14,6 +14,13 @@ framework.
 
 """
 import os
+import sys
+
+
+path = os.path.dirname(os.path.realpath(__file__)).rsplit(os.sep, 1)[0]
+sys.path.insert(0, path)
+
+
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "fw_userstudy.settings")
 

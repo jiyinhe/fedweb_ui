@@ -56,7 +56,7 @@ at any time.</p>
 		</div>
 
 		<div class="col-md-7">
-		<form class="form-horizontal" role="form" id="preqst_form" action="/question/store_preqst/" method="POST">{% csrf_token %}
+		<form class="form-horizontal" role="form" id="preqst_form" action="{% url questionnaire.views.store_preqst %}" method="POST">{% csrf_token %}
 			<label><p><b>I declare that I have read and understood
 			the above and allow the anonimized logs of my activity to be used and
 			shared for research purposes. </b>

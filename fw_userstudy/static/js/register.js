@@ -55,7 +55,6 @@ function register(user, email, pass){
 				$('#errsign_user').removeClass('errsign-valid').addClass('errsign-err');
 			}
 			else{
-				ILPSLogging.loginUser(user);
 				$('#id_username').val(user);
 				$('#id_password').val(pass);
 				$('#loginform').submit();
