@@ -93,8 +93,8 @@ class BrowseCategory:
 		C = sorted(C, key=operator.itemgetter(0, 2))
 		u = Utils()
 		cost, route, step = u.subset_sum_min(C, gain)
-		print cost, step
-		print route
-		for r in route:
-			print self.sublists[r[1]][0:10] 
-
+		#print cost, step
+		#print route
+		#for r in route:
+		#	print self.sublists[r[1]][0:10] 
+		return cost
