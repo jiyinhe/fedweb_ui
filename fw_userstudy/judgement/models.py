@@ -74,60 +74,9 @@ class Site(models.Model):
     	class Meta:
         	db_table = u'site'
 
-class JudgementManager(models.Manager):
-	def save_judgement(self, user_id, result_id, judge_value, judge_type, progress):
-		# global variable
-		levels = {'Nav': 6, 'Key': 5, 'HRel': 4, 'Rel': 3, 'Non': 2, 'Spam': 1};
-
-		# Upate
-		s_count = int(progress[1])
-		p_count = int(progress[2])
-		total = int(progress[0])
-		# If it's already exists, update the value
-		try:
-			judge = self.get(user_id = user_id, result_id = result_id)
-			if judge_type == 'snippet':
-				judge.relevance_snippet = levels[judge_value]
-			elif judge_type == 'page':
-				judge.relevance_doc = levels[judge_value]
-			judge.save()
-
-		# Add new judgement
-		except Judgement.DoesNotExist:
-			if judge_type == 'snippet':
-				s_count += 1
-				rel_s = levels[judge_value]
-				if rel_s < 3:
-					rel_d = rel_s
-				else:
-					rel_d = 0 
-			elif judge_type == 'page':
-				rel_s = 0	
-				rel_d = levels[judge_value]
-			
-			judge = self.create(user_id=user_id, result_id=result_id, \
-				relevance_snippet = rel_s, relevance_doc = rel_d)
-		# Counts
-		current_q = judge.result.qid
-		current_c = judge.result.cid
-		s_count = Judgement.objects.filter(user_id = user_id, result__qid = current_q, result__cid = current_c, relevance_snippet__gt=0).count()
-		p_count = Judgement.objects.filter(user_id = user_id, result__qid = current_q, result__cid = current_c, relevance_doc__gt=0).count()
-		res = {
-			'relevance_doc': judge.relevance_doc,
-			'relevance_snippet': judge.relevance_snippet,
-			's_count': s_count,
-			'p_count': p_count,
-			}	
-		# update user progress
-		if res['s_count'] == total and res['p_count'] == total:
-			# finished, update the progress table
-			p = UserProgress.get(user_id = user_id, crawl_id=judge.result.cid, query_id=judge.result.qid)
-			p.status = 1
-			p.save()
-		return res 
-
 
 class ResultManager(models.Manager):
+	# Deprecated
 	def get_results(self, crawl_id, qid, user_id):
 		crawl_id = int(crawl_id)
 		qid = int(qid)
@@ -219,9 +168,130 @@ class Result(models.Model):
         	db_table = u'result'
 
 
+class JudgementManager(models.Manager):
+	def get_results_to_judge(self, qid, user_id):
+		# find pages retrieved for qid
+		page_ids = [r.page_id for r in Result.objects.filter(qid=qid)]	
+		# get actual pages, order by urls
+		pages = Page.objects.filter(page_id__in=page_ids).order_by('url')
+		# get current judgement for th page	
+		res = [{
+			'id': p.page_id,
+			'title': p.title,
+			'url': p.url,
+			'summary': utils.clean_snippet(p.summary),
+			'location': p.location.split('fedsearch_crawl/')[1],
+			'judge': self.get_judge(qid, user_id, p.page_id)
+
+			} for p in pages]
+		return res
+		
+
+	def get_judge(self, qid, user_id, page_id):
+		# Get judgements, if any
+		jdg = Judgement.objects.filter(user_id = user_id, page = page_id, query = qid).order_by('id')
+
+	        if len(jdg)>0:
+			j = jdg[len(jdg)-1]
+			if len(jdg)>1:
+				jdg.delete()
+			j.save()
+			judge = {'relevance_snippet': j.relevance_snippet, 
+				'relevance_doc': j.relevance_doc,
+				}
+			#if len(jdg)>1:
+			#	#delete everythin except the last one
+			#	for j in jdg[0:len(jdg)-1]:
+			#		j.delete()	
+		else:
+			judge = {'relevance_snippet': 0, 'relevance_doc': 0} 	
+		return judge
+	
+	# changed judgement table: result -> query, page	
+	def save_judgement(self, user_id, qid, page_id, judge_value, judge_type, total_docs):
+		print 'save_judge', qid
+		# global variable
+		levels = {'Nav': 6, 'Key': 5, 'HRel': 4, 'Rel': 3, 'Non': 2, 'Spam': 1};
+
+		# Upate
+		#s_count = int(progress[1])
+		#p_count = int(progress[2])
+		total = int(total_docs)
+		# If it's already exists, update the value
+		#judge = self.get(user_id = user_id, result_id = result_id)
+		judges = self.filter(user_id = user_id, query = qid, page = page_id)
+		if len(judges) == 1:	
+			judge = judges[0]
+			if judge_type == 'snippet':
+				judge.relevance_snippet = levels[judge_value]
+				# If document was not judged and snippet is changed to irrelvant, 
+				# then also change document judge
+				if levels[judge_value]<3 and judge.relevance_doc == 0:
+					#print 'doc:', judge.relevance_doc, levels[judged_value]
+					judge.relevance_doc = levels[judge_value]  
+
+			elif judge_type == 'page':
+				judge.relevance_doc = levels[judge_value]
+			judge.save()
+
+		# Add new judgement
+		#except Judgement.DoesNotExist:
+		else:
+			# whether if it's empty set or larger than one entries, delete it
+			# then insert new one
+			if len(judges)>1:
+				judges.delete()
+			if judge_type == 'snippet':
+				#s_count += 1
+				rel_s = levels[judge_value]
+				if rel_s < 3:
+					rel_d = rel_s
+				else:
+					rel_d = 0 
+			elif judge_type == 'page':
+				rel_s = 0	
+				rel_d = levels[judge_value]
+			
+			#judge = self.create(user_id=user_id, result_id=result_id, \
+			#	relevance_snippet = rel_s, relevance_doc = rel_d)
+			judge = self.create(user_id=user_id, query_id = qid, page_id = page_id, \
+				relevance_snippet = rel_s, relevance_doc = rel_d)
+
+			# Double check after insertion
+			tmp = self.filter(user_id = user_id, query = qid, page = page_id)
+			if len(tmp)>1:
+				t = tmp[len(tmp)-1]
+				tmp.delete()
+				t.save()
+
+		# Counts
+		current_q = judge.query.qid
+		#current_c = judge.result.cid
+
+		s_count = Judgement.objects.filter(user_id = user_id, query = current_q, relevance_snippet__gt=0).count()
+		p_count = Judgement.objects.filter(user_id = user_id, query = current_q, relevance_doc__gt=0).count()
+		res = {
+			'relevance_doc': judge.relevance_doc,
+			'relevance_snippet': judge.relevance_snippet,
+			's_count': s_count,
+			'p_count': p_count,
+			}
+		print s_count, p_count, total	
+		# update user progress
+		if s_count == total and p_count == total:
+			print 'query done', qid, current_q
+			# finished, update the progress table
+			p = UserProgress.objects.get(user_id = user_id, query_id=current_q)
+			p.status = 1
+			p.save()
+		#print s_count, p_count
+		return res 
+
 
 class Judgement(models.Model):
-	result = models.ForeignKey(Result)
+	#result = models.ForeignKey(Result)
+	page = models.ForeignKey(Page)
+	query = models.ForeignKey(Query)
      	relevance_snippet = models.IntegerField()	
     	relevance_doc = models.IntegerField()	
     	user = models.ForeignKey(User)
@@ -232,15 +302,19 @@ class UserProgressManager(models.Manager):
 		# Check if there are unfinished assignment
 		res = self.filter(user_id = user_id, status=0)
 		if len(res)>0:
-			return res[0].query.qid, res[0].crawl.cid
+			print 'assign_task unfinished:', res[0].query.qid 
+			return res[0].query.qid #res[0].crawl.cid
 		else:
 			# If not, find a new task, and register it
 			done = self.filter(user_id=user_id, status=1)
-			done_task = [(d.query.qid, d.crawl.cid) for d in done]
-			done_task.sort(key=operator.itemgetter(0))
+			#done_task = [(d.query.qid, d.crawl.cid) for d in done]
+			done_task = [d.query.qid for d in done]
+			#done_task.sort(key=operator.itemgetter(0))
+			done_task.sort()
 			qid = -1
-			crawl = -1
-			all_crawls = Crawl.objects.get_crawl_ids()			
+			"""
+			#crawl = -1
+			#all_crawls = Crawl.objects.get_crawl_ids()			
 			# Check if certain crawl is not finished
 			for k, g in itertools.groupby(done, lambda x: x[0]):
 				done_crawls = list(g)
@@ -249,25 +323,28 @@ class UserProgressManager(models.Manager):
 					remain_crawls.sort()
 					qid = k
 					crawl = sorted(remain_crawls)[0]
+			"""
 			# If all crawls in these queries are done
 			# find a new query
 			all_querys = [q.qid for q in Query.objects.all()]
-			remain_queries = set(all_querys) - set([d[0] for d in done_task])
+			remain_queries = set(all_querys) - set(done_task)
 			if len(remain_queries) > 0:
 				qid = sorted(list(remain_queries))[0]
-				crawl = 1
+				#crawl = 1
 			if not qid == -1:
 				# Craete a progress profile
-				p = UserProgress(user_id=user_id, crawl_id = crawl, query_id = qid, status=0)
+				#p = UserProgress(user_id=user_id, crawl_id = crawl, query_id = qid, status=0)
+				p = UserProgress(user_id=user_id, query_id = qid, status=0)
 				p.save()
-			return qid, crawl
+			print 'assign_task:', qid
+			return qid #crawl
 	
 		
 
 class UserProgress(models.Model):
 	user = models.ForeignKey(User)
 	query = models.ForeignKey(Query)
-	crawl = models.ForeignKey(Crawl)
+	#crawl = models.ForeignKey(Crawl)
 	status = models.IntegerField()
 	objects = UserProgressManager()
 

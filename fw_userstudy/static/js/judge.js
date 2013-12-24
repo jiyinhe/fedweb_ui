@@ -1,11 +1,13 @@
 $(document).ready(function(){
 	//set the active crawl tab
-	set_active_crawl();
-	$('.crawl_tab').click(function(){
-		console.log($(this).attr('value'));
-		change_crawl($(this).attr('value'));
-	});					
-
+	//set_active_crawl();
+	//$('.crawl_tab').click(function(){
+	//	console.log($(this).attr('value'));
+	//	change_crawl($(this).attr('value'));
+	//});					
+	//load results
+	load_docs();
+	
 	//filter tooltip
 	$('[rel=tooltip]').tooltip({
 		placement: "auto",
@@ -46,12 +48,14 @@ var total_docs = 0;
 var judged_s = 0;
 var judged_p = 0;
 
+// Not used
 function set_active_crawl(){
 	id = '#crawl_li'+current_crawl;
 	$(id).addClass('active');
 	load_docs();
 }
 
+//Not used
 function change_crawl(crawl_id){
 	$('#crawl_li'+current_crawl).removeClass('active');
 	$('#crawl_li'+crawl_id).addClass('active');
@@ -63,7 +67,8 @@ function load_docs(){
 	//first clear all
 	$('#documents').html('')
 	// Then check the crawl and query
-	if (current_crawl == -1 || current_query == -1){
+	//if (current_crawl == -1 || current_query == -1){
+	if (current_query == -1){
 		$('#documents').html('You have completed judging current query and crawl, thank you!');
 	}
 	
@@ -72,7 +77,7 @@ function load_docs(){
                 type: "POST",
                 url: load_results_url,
                 data: {
-			current_crawl: current_crawl,
+			//current_crawl: current_crawl,
 			current_query: current_query,
                       }
         }).done(function(response) {
@@ -81,24 +86,29 @@ function load_docs(){
 	});
 }
 
+//We not judge (page, query) pair, remove rank, crawl, site info
 function show_results(docs){	
+    //When it starts, show the waiting block
     var html = []
     if (docs.length == 0)
 	$('#document').html('No results were crawled.');
 
-    for (var i = 0; i<docs.length; i++){
-	r = docs[i][0]
-	result_html = []
+ //   length = docs.length;
+    length = 10;
+    for (var i = 0; i<length; i++){
+	//r = docs[i][0]
+	r = docs[i];	
+	result_html = [];
 	
 	result_html.push('<div class="list-group-item doc-item" name="doc-item" id="doc-item_'+r['id']+'">');
 	result_html.push('<div id="result-item_'+r['id']+'" class="result-item">');
 
 	result_html.push('<div id="'+r['id']+'_title" name="'+r['title']+'" class="list-group-item-heading">');
-	result_html.push('<span class="label label-info">'+r['site_name']+' #'+r['rank']+'</span>')
+	//result_html.push('<span class="label label-info">'+r['site_name']+' #'+r['rank']+'</span>')
 	result_html.push('<span class="doc_title" id="'+r['id']+'" data-toggle="modal" data-target="#docModal">');
 	result_html.push(r['title']);
 	result_html.push('</span>');
-	result_html.push('<span class="pull-right">#'+(i+1)+'</span>')	
+	result_html.push('<span class="pull-right">pid:#'+r['id']+'</span>')	
 	result_html.push('</div>'); //Group heading
 	result_html.push('<div class="doc_url" id="url_'+r['id']+'" >'+r['url']+'</div>');
 	result_html.push('<div class="judge" id="judge_snippet_'+r['id']+'">'+'</div>');
@@ -135,6 +145,8 @@ function show_results(docs){
    $('#documents').html(html.join('\n'));
    //enable buttons
    $('.btn').button();
+   //set waiting done
+   $('#wait').removeClass('waiting').addClass('waiting-done');
 }
 
 //Create the button for relevance judgement
@@ -168,6 +180,8 @@ function judge_buttons(res_id, rel_type, judge){
 	return html.join('\n')
 }
 
+//set the judgement that has been saved 
+//update button value
 function set_saved_value(result_id, result_type, judge){
 	saved_value = [];
 	if (result_type == 'snippet' && judge['relevance_snippet']>0){
@@ -188,18 +202,26 @@ function set_saved_value(result_id, result_type, judge){
 	return saved_value.join('\n');
 }
 
+//Set the radio button to the one clicked
+function set_clicked_rel(page_id, rel_type, judge){
+	//set all others to inactive, and set the selected one to active
+	for (i in rel_levels){
+		idx = [rel_levels[i], page_id, rel_type].join('_');
+		$('#'+idx).removeClass('active');
+		$('#radio_'+idx).prop('checked', false);
+	}
+	// the clicked one
+	id = rel_levels[6-judge]+'_'+page_id+'_'+rel_type;
+//	console.log(id)
+	$('#'+id).addClass('active');
+	$('#radio_'+id).prop('checked', true);
+}
 
 function rel_click(id){
 	strs = id.split('_');
 	rel = strs[0];
-	//set all others to inactive, and set the selected one to active
-	for (i in rel_levels){
-		idx = [rel_levels[i], strs[1], strs[2]].join('_');
-		$('#'+idx).removeClass('active');
-		$('#radio_'+idx).prop('checked', false);
-	}
-	$('#'+id).addClass('active');
-	$('#radio_'+id).prop('checked', true);
+	page_id = strs[1]
+	judge_type = strs[2]
 
 	//save the click
  	$.ajax({
@@ -207,52 +229,39 @@ function rel_click(id){
                 url: save_judge_url,
                 data: {
 			current_query: current_query,
-			current_crawl: current_crawl,
-			result_id: strs[1],
-			judge_type: strs[2],
-			judge: strs[0],
+			//current_crawl: current_crawl,
+			//result_id: strs[1],
+			page_id: page_id,
+			judge_type: judge_type,
+			judge: rel,
 			total_docs: total_docs,
-			s_count: judged_s,
-			p_count: judged_p,
+			//s_count: judged_s,
+			//p_count: judged_p,
 	}
         }).done(function(response) {
 		//get the progress
 		judged_s = response['s_count'];
 		judged_p = response['p_count'];
+		rel_s = response['relevance_snippet'];
+		rel_p = response['relevance_doc'];
 		//console.log(judged_s+' '+judged_p);
-
-		//show the saved snippet label
-		label_idx = rel_levels.indexOf(strs[0]);
-		saved_value = ['<span class="label label-'+colors[label_idx]+' pull-right save_label">'];
-		saved_value.push(strs[0])
-		saved_value.push('</span>')
+		//update clicked radio button
+		set_clicked_rel(page_id, 'snippet', rel_s);
+		set_clicked_rel(page_id, 'page', rel_p);
 		//show the saved result
-		if (strs[2] == 'snippet'){
+		if (rel_s > 0){
+			label_idx = 6 - rel_s;
+			saved_value = ['<span class="label label-'+colors[label_idx]+' pull-right save_label">'];
+			saved_value.push(rel_levels[label_idx]);
+			saved_value.push('</span>');
 			saved_value.push('<span class="pull-right">Snippet relevance: </span>');
 			$('#save_s_'+strs[1]).html(saved_value.join('\n'));
-			// if snippet is Non or Spam, then by default set doc to Non/spam
-			// so also show the doc judgement
-			if (response['relevance_snippet']<3){
-                		label_idx = 6-response['relevance_doc'];
-                		saved_value[0] = ['<span class="label label-'+colors[label_idx]+' pull-right">'];
-				saved_value[1] = rel_levels[label_idx]; 
-				saved_value[saved_value.length-1] = '<span class="pull-right">Page relevance: </span>';
-				$('#save_p_'+strs[1]).html(saved_value.join('\n'));
-				//also update the button selection
-				//set all others to inactive, and set the selected one to active
-				for (i in rel_levels){
-					idx = [rel_levels[label_idx], strs[1], 'page'].join('_');
-					$('#'+idx).removeClass('active');
-					$('#radio_'+idx).prop('checked', false);
-				}
-				var page_id = id.replace('snippet', 'page');
-				$('#'+page_id).addClass('active');
-				$('#radio_'+page_id).prop('checked', true);
-				//also update progress
-				update_progress_bar('page');	
-			}
 		}
-		else if (strs[2] == 'page'){
+		if (rel_p > 0){
+			label_idx = 6 - rel_p;
+			saved_value = ['<span class="label label-'+colors[label_idx]+' pull-right save_label">'];
+			saved_value.push(rel_levels[label_idx]);
+			saved_value.push('</span>');
 			saved_value.push('<span class="pull-right">Page relevance: </span>');
 			$('#save_p_'+strs[1]).html(saved_value.join('\n'));
 		}

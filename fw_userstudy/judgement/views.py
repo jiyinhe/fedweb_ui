@@ -40,13 +40,14 @@ def judgement(request):
 	return render_to_response(template, c)
 
 def get_parameters(request):
-	crawl_ids = Crawl.objects.get_crawl_ids() 
+	#crawl_ids = Crawl.objects.get_crawl_ids() 
 	# Get a task	
 	current_qid = request.POST.get('query', -1)
 	if current_qid == -1:
-		current_qid, current_crawl = UserProgress.objects.assign_task(request.user.id)  	
-	else:
-		current_crawl = 1
+		#current_qid, current_crawl = UserProgress.objects.assign_task(request.user.id)  	
+		current_qid = UserProgress.objects.assign_task(request.user.id)
+	#else:
+		#current_crawl = 1
 
 	topicnum, topictext = Query.objects.get_query(current_qid) 
 	all_queries = Query.objects.get_all_queries()
@@ -55,8 +56,8 @@ def get_parameters(request):
 		'topic_num': topicnum,
 		'topic_text': topictext,
 		'qid': current_qid,
-		'crawls': crawl_ids,
-		'current_crawl': current_crawl,
+		#'crawls': crawl_ids,
+		#'current_crawl': current_crawl,
 		'current_query': current_qid,
 		'all_queries': all_queries,
 		}
@@ -64,11 +65,12 @@ def get_parameters(request):
 
 def load_results(request):
 	if request.is_ajax:
-		crawl_id = request.POST['current_crawl']
+		#crawl_id = request.POST['current_crawl']
 		qid = request.POST['current_query']
 
 		data = {}
-		data = Result.objects.get_results(crawl_id, qid, request.user.id)
+		#data = Result.objects.get_results(crawl_id, qid, request.user.id)
+		data = Judgement.objects.get_results_to_judge(qid, request.user.id)
 
 		json_data = simplejson.dumps(data)		
 		response = HttpResponse(json_data, mimetype="application/json")
@@ -78,13 +80,17 @@ def load_results(request):
 
 def save_judge(request):
 	if request.is_ajax:
-		result_id = request.POST['result_id']
+		#result_id = request.POST['result_id']
+		qid = request.POST['current_query']
+		page_id = request.POST['page_id']
 		judge_value = request.POST['judge']
 		judge_type = request.POST['judge_type']
-		progress = (request.POST['total_docs'], request.POST['s_count'], request.POST['p_count'])
-		
-		data = Judgement.objects.save_judgement(request.user.id, result_id, judge_value, judge_type, progress)
-		print data
+		#progress = (request.POST['total_docs'], request.POST['s_count'], request.POST['p_count'])
+		total_docs = request.POST['total_docs']
+	
+		#data = Judgement.objects.save_judgement(request.user.id, result_id, judge_value, judge_type, progress)
+		data = Judgement.objects.save_judgement(request.user.id, qid, page_id, judge_value, judge_type, total_docs)
+		#print data
 		json_data = simplejson.dumps(data)		
 		response = HttpResponse(json_data, mimetype="application/json")
 	else:
