@@ -110,8 +110,8 @@ class JudgementManager(models.Manager):
 		# Counts
 		current_q = judge.result.qid
 		current_c = judge.result.cid
-		s_count = Judgement.filter(user_id = user_id, result.qid = current_q, result.cid = current_c, relevance_snippet__lt=0).count()
-		p_count = Judgement.filter(user_id = user_id, result.qid = current_q, result.cid = current_c, relevance_doc__lt=0).count()
+		s_count = Judgement.objects.filter(user_id = user_id, result__qid = current_q, result__cid = current_c, relevance_snippet__gt=0).count()
+		p_count = Judgement.objects.filter(user_id = user_id, result__qid = current_q, result__cid = current_c, relevance_doc__gt=0).count()
 		res = {
 			'relevance_doc': judge.relevance_doc,
 			'relevance_snippet': judge.relevance_snippet,
