@@ -70,7 +70,11 @@ class QueryManager(models.Manager):
 			return res[0].topicnum, res[0].text
 
 	def get_all_queries(self):
-		return [(q.qid, q.topicnum, q.text) for q in self.all()]		
+		if settings.topics == []:
+			return [(q.qid, q.topicnum, q.text) for q in self.all()]		
+		else:
+			qrys = [self.get(qid = q) for q in settings.topics]
+			return [(q.qid, q.topicnum, q.text) for q in qrys]
 
 class Query(models.Model):
     	qid = models.IntegerField(primary_key=True)
