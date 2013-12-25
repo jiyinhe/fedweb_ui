@@ -6,6 +6,7 @@ from whoosh.analysis import FancyAnalyzer
 import utils
 import itertools
 import operator
+from fw_userstudy import settings
 # Create your models here.
 # This is an auto-generated Django model module.
 # You'll have to do the following manually to clean this up:
@@ -37,9 +38,15 @@ class PageManager(models.Manager):
 	def get_html_location(self, page_id):
 		try:
 			doc = self.get(page_id=page_id)
-			return doc.location.split('fedsearch_crawl')[1] 
+			html = 'pages%s'%doc.location.split('pages')[1] 
+			thumb_status = Result.objects.filter(page_id=page_id)[0].thumb_status
+			if thumb_status == 0:
+				img = 'thumb%s'%doc.thumbnail.split('thumb')[1]
+			else:
+				img = None
+			return html, img	
 		except Page.DoesNotExist:
-			return None	
+			return None, None	
 
 
 class Page(models.Model):
@@ -181,16 +188,20 @@ class Result(models.Model):
 class JudgementManager(models.Manager):
 	def get_results_to_judge(self, qid, user_id):
 		# find pages retrieved for qid
-		page_ids = [r.page_id for r in Result.objects.filter(qid=qid)]	
+		pages = [Page.objects.get(page_id = p['page_id']) for p in Result.objects.filter(qid=qid).values('page_id').distinct()]	
+
 		# get actual pages, order by urls
-		pages = Page.objects.filter(page_id__in=page_ids).order_by('url')
+		#pages = [Page.objects.get(page_id = page_id) for page_id in page_ids]
+		pages.sort(key=lambda x: x.url)
+		#pages = Page.objects.filter(page_id__in=page_ids).order_by('url')
 		# get current judgement for th page	
+		#print pages
 		res = [{
 			'id': p.page_id,
 			'title': p.title,
 			'url': p.url,
 			'summary': utils.clean_snippet(p.summary),
-			'location': p.location.split('fedsearch_crawl/')[1],
+			#'location': 'pages/%s'%p.location.split('pages/')[1],
 			'judge': self.get_judge(qid, user_id, p.page_id),
 			} for p in pages]
 		return res
@@ -335,7 +346,10 @@ class UserProgressManager(models.Manager):
 			"""
 			# If all crawls in these queries are done
 			# find a new query
-			all_querys = [q.qid for q in Query.objects.all()]
+			if settings.topics == []:
+				all_querys = [q.qid for q in Query.objects.all()]
+			else:
+				all_querys = settings.topics
 			remain_queries = set(all_querys) - set(done_task)
 			if len(remain_queries) > 0:
 				qid = sorted(list(remain_queries))[0]

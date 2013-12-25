@@ -109,15 +109,20 @@ def fetch_document(request):
 			doc_id = request.POST['doc_id']
 			# Get the document html location
 			#print doc_id
-			html_loc = Page.objects.get_html_location(doc_id)
-			print html_loc
+			html_loc, img_loc = Page.objects.get_html_location(doc_id)
+			#print html_loc
 			if html_loc == None or html_loc == '':
 				data = 'Sorry, this document is not available.'	
 			else:
-				loc = '%s/%s'%(settings.DATA_ROOT, html_loc)
-				f = open(loc)
-				data = utils.clean_html(f.read())
-				f.close()
+				if img_loc == None: 
+					loc = '%s/%s'%(settings.DATA_ROOT, html_loc)
+					f = open(loc)
+					data = utils.clean_html(f.read())
+					f.close()
+				else:
+					loc = '%s/%s'%(settings.DATA_ROOT, img_loc)
+					tmp = '<img href="%s" />'%loc
+					data = tmp
 		json_data = simplejson.dumps(data)		
 		response = HttpResponse(json_data, mimetype="application/json")
 	else:
