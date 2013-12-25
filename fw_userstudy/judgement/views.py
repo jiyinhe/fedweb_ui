@@ -70,7 +70,10 @@ def load_results(request):
 
 		data = {}
 		#data = Result.objects.get_results(crawl_id, qid, request.user.id)
-		data = Judgement.objects.get_results_to_judge(qid, request.user.id)
+		data['docs'] = Judgement.objects.get_results_to_judge(qid, request.user.id)
+		data['judged_s'] = sum([int(d['judge']['relevance_snippet']>0) for d in data['docs']])
+		data['judged_p'] = sum([int(d['judge']['relevance_doc']>0) for d in data['docs']])
+
 
 		json_data = simplejson.dumps(data)		
 		response = HttpResponse(json_data, mimetype="application/json")

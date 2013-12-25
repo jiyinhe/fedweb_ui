@@ -24,8 +24,13 @@
 
 <div class="container">
 <div class="row">
+	<div class="col-md-10" id="wait">
+		<div class="jumbotron">
+		<span> Loading: Please wait ... </span>
+		</div>
+	</div>
 	<div class="col-md-10">
-	<div class="waiting" id="wait"></div>
+		<div class="waiting">
 		<div  id="topic-panel" class="panel panel-primary">
 		<div class="panel-heading">
 			<div class="topic-info">
@@ -65,19 +70,21 @@
 
 		<div class="panel panel-primary" id="results">
 			<!-- we do not separate different crawls -->
-			<!--div class="list-group-item">
-			<ul class="pagination">
-				<li class="disabled"><span>Crawls</span></li>
+			<div class="list-group-item">
+			<!--ul class="pagination">
+				<li class="disabled"><span>Page</span></li>
 				{% for c in crawls %}
   				<li id="crawl_li{{c}}">
 				<span id="crawl_tab{{c}}" class="crawl_tab" value="{{c}}">{{c}}
 				</span>
 				</li>
 				{% endfor %}
-			</ul>
-			</div-->
+			</ul-->
+			<div class="pagination" id="pagination"></div>
+			</div>
 			<div id="documents"></div>
 
+		</div>
 		</div>
 	</div>
 	<div class="col-md-2">

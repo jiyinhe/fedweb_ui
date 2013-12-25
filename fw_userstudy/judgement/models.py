@@ -181,8 +181,7 @@ class JudgementManager(models.Manager):
 			'url': p.url,
 			'summary': utils.clean_snippet(p.summary),
 			'location': p.location.split('fedsearch_crawl/')[1],
-			'judge': self.get_judge(qid, user_id, p.page_id)
-
+			'judge': self.get_judge(qid, user_id, p.page_id),
 			} for p in pages]
 		return res
 		
