@@ -34,7 +34,15 @@ $(document).ready(function(){
 		change_query($(this));
 	});
 
-	
+	//When click document title, show document
+	$('.doc_title').click(function(){
+		ele_id = $(this).attr('id');
+		doc_click(ele_id);
+		//set the modal title
+		title = $('#'+ele_id+'_title').attr('name');
+		$('#modal_title').html(title);
+	});
+
 });
 
 // adjust the category area length
@@ -365,6 +373,23 @@ function change_query(query_item){
 	$('#query_select').attr('value', qid);
 	//submit the form to the same url
 	$('#query').submit();
+}
+
+// when a document is clicked, get the html file, set url to "visited"
+function doc_click(ele_id){
+	console.log(ele_id);
+	//Request the html file with this docid
+	$.ajax({
+                type: "POST",
+                url: document_url,
+                data: {
+                        ajax_event: 'fetch_document',
+			doc_id: ele_id,
+                }
+        }).done(function(response) {
+		console.log(response);
+		$("#doc_content").html(response);
+        });
 }
 
 

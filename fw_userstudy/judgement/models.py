@@ -32,6 +32,15 @@ class Crawl(models.Model):
     	class Meta:
         	db_table = u'crawl'
 
+class PageManager(models.Manager):
+	# get the html location of the document
+	def get_html_location(self, doc_id):
+		try:
+			doc = self.get(doc_id=doc_id)
+			return doc.location.split('fedsearch_crawl')[1] 
+		except Document.DoesNotExist:
+			return None	
+
 
 class Page(models.Model):
     	title = models.CharField(max_length=1500, blank=True)
@@ -41,6 +50,7 @@ class Page(models.Model):
     	page_id = models.IntegerField(primary_key=True)
     	thumbnail = models.CharField(max_length=1500, blank=True)
     	md5 = models.CharField(max_length=96, blank=True)
+	objects = PageManager()
     	class Meta:
         	db_table = u'page'
 

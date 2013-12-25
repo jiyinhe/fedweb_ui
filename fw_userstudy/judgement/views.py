@@ -100,4 +100,26 @@ def save_judge(request):
 		return render_to_response('errors/403.html')
 	return response
 
-	
+
+def fetch_document(request):
+	if request.is_ajax:
+		data = {}
+        	if request.POST['ajax_event'] == 'fetch_document':
+			doc_id = request.POST['doc_id']
+			# Get the document html location
+			#print doc_id
+			html_loc = Page.objects.get_html_location(doc_id)
+			if html_loc == None or html_loc == '':
+				data = 'Sorry, this document is not available.'	
+			else:
+				loc = '%s/FW13-topics-docs/%s'%(settings.DATA_ROOT, html_loc)
+				f = open(loc)
+				data = clean_html(f.read())
+				f.close()
+		json_data = simplejson.dumps(data)		
+		response = HttpResponse(json_data, mimetype="application/json")
+	else:
+                return render_to_response('errors/403.html')
+        return response
+
+
