@@ -314,6 +314,7 @@ function rel_click(id){
 			saved_value.push('</span>');
 			saved_value.push('<span class="pull-right">Snippet relevance: </span>');
 			$('#save_s_'+strs[1]).html(saved_value.join('\n'));
+			update_progress_bar('snippet');
 		}
 		if (rel_p > 0){
 			label_idx = 6 - rel_p;
@@ -322,8 +323,8 @@ function rel_click(id){
 			saved_value.push('</span>');
 			saved_value.push('<span class="pull-right">Page relevance: </span>');
 			$('#save_p_'+strs[1]).html(saved_value.join('\n'));
+			update_progress_bar('page');
 		}
-		update_progress_bar(strs[2]);
         });
 
 }
