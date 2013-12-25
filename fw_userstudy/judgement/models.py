@@ -306,6 +306,15 @@ class JudgementManager(models.Manager):
 			'p_count': p_count,
 			}
 		print s_count, p_count, total	
+
+		# Also if it's not in the user progress, need to create one
+		try:
+			UserProgress.objects.get(user_id = user_id, query_id = current_q)
+
+		except 	UserProgress.DoesNotExist:
+			p = UserProgress(user_id=user_id, query_id = qid, status=0)
+			p.save()
+
 		# update user progress
 		if s_count == total and p_count == total:
 			print 'query done', qid, current_q
@@ -313,6 +322,8 @@ class JudgementManager(models.Manager):
 			p = UserProgress.objects.get(user_id = user_id, query_id=current_q)
 			p.status = 1
 			p.save()
+
+		
 		#print s_count, p_count
 		return res 
 
