@@ -192,7 +192,12 @@ class Result(models.Model):
 class JudgementManager(models.Manager):
 	def get_results_to_judge(self, qid, user_id):
 		# find pages retrieved for qid
-		pages = [Page.objects.get(page_id = p['page_id']) for p in Result.objects.filter(qid=qid).values('page_id').distinct()]	
+		# get results from crawls > 0 
+		res = [r['page_id'] for r in Result.objects.filter(qid=qid, cid__gt=0).values('page_id').distinct()]
+		# get page_ids that didn't occur in crawl 0 
+		res_c0 = [r['page_id'] for r in Result.objects.filter(qid=qid, cid=0).values('page_id').distinct()]
+		X = set(res)-set(res_c0)
+		pages = [Page.objects.get(page_id = p) for p in X]	
 
 		# get actual pages, order by urls
 		#pages = [Page.objects.get(page_id = page_id) for page_id in page_ids]
