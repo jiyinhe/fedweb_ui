@@ -34,14 +34,6 @@ $(document).ready(function(){
 		change_query($(this));
 	});
 
-	//When click document title, show document
-	$('.doc_title').click(function(){
-		ele_id = $(this).attr('id');
-		doc_click(ele_id);
-		//set the modal title
-		title = $('#'+ele_id+'_title').attr('name');
-		$('#modal_title').html(title);
-	});
 
 });
 
@@ -61,6 +53,19 @@ var judged_p = 0;
 var all_docs = [];
 var docs_per_page = 100; 
 var current_page = 1;
+
+function bind_result_listener(){
+	//When click document title, show document
+	$('.doc_title').click(function(){
+		ele_id = $(this).attr('id');
+		doc_click(ele_id);
+		//set the modal title
+		title = $('#'+ele_id+'_title').attr('name');
+		$('#modal_title').html(title);
+	});
+
+}
+
 
 function create_pagination(){
 	var num_pages = Math.ceil(all_docs.length/docs_per_page);
@@ -200,7 +205,7 @@ function show_results(){
    //set waiting done
    $('#wait').addClass('waiting-done');
    $('.waiting').removeClass('waiting');
-   //set progress bar
+   bind_result_listener();
 }
 
 //Create the button for relevance judgement

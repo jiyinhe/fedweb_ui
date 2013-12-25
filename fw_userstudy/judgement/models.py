@@ -34,11 +34,11 @@ class Crawl(models.Model):
 
 class PageManager(models.Manager):
 	# get the html location of the document
-	def get_html_location(self, doc_id):
+	def get_html_location(self, page_id):
 		try:
-			doc = self.get(doc_id=doc_id)
+			doc = self.get(page_id=page_id)
 			return doc.location.split('fedsearch_crawl')[1] 
-		except Document.DoesNotExist:
+		except Page.DoesNotExist:
 			return None	
 
 

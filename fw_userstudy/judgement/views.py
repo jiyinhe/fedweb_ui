@@ -109,10 +109,11 @@ def fetch_document(request):
 			# Get the document html location
 			#print doc_id
 			html_loc = Page.objects.get_html_location(doc_id)
+			print html_loc
 			if html_loc == None or html_loc == '':
 				data = 'Sorry, this document is not available.'	
 			else:
-				loc = '%s/FW13-topics-docs/%s'%(settings.DATA_ROOT, html_loc)
+				loc = '%s/%s'%(settings.DATA_ROOT, html_loc)
 				f = open(loc)
 				data = clean_html(f.read())
 				f.close()
