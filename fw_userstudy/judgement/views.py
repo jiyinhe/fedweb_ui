@@ -15,7 +15,8 @@ import re
 import itertools
 import operator
 import simplejson
-import pdb;
+import pdb
+import utils
 
 
 # This is the single entry point after user login
@@ -115,7 +116,7 @@ def fetch_document(request):
 			else:
 				loc = '%s/%s'%(settings.DATA_ROOT, html_loc)
 				f = open(loc)
-				data = clean_html(f.read())
+				data = utils.clean_html(f.read())
 				f.close()
 		json_data = simplejson.dumps(data)		
 		response = HttpResponse(json_data, mimetype="application/json")
