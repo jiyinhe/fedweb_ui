@@ -294,9 +294,11 @@ class JudgementManager(models.Manager):
 			# Double check after insertion
 			tmp = self.filter(user_id = user_id, query = qid, page = page_id)
 			if len(tmp)>1:
-				t = tmp[len(tmp)-1]
-				tmp.delete()
-				t.save()
+				for t in tmp[1:]:
+					t.delete()
+				#t = tmp[len(tmp)-1]
+				#tmp.delete()
+				#t.save()
 
 		# Counts
 		current_q = judge.query.qid
