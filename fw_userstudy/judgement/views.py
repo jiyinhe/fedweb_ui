@@ -75,7 +75,6 @@ def load_results(request):
 		data['judged_s'] = sum([int(d['judge']['relevance_snippet']>0) for d in data['docs']])
 		data['judged_p'] = sum([int(d['judge']['relevance_doc']>0) for d in data['docs']])
 
-
 		json_data = simplejson.dumps(data)		
 		response = HttpResponse(json_data, mimetype="application/json")
 	else:
@@ -142,4 +141,15 @@ def duplicate_submit(request):
                 return render_to_response('errors/403.html')
         return response
 
+def duplicate_delete(request):
+	if request.is_ajax:
+		data = {}
+		dup_id = request.POST['dup_id']
+		source_id = request.POST['source_id']
+		data = Duplicate.objects.delete_dup(dup_id, source_id, request.user.id)	
+		json_data = simplejson.dumps(data)		
+		response = HttpResponse(json_data, mimetype="application/json")
+	else:
+                return render_to_response('errors/403.html')
+        return response
 

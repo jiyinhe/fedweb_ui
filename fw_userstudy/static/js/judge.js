@@ -189,7 +189,7 @@ function show_results(){
 	result_html.push('<div class="alert alert-danger space5">');
 	//area to show the saved duplicate judgement
 	result_html.push('<span class="pull-right" id="save_dup_'+r['id']+'">');
-	result_html.push('Duplicate source: '+r['source']);
+	result_html.push('Duplicate source: <span class="badge">'+r['dup_source']+'</span>');
 	result_html.push('</span>');
 	//the input area
 	result_html.push('<div class="form-inline">');
@@ -198,6 +198,8 @@ function show_results(){
     	result_html.push('<input type="text" class="form-control" id="dup_input_'+r['id']+'" placeholder="Enter source pid" />');
   	result_html.push('</div>');
   	result_html.push('<button type="submit" id="dup_btn_'+r['id']+'"class="btn btn-danger btn-sm" onclick=dup_click(id)>Submit </button>');
+	result_html.push('<button type="submit" id="dup_btn_'+r['id']+'"class="btn btn-primary btn-sm" onclick=dup_delete(id)>Delate Duplicate</button>');
+	
 	result_html.push('</div>');
 	result_html.push('</div>');
 
@@ -430,17 +432,52 @@ function dup_click(id){
 	var result_id = id.split('_')[2];
 	var source_id = $('#dup_input_'+result_id).val();
 	if (source_id == '')
-		source_id = '-1';
+		return 0
 	// submit result
 	$.ajax({
                 type: "POST",
                 url: duplicate_submit_url,
                 data: {
 			dup_id: result_id,
-			source_id: source_id
+			source_id: source_id,
+			current_query: current_query,
                 }
         }).done(function(response) {
-		console.log(response);
+		var dup_source = response;
+		// update the labels of duplications
+		for (var i = 0; i<dup_source.length; i++){
+			update_saved_dupsource(dup_source[i][0], dup_source[i][1]);
+		}	
+
         });
 }
+
+function dup_delete(id){
+	var result_id = id.split('_')[2];
+        var source_id = $('#dup_input_'+result_id).val();
+	if (source_id == '')
+		return 0 
+        // submit result
+        $.ajax({
+                type: "POST",
+                url: duplicate_delete_url,
+                data: {
+                        dup_id: result_id,
+                        source_id: source_id
+                }
+        }).done(function(response) {
+                var dup_source = response;
+		// update the labels of duplications
+		for (var i = 0; i<dup_source.length; i++){
+			update_saved_dupsource(dup_source[i][0], dup_source[i][1]);
+		}	
+        });
+		
+}
+
+function update_saved_dupsource(page_id, source_id){
+	$('#save_dup_'+page_id).html('Duplicate source: <span class="badge">'+source_id+'</span>');
+	$('#save_dup_'+source_id).html('Duplicate source: <span class="badge"> Source </span>');
+}
+
 

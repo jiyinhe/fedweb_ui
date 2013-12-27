@@ -216,6 +216,7 @@ class JudgementManager(models.Manager):
 			'summary': utils.clean_snippet(p.summary),
 			#'location': 'pages/%s'%p.location.split('pages/')[1],
 			'judge': self.get_judge(qid, user_id, p.page_id),
+			'dup_source': Duplicate.objects.get_source_id(p.page_id, user_id),
 			} for p in pages]
 		return res
 		
@@ -399,11 +400,7 @@ class UserProgress(models.Model):
 class DuplicateManager(models.Manager):
 
 	def register_dup(self, dup_id, source_id, user_id):
-		#print dup_id, source_id, user_id
-		if source_id == "-1":
-			#print "empty source"
-			saved_dup = self.dup_with_empty_source(dup_id, source_id, user_id)
-			return saved_dup
+		print 'register dup'
 		if dup_id == source_id:
 			return [(dup_id, -1)]
 		# make the smaller one as source
@@ -452,29 +449,42 @@ class DuplicateManager(models.Manager):
 				new_entry = Duplicate(user_id=user_id, dup=dup, source=source)
 				new_entry.save()
 				saved_dup.append((new_entry.dup, new_entry.source))	
+
 		return saved_dup
 
-	def dup_with_empty_source(self, dup_id, source_id, user_id):
-		# If the entry is empty, the dup needs to be reset
+	def delete_dup(self, dup_id, source_id, user_id):
 		# Check if dup already exist
 		# print "empty source"
 		dup_id = int(dup_id)
 		source_id = int(source_id)
-		saved_dup = [(dup_id, -1)] 	
+		dup = max(dup_id, source_id)
+		source = min(dup_id, source_id)
+		saved_dup = [] 	
 		try:	
-			d = self.get(user_id=user_id, dup=dup_id)
 			# If exists, remove that item
+			d = self.get(user_id=user_id, dup=dup, source=source)
 			d.delete()
-			# Also remove its label if exists 
+			# check if source is still source
+			s = self.filter(user_id=user_id, source=source)
+			if len(s)>0:
+				saved_dup = [(dup, '')]
+			else:
+				saved_dup = [(dup, ''), (source, '')]
 			return saved_dup
-		except Duplicate.DoesNotExist:
-			# If dup doesn't exist, then do nothing
-			return saved_dup   	
 
-	def process_dup_label(self, dup_id, source_id, qid, user_id):
-		# check if dup or source has label alredy 
+		except Duplicate.DoesNotExist:
+			return saved_dup
  
-		pass	
+	def get_source_id(self, dup_id, user_id):
+		try:
+			source_id = self.get(dup=dup_id, user_id=user_id).source
+			return source_id
+		except Duplicate.DoesNotExist:
+			source_id = self.filter(user_id=user_id, source=dup_id)
+			if len(source_id)>0:
+				return 'Source'
+			else:
+				return '' 
 
 # automatically detected and manually detected duplicate pages
 class Duplicate(models.Model):
