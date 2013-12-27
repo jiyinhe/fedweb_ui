@@ -1,5 +1,5 @@
 """
-This script prepare the data needed in the 
+This script prepare the data needed in the user study
 experiment. We use the TREC FedWeb13 data.
 Includes:
  - Topic

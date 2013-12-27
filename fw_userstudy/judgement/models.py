@@ -194,9 +194,13 @@ class JudgementManager(models.Manager):
 		# find pages retrieved for qid
 		# get results from crawls > 0 
 		res = [r['page_id'] for r in Result.objects.filter(qid=qid, cid__gt=0).values('page_id').distinct()]
-		# get page_ids that didn't occur in crawl 0 
-		res_c0 = [r['page_id'] for r in Result.objects.filter(qid=qid, cid=0).values('page_id').distinct()]
+		# filter page_ids that didn't occur in crawl 0 
+		res_c0 = [r['page_id'] for r in Result.objects.filter(qid=qid, cid=0).values('page_id').distinct()]		
 		X = set(res)-set(res_c0)
+
+		# filter page_ids that occur in the duplication table with user_id 0
+		X = set([Duplicate.objects.get_source_id(p, 0) for p in X])
+
 		pages = [Page.objects.get(page_id = p) for p in X]	
 
 		# get actual pages, order by urls
@@ -391,7 +395,23 @@ class UserProgress(models.Model):
 	status = models.IntegerField()
 	objects = UserProgressManager()
 
-	
+
+class DuplicateManager(models.Manager):
+	def get_source_id(self, page_id, user_id):
+		try:
+			return self.get(dup = page_id, user_id = user_id).source
+		except Duplicate.DoesNotExist:
+			return page_id
+
+# automatically detected and manually detected duplicate pages
+class Duplicate(models.Model):
+	dup = models.IntegerField(primary_key=True)
+	source = models.IntegerField()
+	# 0: automatically detected, Others are associated other user_ids 
+	user_id = models.IntegerField()
+	#url = models.TextField() 
+	#source_url = models.TextField()
+	objects = DuplicateManager()
 
 
 
