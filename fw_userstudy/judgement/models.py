@@ -199,13 +199,13 @@ class JudgementManager(models.Manager):
 		X = set(res)-set(res_c0)
 
 		# filter page_ids that occur in the duplication table with user_id 0
-		X = set([Duplicate.objects.get_source_id(p, 0) for p in X])
+		X = set([DuplicateAuto.objects.get_source_id(p) for p in X])
 
 		pages = [Page.objects.get(page_id = p) for p in X]	
 
 		# get actual pages, order by urls
 		#pages = [Page.objects.get(page_id = page_id) for page_id in page_ids]
-		pages.sort(key=lambda x: x.url)
+		pages.sort(key=(lambda x: (x.url, x.page_id)))
 		#pages = Page.objects.filter(page_id__in=page_ids).order_by('url')
 		# get current judgement for th page	
 		#print pages
@@ -397,15 +397,88 @@ class UserProgress(models.Model):
 
 
 class DuplicateManager(models.Manager):
-	def get_source_id(self, page_id, user_id):
+
+	def register_dup(self, dup_id, source_id, user_id):
+		#print dup_id, source_id, user_id
+		if source_id == "-1":
+			#print "empty source"
+			saved_dup = self.dup_with_empty_source(dup_id, source_id, user_id)
+			return saved_dup
+		if dup_id == source_id:
+			return [(dup_id, -1)]
+		# make the smaller one as source
+		dup =  max(int(dup_id), int(source_id))
+		source = min(int(dup_id), int(source_id)) 		
+		saved_dup = []
 		try:
-			return self.get(dup = page_id, user_id = user_id).source
+			# Check if the dup_id already exist, either for this user
+			# or with user 0, Note: it can not exist twice among these
+			d = self.get(user_id=user_id, dup = dup)
+			# if exist, compare the source, always save the smallest source
+			# If current source is smaller, then update everything point
+			# to original source to current source
+			if source < d.source:
+				# create a new entry for the original source, pointing to current source 
+				new_entry = Duplicate(user_id = user_id, dup = s.source, source=source)	
+				new_entry.save()
+				saved_dup.append((new_entry.dup, new_entry.source))
+				# Find all dups of the original entry, change it to current source
+				dset = self.filter(user_id = user_id, source=d.source).update(source=source)	
+				saved_dup.extend([(dd.dup, dd.source) for dd in dset])
+				# change the source of the original dup to current source 	
+				d.source = source
+				d.save()
+				saved_dup.append((d.dup, d.source)) 
+			# If current source is larger, pointing current source to original source
+			elif source > d.source:
+				new_entry = Duplicate(user_id = user_id, dup = source, source=d.source)
+				new_entry.save()
+				saved_dup.append((new_entry.dup, new_entry.source))
+			# If it's equal, then it's a repeated submission, do nothing
 		except Duplicate.DoesNotExist:
-			return page_id
+			# If the dup does not exist yet
+			# find if the source is a dup in the db
+			d = self.filter(user_id=user_id, dup=source)	
+			if len(d)>1:
+				print 'Error: multilpe entries with the same dup id'	
+			elif len(d) == 1:
+				# if source is dup in the db, add the new entry for the original source
+				new_entry = Duplicate(user_id=user_id, dup=dup, source=d[0].source)		
+				new_entry.save()
+				saved_dup.append((new_entry.dup, new_entry.source))
+			else:
+				# if source is not a dup, then either it's an original source
+				# or neither a dup nor a source, then add this entry
+				new_entry = Duplicate(user_id=user_id, dup=dup, source=source)
+				new_entry.save()
+				saved_dup.append((new_entry.dup, new_entry.source))	
+		return saved_dup
+
+	def dup_with_empty_source(self, dup_id, source_id, user_id):
+		# If the entry is empty, the dup needs to be reset
+		# Check if dup already exist
+		# print "empty source"
+		dup_id = int(dup_id)
+		source_id = int(source_id)
+		saved_dup = [(dup_id, -1)] 	
+		try:	
+			d = self.get(user_id=user_id, dup=dup_id)
+			# If exists, remove that item
+			d.delete()
+			# Also remove its label if exists 
+			return saved_dup
+		except Duplicate.DoesNotExist:
+			# If dup doesn't exist, then do nothing
+			return saved_dup   	
+
+	def process_dup_label(self, dup_id, source_id, qid, user_id):
+		# check if dup or source has label alredy 
+ 
+		pass	
 
 # automatically detected and manually detected duplicate pages
 class Duplicate(models.Model):
-	dup = models.IntegerField(primary_key=True)
+	dup = models.IntegerField()
 	source = models.IntegerField()
 	# 0: automatically detected, Others are associated other user_ids 
 	user_id = models.IntegerField()
@@ -414,6 +487,17 @@ class Duplicate(models.Model):
 	objects = DuplicateManager()
 
 
+class DuplicateAutoManager(models.Manager):
+	def get_source_id(self, page_id):
+		try:
+			return self.get(dup = page_id).source
+		except DuplicateAuto.DoesNotExist:
+			return page_id
+
+class DuplicateAuto(models.Model):
+	dup = models.IntegerField(primary_key=True)
+	source = models.IntegerField()
+	objects = DuplicateAutoManager()
 
 	
 	

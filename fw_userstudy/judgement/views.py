@@ -2,7 +2,7 @@
 from django.shortcuts import render_to_response, get_object_or_404, redirect 
 from django.contrib.auth.models import User
 from questionnaire.models import UserProfile
-from judgement.models import Page, Result, Judgement, Query, Crawl, UserProgress
+from judgement.models import Page, Result, Judgement, Query, Crawl, UserProgress, Duplicate
 from django.http import HttpResponseRedirect, HttpResponse, HttpRequest
 from django.core.context_processors import csrf
 from django.utils import simplejson
@@ -123,6 +123,19 @@ def fetch_document(request):
 					loc = '%s/%s'%(settings.DATA_ROOT, img_loc)
 					tmp = '<img href="%s" />'%loc
 					data = tmp
+		json_data = simplejson.dumps(data)		
+		response = HttpResponse(json_data, mimetype="application/json")
+	else:
+                return render_to_response('errors/403.html')
+        return response
+
+def duplicate_submit(request):
+	if request.is_ajax:
+		data = {}
+		dup_id = request.POST['dup_id']
+		source_id = request.POST['source_id']
+		data = Duplicate.objects.register_dup(dup_id, source_id, request.user.id)
+		
 		json_data = simplejson.dumps(data)		
 		response = HttpResponse(json_data, mimetype="application/json")
 	else:

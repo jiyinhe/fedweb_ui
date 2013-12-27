@@ -16,7 +16,7 @@ $(document).ready(function(){
 	//to filter snippets
 	$('#hide_nonrel').click(function(){
 		//change the button label
-		console.log($(this).text())
+		//console.log($(this).text())
 		if ($(this).text().trim() == 'Filter snippets'){
 			filter_snippets();
 			$(this).text('un-Filter snippets');
@@ -156,26 +156,54 @@ function show_results(){
 	//r = docs[i][0]
 	r = all_docs[i];	
 	result_html = [];
-	
+	// Outer div for a doc	
 	result_html.push('<div class="list-group-item doc-item" name="doc-item" id="doc-item_'+r['id']+'">');
+	// Outer div for showing a result
 	result_html.push('<div id="result-item_'+r['id']+'" class="result-item">');
-
+	// div for doc title
 	result_html.push('<div id="'+r['id']+'_title" name="'+r['title']+'" class="list-group-item-heading">');
 	//result_html.push('<span class="label label-info">'+r['site_name']+' #'+r['rank']+'</span>')
+	// bind doc title to its content
 	result_html.push('<span class="doc_title" id="'+r['id']+'" data-toggle="modal" data-target="#docModal">');
 	result_html.push(r['title']);
 	result_html.push('</span>');
-	result_html.push('<span class="pull-right">#'+(i+1)+' pid-'+r['id']+'</span>')	
+	// showing the page_id, and a conter of number of docs shown so far
+	result_html.push('<span class="pull-right">');
+	//the duplication bar for the result
+	pid='#'+(i+1)+' pid-'+r['id'];
+	result_html.push(pid);
+	result_html.push('</span>');
+
 	result_html.push('</div>'); //Group heading
+	// doc url	
 	result_html.push('<div class="doc_url" id="url_'+r['id']+'" >'+r['url']+'</div>');
+	// ?? 
 	result_html.push('<div class="judge" id="judge_snippet_'+r['id']+'">'+'</div>');
+	// summary 
 	result_html.push('<div class="list-group-item-text" id="summary_'+r['id']+'">');
 	result_html.push(r['summary']);
 	result_html.push('</div>');//Group-item-text
 	result_html.push('</div>');//result-item
 
+	//the duplication bar for the result
+	result_html.push('<div class="alert alert-danger space5">');
+	//area to show the saved duplicate judgement
+	result_html.push('<span class="pull-right" id="save_dup_'+r['id']+'">');
+	result_html.push('Duplicate source: '+r['source']);
+	result_html.push('</span>');
+	//the input area
+	result_html.push('<div class="form-inline">');
+	result_html.push('<span>Duplicate of</span>')
+  	result_html.push('<div class="form-group">');
+    	result_html.push('<input type="text" class="form-control" id="dup_input_'+r['id']+'" placeholder="Enter source pid" />');
+  	result_html.push('</div>');
+  	result_html.push('<button type="submit" id="dup_btn_'+r['id']+'"class="btn btn-danger btn-sm" onclick=dup_click(id)>Submit </button>');
+	result_html.push('</div>');
+	result_html.push('</div>');
+
 	//the judgement bar for snippets
 	result_html.push('<div class="alert alert-warning space5">');
+	//area to show saved relevance judgement
 	result_html.push('<span class="pull-right save_s" id="save_s_'+r['id']+'">');
 	//set the saved value label
 	saved_label = set_saved_value(r['id'], 'snippet', r['judge']);
@@ -393,9 +421,26 @@ function doc_click(ele_id){
 			doc_id: ele_id,
                 }
         }).done(function(response) {
-		console.log(response);
+	//	console.log(response);
 		$("#doc_content").html(response);
         });
 }
 
+function dup_click(id){
+	var result_id = id.split('_')[2];
+	var source_id = $('#dup_input_'+result_id).val();
+	if (source_id == '')
+		source_id = '-1';
+	// submit result
+	$.ajax({
+                type: "POST",
+                url: duplicate_submit_url,
+                data: {
+			dup_id: result_id,
+			source_id: source_id
+                }
+        }).done(function(response) {
+		console.log(response);
+        });
+}
 
