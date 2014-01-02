@@ -21,58 +21,11 @@ def load_categories(catefile):
 	categories = [(d[0], d[3]) for d in content]
 	return dict(categories)	
 		
-def simulate_category_ui(judged_list, run, categories):
-	unique_cate = list(set([categories[c] for c in categories]))
-	run = dict(run)
-	for q in sorted(judged_list.keys()):
-		sites = [d[0].split('-')[1] for d in run[q]]
-		cate = [(i, categories[sites[i]]) for i in range(len(sites))] 
-		cate.sort(key=operator.itemgetter(1))
-		sublists = []
-		judge = judged_list[q]
-		# make it binary
-		judge = [int(j>0) for j in judge]	
-		if sum(judge) == 0:
-			continue
-		#if sum(judge)>300:
-		#	continue
-		for c in unique_cate:
-			sublist = list(itertools.ifilter(lambda x: x[1]==c, cate))
-			#print sublist
-			# Get judge for sublist
-			jsub = [judge[s[0]] for s in sublist]	
-			sublists.append(jsub)
-			
-		#print q, sum(judge)
-		bc = BrowseCategory(sublists)
-		cost = bc.min_effort(gain)
-		print q, '\t', cost
-
-def simulate_basic_ui(judged_list):
-	res = []
-	for q in sorted(judged_list.keys()):
-		qlist = judged_list[q] 
-		# Use binary judge
-		qlist = [int(x>0) for x in qlist]	
-		# An unjudged query
-		if sum(qlist) == 0:
-			continue
-		bb = BrowseBasic(qlist)
-		cost = bb.min_effort(gain)
-		res.append((q, cost))
-		print q, '\t', cost
-	return dict(res)
-
 
 if __name__ == '__main__':
 	run = trec_util.load_TREC_run(runfile)		
 	qrels = trec_util.load_qrels(qrelsfile)
 	judged_list = trec_util.judged_ranklist(run, qrels)
-	basic = simulate_basic_ui(judged_list)
-
-	# run simulation for the advanced interface
-	#categories = load_categories(categoryfile)
-	#cate = simulate_category_ui(judged_list, run, categories)
 	
 	
 
