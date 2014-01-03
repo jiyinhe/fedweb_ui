@@ -41,11 +41,14 @@ class FilterModel:
 	
 	""" choose based on prior """
 	def sample_list(self):
+		print self.prior
 		# fist check if some of the list has been exhausted
 		prior = []
 		for p in self.prior:
-			if not p[1] >= len(resultlist[p[2]]):
+			if not p[1] >= len(self.resultlist[p[2]])-1:
 				prior.append((p[0], p[2]))
+		if prior == []:
+			return -1
 		# hyperparameter
 		alpha = [p[0] for p in prior]
 		# We need to draw sample from a categorical distribution  
