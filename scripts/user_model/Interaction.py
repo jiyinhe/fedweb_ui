@@ -54,18 +54,25 @@ class Interaction:
 			# Now we are at a list, check if next doc has been seen already, if so, skip it
 			if self.doc_is_seen():			
 				continue
+
 			# Now we are at a new doc, decide if examine another document
-			if self.examine_next():  	
-				# If the doc is in a next page, first add pagination
-				if self.current_list[1]%self.page_size == 0:
-					self.action_list.append('pagination')
-				# Then add the examine action
-				self.examine_doc()
-				self.action_list.append('examine')
-			else:
-				# Otherwise do filtering  
-				self.choose_list()
+			if not self.examine_next():
+				# If not, first do filtering
+				listid = self.choose_list()
 				self.action_list.append('filter')
+				# then set the current visit to the next doc in the list
+				# Note: if a list is exhausted, it won't be selected 
+				self.current_visit = [listid, self.last_visit[listid]+1]
+
+			# Now whether it's coming from a filter or that we've decided to 
+			# examine the next doc, we will examine it		 
+
+			# If the doc is in a next page, first add pagination
+			if self.current_list[1]%self.page_size == 0:
+				self.action_list.append('pagination')
+			# Then examine doc 
+			self.examine_doc()
+			self.action_list.append('examine')
 
 
 	# Choose a sublist 
@@ -78,7 +85,7 @@ class Interaction:
 		if self.current_visit[1] >= len(self.resultlist[self.current_visit[0]]):
 			return False
 		else:
-			return self.E.examine_next()	
+			return self.E.examine_next()==1	
 	
 	# Actually examine the doc
 	def examine_doc(self):
@@ -91,7 +98,7 @@ class Interaction:
 		# Check relevance
 		self.rel_count += res[2]
 		# add this position to last visit
-		self.last_visit[self.current_visit[0]].append(self.current_visit[1])
+		self.last_visit[self.current_visit[0]] = self.current_visit[1]
 
 		# move current_visit to the next doc in the current list
 		current_visit[1] = self.current_visit[1] + 1 	
