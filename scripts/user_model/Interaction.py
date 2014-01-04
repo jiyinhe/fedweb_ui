@@ -50,42 +50,59 @@ class Interaction:
 	# Start a simulation
 	def run(self):
 		# Only stop when all documents being examined, or K document has been found   
-		while not (self.rel_count == self.K or len(self.doc_seen) == self.doc_count):	
-			print 'doc_seen_list', self.doc_seen
+		while not len(self.doc_seen) >= self.doc_count:	
+			#print 'task_length', self.K, 'found:', self.rel_count
+			if self.rel_count >= self.K:
+				break
+			#print 'doc_seen_list', self.doc_seen
 		
 			# Now we are at a new doc, decide if examine another document
 			if not self.examine_next():
 				# If not, first do filtering
 				listid = self.choose_list()
+				# If no list is selected, then 
+				if listid == -1:
+					#print sum([s[2] for s in self.resultlist[0]])
+					#print 'task_length', self.K, 'found:', self.rel_count, 
+					#print 'Error: Something wrong, debug:', #self.doc_seen 
+					continue
 				# then set the current visit to the next doc in the list
 				# Note: if a list is exhausted, it won't be selected 
 				self.current_visit = [listid, self.last_visit[listid]+1]
 				# After filtering, we now decide to visit this doc
-				self.action_list.append(('filter', (self.current_visit[0], self.current_visit[1])))
-				print 'filter', self.current_visit
+				#print self.current_visit
+				#print [len(r) for r in self.resultlist]
+				doc = self.resultlist[self.current_visit[0]][self.current_visit[1]]
+				self.action_list.append(('filter', (self.current_visit[0], self.current_visit[1], doc)))
+			#	print 'filter', self.current_visit
 
 
 			# Now we have to examine next doc, but first check if it's seen already, if so, skip it
 			if self.doc_is_seen():			
-				# move the current_visit to next doc in the list
-				print 'doc_seen', self.current_visit, self.resultlist[self.current_visit[0]][self.current_visit[1]], self.doc_seen
+				# set the last current_visit to last visited 
+				self.last_visit[self.current_visit[0]] = self.current_visit[1]
 				# move current_visit to next doc, prepare next iteration 
 				self.current_visit[1] = self.current_visit[1] + 1
-
+			#	print 'doc seen'
 				continue
+			
 
-
+			#print self.current_visit
 			# Now whether it's coming from a filter or that we've decided to 
 			# examine the next doc, we will examine it		 
-			else:
-				print 'examine next', self.current_visit
+			#print 'examine next', self.current_visit
 			# If the doc is in a next page, first add pagination
 			if self.current_visit[1]>0 and self.current_visit[1]%self.page_size == 0:
-				self.action_list.append(('pagination', (self.current_visit[0], self.current_visit[1])))
+				doc = self.resultlist[self.current_visit[0]][self.current_visit[1]]
+				self.action_list.append(('pagination', (self.current_visit[0], self.current_visit[1], doc)))
 
 			# Then examine doc 
 			self.examine_doc()
-			self.action_list.append(('examine', (self.current_visit[0], self.current_visit[1])))
+			doc = self.resultlist[self.current_visit[0]][self.current_visit[1]]
+			self.action_list.append(('examine', (self.current_visit[0], self.current_visit[1], doc)))
+			# If FilterModel is dynamic, then update the model after examine
+			if self.F.model_type == 'dynamic':
+				self.F.update_prior(doc)
 
 			# After examine
 			# add this position to last visit
@@ -94,16 +111,17 @@ class Interaction:
 			# move current_visit to the next doc in the current list
 			self.current_visit[1] = self.current_visit[1] + 1 	
 
-			print self.rel_count
+			#print self.rel_count
+			#print len(self.action_list), self.rel_count, self.K
 
 	# Choose a sublist 
 	def choose_list(self):
-		return self.F.select_list()
+		return self.F.select_list(self.last_visit)
 
 	# Decide if we should examine another doc
 	def examine_next(self):
 		# If the current visit position is larger than the maximum docs in the list, then this doc cannot be examined
-		print self.current_visit
+		#print self.current_visit
 		if self.current_visit[1] >= len(self.resultlist[self.current_visit[0]]):
 			return False
 		else:

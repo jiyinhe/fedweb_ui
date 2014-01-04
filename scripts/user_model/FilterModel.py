@@ -21,32 +21,47 @@ class FilterModel:
 	# - each subarray is a sub ranked list
 	# - each item contains the (doc_id, rank, relevance_judge) 
 	# prior: the priors, if None, then uniform
-	def __init__(self, resultlist, prior=None):
+	def __init__(self, resultlist, prior=None, model_type='static'):
 		self.resultlist = resultlist
+		self.model_type = model_type
 		# keep history of the rel/non-rel docs encontered before	
 		self.history = [[0, 0] for i in range(len(resultlist))]
 
 		if prior == None:
-			# Keep track of how many times a list has been selected 
-			self.prior = [[1, 0, i] for i in range(len(resultlist))]
+			# [0]: prior probability
+			# [2]: list index
+			self.prior = [[1, i] for i in range(len(resultlist))]
 		else:
-			self.prior = [[prior[i], 0, i] for i in range(len(prior))]
+			#print prior
+			self.prior = [[prior[i], i] for i in range(len(prior))]
 			if not len(prior) == len(resultlist):
 				print 'ERROR: prior should have the same length as resultlist'
 				sys.exit()
 		
-	def select_list(self):
-		idx = self.sample_list()			
+	# last_visit: an array of len(resultlist)
+	# storing the last rank visited in a sublist
+	# Use this to peek next doc, check if it's seen before in other lists
+	def select_list(self, last_visit):
+		idx = self.sample_list(last_visit)			
 		return idx	
 	
 	""" choose based on prior """
-	def sample_list(self):
-		print self.prior
+	def sample_list(self, last_visit):
+		#print self.prior
 		# fist check if some of the list has been exhausted
+		#print 'last', last_visit
+		#print [len(r) for r in self.resultlist]
 		prior = []
 		for p in self.prior:
-			if not p[1] >= len(self.resultlist[p[2]])-1:
-				prior.append((p[0], p[2]))
+			rank = last_visit[p[1]]
+			#print  rank, len(self.resultlist[p[1]])
+			# If a sublist is at the end, do not select it
+			if not rank >= len(self.resultlist[p[1]])-1:
+			#if not p[1] >= len(self.resultlist[p[2]])-1:
+				prior.append((p[0], p[1]))
+			#else:
+			#	print 'rank', rank, len(self.resultlist[p[1]])
+		#print 'prior', prior
 		if prior == []:
 			return -1
 		# hyperparameter
@@ -60,15 +75,14 @@ class FilterModel:
 		# Use the numpy.multinomial function to generate a random value
 		# It seems to be equivelent 
 		idx = list(random.multinomial(1, P, size=1)[0]).index(1)	
-		
-		# add this idx to the list
-		self.prior[idx][1] += 1	  
-		return idx 
+		listid = prior[idx][1]
+		#print 'select', idx, listid	
+		return listid 
 	
 	""" update the prior"""
-	# record: a tuple (listid, rank, relevance)
+	# record: a tuple (listid, rank, relevance), the selected doc
 	def update_prior(self, record):
-		print self.prior
+		#print self.prior
 		listid = record[0]
 		rel = record[2]
 		
@@ -76,7 +90,7 @@ class FilterModel:
 		# Dir(c+alpha) where c is the new observation
 		if rel > 0:
 			self.prior[listid][0] += 1			
-		print self.prior
+		#print self.prior
 
 if __name__ == "__main__":
 	resultlist = [[(1, 0, 0),(2, 1, 1),(3, 2, 0)],

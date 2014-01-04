@@ -55,9 +55,10 @@ def judged_ranklist(run, qrels):
 	for q in run:
 		qid = q[0]
 		docs = [d[0] for d in q[1]]
-		judge = qrels.get(qid, {})
+		judge = qrels.get(qid)
+		if judge == None:
+			continue
 		judged_list = [judge.get(d, 0) for d in docs]
-
 		#if qid == '7003':
 		#	Q = q[1][0:20]
 	        #	print Q
