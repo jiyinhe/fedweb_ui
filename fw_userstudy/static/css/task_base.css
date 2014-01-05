@@ -96,6 +96,13 @@ a.category {
 	color: red;
 	font-size: 40px;
 }
-.pagination{
+.pagination_marc{
 	width: 125px;
+}
+
+.pagination_area{
+	text-align: center;
+}
+.page{
+	cursor: pointer;
 }

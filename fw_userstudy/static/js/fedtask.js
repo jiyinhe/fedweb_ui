@@ -51,7 +51,7 @@ function bind_resultlist_listeners(){
 		ele_id = $(this).attr('id');
 		doc_bookmark(ele_id);
 	});
-	$('.pagination').click(function(){
+	$('.page').click(function(){
 		ele_id = $(this).attr('id');
 		update_pagination(ele_id);
 	});
@@ -278,9 +278,14 @@ function category_click(ele_id){
 	var state = ILPSLogging.getState();
 	state['current_category'] = ele_id;
 	ILPSLogging.setState(state);
+	//reset current_page to 1
+	CURRENTPAGE = 1
+	//Then regenerate the pagination
 	pagination();
 }
 
+//Update the result list and pagination when an element 
+//in the pagination is clicked
 function update_pagination(ele_id){
 	var docs = ALLRANKS
 	if (typeof(current_active_category) != 'undefined'){	
@@ -288,6 +293,7 @@ function update_pagination(ele_id){
 			docs = cate[1+parseInt(current_active_category.replace('category_',''))]['doc_ranks'];
 		}
 	}
+	/*
 	if (ele_id == 'pagination_first'){
 		ILPSLogging.paginate(1,CURRENTPAGE);
 		CURRENTPAGE = 1;
@@ -312,6 +318,22 @@ function update_pagination(ele_id){
 			CURRENTPAGE++;
 			pagination();
 		}
+	}*/
+
+	//It doesn't change the result list, just the
+	//pagination options shown in the pagination	
+	//Rotate pagination 1 step, and rebind the listener for logging
+	//and clicking  
+	if (ele_id == 'page_prev'){
+
+	}
+	else if (ele_id == 'page_next'){
+
+	}
+	//In this case, the look of pagination doesn't change
+	//but the result list should change.
+	else{
+	
 	}
 }
 
@@ -348,6 +370,10 @@ function pagination(){
 }
 
 function create_pagination(docs){
+	var num_pages = Math.ceil(docs.length/10);
+	//console.log(num_pages);
+	var html = [];
+	/*
 	var prevpage = '-';
 	if (CURRENTPAGE > 1){ prevpage = CURRENTPAGE - 1; }
 	
@@ -355,29 +381,42 @@ function create_pagination(docs){
 	if (CURRENTPAGE < docs.length/10){ nextpage = CURRENTPAGE + 1;}
 	html = [
 	'<ul class="pager">',
-	  '<li><a id="pagination_first" class="pagination"><span',
+	  '<li><a id="pagination_first" class="pagination_marc"><span',
 			'class="pull-left">First</span><span class="badge',
 			'pull-right">1</span></a></li>',
-	  '<li><a id="pagination_prev" class="pagination"><span',
+	  '<li><a id="pagination_prev" class="pagination_marc"><span',
 			'class="pull-left">Prev</span><span class="badge',
 			' pull-right">',
 			prevpage,
 			' </span></a></li>',
-	  '<li><a id="pagination_page" class="pagination"><span',
+	  '<li><a id="pagination_page" class="pagination_marc"><span',
 			'class="pull-left">Page</span><span class="badge',
 			' pull-right">',
 			CURRENTPAGE,
 			'</span></a></li>',
-	  '<li><a id="pagination_next" class="pagination"><span',
+	  '<li><a id="pagination_next" class="pagination_marc"><span',
 			'class="pull-left">Next</span><span class="badge',
 			' pull-right">',
 			nextpage,
 			'</span></a></li>',
-	  '<li><a id="pagination_last" class="pagination"><span',
+	  '<li><a id="pagination_last" class="pagination_marc"><span',
 			'class="pull-left">Last</span><span class="badge',
 			' pull-right">',
 			Math.ceil(docs.length/PAGESIZE),
 			'</span></a></li>',
 	  '</ul>']
+	*/
+
+	html.push('<ul class="pagination">');
+	html.push('<li><a id="page_prev" class="page">&laquo; Previous</a></li>');
+
+	var num_pages_show = Math.min(num_pages, 10)
+	for (var i = 1; i <= num_pages_show; i++){
+		p = $.validator.format('<li><a class="page" id="page_{0}">{1}</a></li>');
+		html.push(p(i, i));
+	}
+	html.push('<li><a id="page_next" class="page">Next &raquo; </a></li>');
+	html.push('</ul>');
+
 	return 	html.join( '\n');
 }

@@ -141,12 +141,11 @@ if __name__ == '__main__':
 	for p in params:
 		pid = p[0]
 		line = ['%s'%x for x in p[1]]
-		if not line[6] == None:
+		if not line[6] == 'None':
 			line[6] = 'NDCG'
 		#print line
 		outp.write('%s %s\n'%(pid, ' '.join(line)))
 	outp.close()
-
 	for p in params:
 		pid = p[0]
 		param = p[1]
@@ -175,4 +174,3 @@ if __name__ == '__main__':
 			out.write(line+'\n')
 		out.close()		
 
-	
