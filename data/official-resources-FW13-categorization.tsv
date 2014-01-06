@@ -1,0 +1,157 @@
+e001	arXiv.org	http://arxiv.org	Academic
+e002	CCSB	http://liinwww.ira.uka.de	Academic
+e003	CERN Documents	http://cdsweb.cern.ch	Academic
+e004	CiteSeerX	http://citeseerx.ist.psu.edu	Academic
+e005	CiteULike	http://www.citeulike.org	Academic
+e006	Economists Online	http://www.economistsonline.org	Academic
+e007	eScholarship	http://escholarship.org	Academic
+e008	KFUPM ePrints	http://eprints.kfupm.edu.sa	Academic
+e009	MPRA	http://mpra.ub.uni-muenchen.de	Academic
+e010	MS Academic	http://academic.research.microsoft.com	Academic
+e011	Nature	http://www.nature.com	Academic
+e012	Organic Eprints	http://orgprints.org	Academic
+e013	SpringerLink	http://www.springerlink.com	Academic
+e014	U. Twente	http://doc.utwente.nl	Academic
+e015	UAB Digital	http://ddd.uab.cat	Academic
+e016	UQ eSpace	http://espace.library.uq.edu.au	Academic
+e017	PubMed	http://pubmed.gov	Academic,Health
+e018	LastFM	http://www.last.fm/	Audio
+e019	LYRICSnMUSIC	http://www.lyricsnmusic.com/	Audio
+e020	Comedy Central	http://www.comedycentral.com/	Audio,Video
+e021	Dailymotion	http://www.dailymotion.com/	Audio,Video
+e022	YouTube	http://www.youtube.com	Audio,Video
+e023	Google Blogs	http://www.google.com/blogsearch	Blogs
+e024	LinkedIn Blog	http://blog.linkedin.com	Blogs
+e025	Tumblr	http://www.tumblr.com	Blogs
+e026	WordPress	http://en.search.wordpress.com	Blogs
+e027	Columbus Library	http://www.columbuslibrary.org/	Books
+e028	Goodreads	http://www.goodreads.com/	Books
+e029	Google Books	http://books.google.com	Books
+e030	NCSU Library	http://www.lib.ncsu.edu	Books
+e032	IMDb	http://www.imdb.com	Encyclopedia
+e033	Wikibooks	http://en.wikibooks.org	Encyclopedia
+e034	Wikipedia	http://en.wikipedia.org	Encyclopedia
+e036	Wikispecies	http://species.wikimedia.org	Encyclopedia
+e037	Wiktionary	http://en.wiktionary.org	Encyclopedia
+e038	E? Online	http://www.eonline.com	Entertainment
+e039	Entertainment Weekly	http://www.ew.com/	Entertainment
+e041	TMZ	http://www.tmz.com/	Entertainment
+e042	The Sun	http://www.thesun.co.uk/	Entertainment,Sports,News
+e043	Addicting games	http://www.addictinggames.com/	Games
+e044	Amorgames	http://armorgames.com/	Games
+e045	Crazy monkey games	http://www.crazymonkeygames.com/	Games
+e047	GameNode	http://www.gamenode.com	Games
+e048	Games.com	http://games.com	Games
+e049	Miniclip	http://www.miniclip.com/games/en/	Games
+e050	About.com	http://www.about.com/	General
+e052	Ask	http://www.ask.com	General
+e055	CMU ClueWeb	http://lemurproject.org/clueweb09/	General
+e057	Gigablast	http://www.gigablast.com	General
+e062	Baidu	http://www.baidu.com	General
+e063	CDC	http://www.cdc.gov/	Health
+e064	Family Practice notebook	http://www.fpnotebook.com/	Health
+e065	Health Finder	http://www.healthfinder.gov/	Health
+e066	HealthCentral	http://www.healthcentral.com/	Health
+e067	HealthLine	http://www.healthline.com/	Health
+e068	Healthlinks.net	http://www.healthlinks.net/	Health
+e070	Mayo Clinic	http://www.mayoclinic.org/	Health
+e071	MedicineNet	http://www.medicinenet.com/	Health
+e072	MedlinePlus	http://www.nlm.nih.gov/medlineplus/	Health
+e075	U. of Iowa hospitals and clinics	http://www.uihealthcare.org/	Health
+e076	WebMD	http://www.webmd.com/	Health
+e077	Glassdoor	http://www.glassdoor.com/	Jobs
+e078	Jobsite	http://www.jobsite.co.uk	Jobs
+e079	LinkedIn Jobs	http://www.linkedin.com	Jobs
+e080	Simply Hired	http://www.simplyhired.com	Jobs
+e081	USAJobs	http://www.usajobs.gov	Jobs
+e082	Comedy Central Jokes.com	http://www.jokes.com/	Jokes
+e083	Kickass jokes	http://kickasshumor.com/search/	Jokes
+e085	Cartoon Network	http://www.cartoonnetwork.com/	Kids
+e086	Disney Family	http://family.go.com	Kids
+e087	Factmonster	http://www.factmonster.com/	Kids
+e088	Kidrex	http://www.kidrex.org/	Kids
+e089	KidsClicks?	http://kidsclick.org/	Kids
+e090	Nick jr	http://www.nickjr.com/	Kids
+e091	Nickelodeon	http://www.nick.com/	Kids
+e092	OER Commons	http://www.oercommons.org	Kids
+e093	Quintura Kids	http://affiliates.quintura.com/mainkids/	Kids
+e095	Foursquare	https://foursquare.com/	Local
+e098	BBC	http://www.bbc.co.uk	News
+e099	Bing News	http://www.bing.com	News
+e100	Chronicling America	http://chroniclingamerica.loc.gov/	News
+e101	CNN	http://www.cnn.com	News
+e102	Forbes	http://www.forbes.com/search/	News
+e103	Google News	http://news.google.com	News
+e104	JSOnline	http://www.jsonline.com/	News
+e106	Slate	http://www.slate.com	News
+e107	The Guardian	http://www.guardian.co.uk/	News
+e108	The Street	http://www.thestreet.com/	News
+e109	Washington post	http://www.washingtonpost.com/	News
+e110	HNSearch	http://www.hnsearch.com/	News,Tech
+e111	Slashdot	http://slashdot.org	News,Tech
+e112	The Register	http://search.theregister.co.uk	News,Tech
+e113	DeviantArt	http://browse.deviantart.com	Photo/Pictures
+e114	Flickr	http://www.flickr.com	Photo/Pictures
+e115	Fotolia	http://www.fotolia.com	Photo/Pictures
+e117	Getty Images	http://www.gettyimages.com	Photo/Pictures
+e118	IconFinder	http://www.iconfinder.com/	Photo/Pictures
+e119	NYPL Gallery	http://digitalgallery.nypl.org	Photo/Pictures
+e120	OpenClipArt	http://openclipart.org	Photo/Pictures
+e121	Photobucket	http://photobucket.com	Photo/Pictures
+e122	Picasa	http://picasaweb.google.com/lh/explore	Photo/Pictures
+e123	Picsearch	http://www.picsearch.com/	Photo/Pictures
+e124	Wikimedia	http://commons.wikimedia.org	Photo/Pictures
+e126	Funny or Die	http://www.funnyordie.com	Video,Photo/Pictures
+e127	4Shared	http://search.4shared.com	Audio,Video,Books,Photo/Pictures
+e128	AllExperts	http://www.allexperts.com/	Q&A
+e129	Answers.com	http://wiki.answers.com	Q&A
+e130	Chacha	http://www.chacha.com/	Q&A
+e131	StackOverflow	http://stackoverflow.com	Q&A
+e132	Yahoo Answers	http://answers.yahoo.com	Q&A
+e133	MetaOptimize	http://metaoptimize.com/qa/	Academic,Q&A
+e134	HowStuffWorks	http://www.howstuffworks.com/	Kids,Q&A
+e135	AllRecipes	http://allrecipes.com	Recipes
+e136	Cooking.com	http://www.cooking.com/recipes-and-more	Recipes
+e137	Food Network	http://www.foodnetwork.com/	Recipes
+e138	Food.com	http://www.food.com/	Recipes
+e139	Meals.com	http://www.meals.com/	Recipes
+e140	Amazon	http://www.amazon.com	Shopping
+e141	ASOS	http://www.asos.com/	Shopping
+e142	Craigslist	http://www.craigslist.org/	Shopping
+e143	eBay	http://www.ebay.com	Shopping
+e144	Overstock	http://www.overstock.com/	Shopping
+e145	Powell’s	http://www.powells.com	Shopping
+e146	Pronto	http://www.pronto.com/	Shopping
+e147	Target	http://www.target.com/	Shopping
+e148	Yahoo? Shopping	http://shopping.yahoo.com/	Shopping
+e152	Myspace	http://api.myspace.com	Social
+e153	Reddit	http://www.reddit.com/	Social
+e154	Tweepz	http://tweepz.com	Social
+e156	Cnet	http://download.cnet.com	Software
+e157	GitHub	http://github.com/search	Software
+e158	SourceForge	http://sourceforge.net	Software
+e159	bleacher report	http://bleacherreport.com/	Sports
+e160	ESPN	http://search.espn.go.com	Sports
+e161	Fox Sports	http://multimedia.foxsports.com	Sports
+e162	NBA	http://www.nba.com/	Sports
+e163	NHL	http://www.nhl.com/	Sports
+e164	SB nation	http://www.sbnation.com/	Sports
+e165	Sporting news	http://aol.sportingnews.com/	Sports
+e166	WWE	http://www.wwe.com/	Sports
+e167	Ars Technica	http://arstechnica.com/	Tech
+e168	CNET	http://www.cnet.com/	Tech
+e169	Technet	http://social.technet.microsoft.com	Tech
+e170	Technorati	http://www.technorati.com	Tech
+e171	TechRepublic	http://www.techrepublic.com	Tech
+e172	TripAdvisor	http://www.tripadvisor.com/	Travel
+e173	Wiki Travel	http://wikitravel.org/en/Main_Page	Travel
+e174	5min.com	http://www.5min.com	Video
+e175	AOL Video	http://www.aol.com	Video
+e176	Google Videos	http://www.google.com/videohp	Video
+e178	MeFeedia	http://www.mefeedia.com	Video
+e179	Metacafe	http://www.metacafe.com	Video
+e181	National geographic	http://www.nationalgeographic.com/	Video
+e182	Veoh	http://www.veoh.com/	Video
+e184	Vimeo	http://vimeo.com	Video
+e185	Yahoo Screen	http://screen.yahoo.com	Video
+e200	BigWeb	no url	General
