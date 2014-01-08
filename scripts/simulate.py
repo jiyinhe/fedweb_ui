@@ -28,7 +28,7 @@ def load_categories(catefile):
 	content = [d.split('\t') for d in f.readlines()]
 	f.close()
 	# category tuple: (site_id, category)	
-	categories = [(d[0], d[3]) for d in content]
+	categories = [(d[0], d[3].split(',')) for d in content]
 	return dict(categories)	
 
 def compute_ndcg(judged_list):
@@ -53,9 +53,16 @@ def create_sublists(docs, judge):
 	ndcg_b, ndcg_g = compute_ndcg(judged_list)
 	B = [ndcg_b]
 	G = [ndcg_g]
-	
+
+	# Assign categories to documents	
+	doc_cate = []
+	for d in origin_list:
+		cates = categories[d[0].split('-')[1]]
+		tmp = [(d, c) for c in cates]
+		doc_cate.extend(tmp)
+	#print doc_cate
+
 	sublists = [origin_list]	
-	doc_cate = [(d, categories[d[0].split('-')[1]]) for d in origin_list]
 	# Group docs into sublists by category
 	doc_cate.sort(key=operator.itemgetter(1))
 	for k, g in itertools.groupby(doc_cate, lambda x: x[1]):
