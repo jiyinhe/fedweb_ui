@@ -162,10 +162,13 @@ categories = load_categories(categoryfile)
 
 if __name__ == '__main__':
 	if len(sys.argv)<3:
-		print 'usage: python simulate.py outputdir runs(number of simulations)'
+		print 'usage: python simulate.py outputdir runs(number of simulations) qrels'
 		sys.exit()
 	outputdir = sys.argv[1]
 	N = int(sys.argv[2])
+	if len(sys.argv==4):
+		qrelsfile = sys.argv[3]
+
 	output_param_file = '%s/%s'%(outputdir, 'param.txt')
 
 	if not os.path.exists(outputdir):

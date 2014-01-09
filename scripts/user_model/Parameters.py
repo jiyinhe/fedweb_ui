@@ -4,7 +4,7 @@ Set the parameters for simulation
 
 # ===== Parameters for ExamineModel =====
 e_model_type = ['ExpRank']
-e_lambda = [5, 1, 0.5, 0.25, 0.05, 0.01] 
+e_lambda = [1, 0.1, 0.01, 0.001] 
 
 # ===== Parameters for FilterModel ======
 uniform = lambda x: [1 for i in range(len(x))]
