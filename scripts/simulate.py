@@ -166,7 +166,7 @@ if __name__ == '__main__':
 		sys.exit()
 	outputdir = sys.argv[1]
 	N = int(sys.argv[2])
-	if len(sys.argv==4):
+	if len(sys.argv)==4:
 		qrelsfile = sys.argv[3]
 
 	output_param_file = '%s/%s'%(outputdir, 'param.txt')
