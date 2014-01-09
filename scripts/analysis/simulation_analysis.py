@@ -8,10 +8,10 @@ import numpy as np
 import itertools
 import pylab as pl
 
-datadir = '/export/data2/fedweb_userstudy/simulation/'
+datadir = '../../data/simulation2/'
 paramfile = '%s/%s'%(datadir, 'param.txt')
 
-basic_datadir = '/export/data2/fedweb_userstudy/simulation_basic/'
+basic_datadir = '../../data/simulation_basic/'
 paramfile_basic = '%s/%s'%(basic_datadir, 'param.txt')
 
 # Parameters we are going to look at
@@ -60,7 +60,7 @@ def get_diff_data(param_a, param_b):
 		data = np.array(data[1:])
 		baseline.append((pb[1][0], data))
 	baseline = dict(baseline)
-	print 'Computing diff'
+	#print 'Computing diff'
 	
 	D = []
 	for pa in param_a:
@@ -74,15 +74,24 @@ def get_diff_data(param_a, param_b):
 		D.append((pa[1], diff))
 	return D, baseline, qids
 
+def query_performance_per_param(qids, D, B):
+	header = [d.split('=')[0] for d in D[0][0]]
+	header.extend(['%s'%q for q in qids])
+	print '\t'.join(header)
 
-"""
- plot simulated query performance by task length
-"""
-def query_performance_by_task(D, B):
 	for p in B:
-		data = itertools.ifilter(lambda x: x[-1] == p, D)
-		print data
-
+		values = ['', '', '', p.split('=')[1]]	
+		values.extend(['%s'%s for s in B[p][0]])	
+		print '\t'.join(values)
+	
+	for p in D:
+		# The parameter values
+		line = [x.split('=')[1] for x in p[0]]
+		# Diff median
+		diff = np.median(p[1], axis=0)
+		line.extend(['%s'%d for d in diff])	
+		print '\t'.join(line)
+	
 
 if __name__ == '__main__':
 	param_a = load_params(paramfile, params)
@@ -90,24 +99,6 @@ if __name__ == '__main__':
 	D, B, qids = get_diff_data(param_a, param_b)
 	
 	""" do analysis"""
-	""" 1. Does task length influence effectiveness of UI?"""
-	query_performance_by_task(D, B)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+	""" Difference per param """	
+	query_performance_per_param(qids, D, B)
 
