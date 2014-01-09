@@ -25,15 +25,17 @@ class FilterModel:
 		self.resultlist = resultlist
 		self.model_type = model_type
 		# keep history of the rel/non-rel docs encontered before	
-		self.history = [[0, 0] for i in range(len(resultlist))]
+		#self.history = [[0, 0] for i in range(len(resultlist))]
 
 		if prior == None:
 			# [0]: prior probability
 			# [2]: list index
 			self.prior = [[1, i] for i in range(len(resultlist))]
+			self.alpha0 = self.prior
 		else:
 			#print prior
 			self.prior = [[prior[i], i] for i in range(len(prior))]
+			self.alpha0 = self.prior
 			if not len(prior) == len(resultlist):
 				print 'ERROR: prior should have the same length as resultlist'
 				sys.exit()
@@ -84,12 +86,15 @@ class FilterModel:
 	def update_prior(self, record):
 		#print self.prior
 		listid = record[0]
-		rel = record[2]
-		
+		rank = record[1]
+		res = self.resultlist[listid][0:rank + 1]			
+	
 		# Update the prior based on the seen relevant docs
-		# Dir(c+alpha) where c is the new observation
+		# let alpha = (alpha_0 + #rel)/(alpha_0+#seen)
+		num_seen = len(res)
+		num_rel = sum([int(r[2]>0) for r in res])
 		if rel > 0:
-			self.prior[listid][0] += 1			
+			self.prior[listid][0] = (self.alpha0 + num_rel)/(self.alpha0 + num_seen)			
 		#print self.prior
 
 if __name__ == "__main__":
