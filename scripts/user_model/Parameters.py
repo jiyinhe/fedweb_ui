@@ -28,6 +28,7 @@ page_size = [10]
 task_length = [1, 10, -1] 
 
 
+interface = 'category' 
 
 
 

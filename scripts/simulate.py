@@ -14,12 +14,17 @@ qrelsfile = '../data/FW13-QRELS-RM.txt'
 categoryfile ='../data/resources-FW13-categorization.tsv'
 
 def generate_parameters():
-	params = ['index', 'page_size', 'gain_type', 'ndcg_k','e_model',
+	if P.interface == 'basic':
+		params = ['index', 'page_size', 'gain_type', 'e_model', 'task_length']
+		p = itertools.product(P.page_size, P.gain_model_type, P.e_model_type, P.task_length)
+		p = list(p)
+	else:
+		params = ['index', 'page_size', 'gain_type', 'ndcg_k','e_model',
 		'task_length', 'f_model', 'f_prior',
 		'e_lambda'	
-		]
-	p = itertools.product(P.page_size, P.gain_model_type, P.ndcg_k, P.e_model_type, P.task_length, P.f_model_type, P.f_prior, P.e_lambda)
-	p = list(p)
+			]
+		p = itertools.product(P.page_size, P.gain_model_type, P.ndcg_k, P.e_model_type, P.task_length, P.f_model_type, P.f_prior, P.e_lambda)
+		p = list(p)
 	pa = [[i, list(p[i])] for i in range(len(p))]
 	return pa, params
  
@@ -79,6 +84,26 @@ def create_sublists(docs, judge):
 	return sublists, B, G		
 
 """
+simulate interaction with basic interface  
+"""	
+def simulate_basic(judged_list, page_size, task_length):
+	action_list = []
+	rel_count = 0
+	doc_count = 0
+	total_doc = len(judged_list)
+
+	while doc_count < total_doc: 
+		if rel_count >= task_length:
+			break	
+		if not doc_count == 0 and doc_count%page_size == 0:
+			action_list.append('pagination')
+		action_list.append(('examine', 'dummy'))
+		rel_count += judged_list[doc_count]
+		doc_count += 1
+	return action_list
+
+
+"""
 params: 'page_size', 'gain_type', 'ndcg_k', 'e_model', 
 	'task_length', 'f_model', 'f_prior',
 	'e_lambda'	
@@ -97,27 +122,37 @@ def simulate(run, judged_list, param):
 		if param[1] == 'binary':
 			judge = [int(j>0) for j in judge] 
 
-		task_length = param[4]
-		if task_length == -1:
-			task_length = sum(judge)
-		# Get sublist and their binary/graded NDCG scores
-		# First entry is the original list
-		sublists, B, G = create_sublists(docs, judge)
-		#print B
-		#print G
-		# ExamineModel
-		e = ExamineModel.ExamineModel(param[3], e_lambda=param[7])
-		# FilterModel	 
-		p = None
-		if not param[6] == None:
-			# we only use binary_NDCG
-			prior = [b[param[2]] for b in B]	
-			#print prior
-			p = param[6](prior) 
-		f = FilterModel.FilterModel(sublists, p)
-		inter = Interaction.Interaction(e, f, task_length=task_length)	
-		inter.run()
-		action_lists.append((qid, inter.action_list))
+		# basic params are different
+		if P.interface == 'basic':
+			task_length = param[3]
+			if task_length == -1:
+				task_length = sum(judge)
+			page_size = param[0]
+			actionlist = simulate_basic(judge, page_size, task_length)
+			action_lists.append((qid, actionlist))
+		else:
+
+			task_length = param[4]
+			if task_length == -1:
+				task_length = sum(judge)
+			# Get sublist and their binary/graded NDCG scores
+			# First entry is the original list
+			sublists, B, G = create_sublists(docs, judge)
+			#print B
+			#print G
+			# ExamineModel
+			e = ExamineModel.ExamineModel(param[3], e_lambda=param[7])
+			# FilterModel	 
+			p = None
+			if not param[6] == None:
+				# we only use binary_NDCG
+				prior = [b[param[2]] for b in B]	
+				#print prior
+				p = param[6](prior) 
+			f = FilterModel.FilterModel(sublists, p)
+			inter = Interaction.Interaction(e, f, task_length=task_length)	
+			inter.run()
+			action_lists.append((qid, inter.action_list))
 	return action_lists
 
 
@@ -148,7 +183,7 @@ if __name__ == '__main__':
 	for p in params:
 		pid = p[0]
 		line = ['%s'%x for x in p[1]]
-		if not line[6] == 'None':
+		if not (P.interface == 'basic') and not (line[6] == 'None'):
 			line[6] = 'NDCG'
 		#print line
 		outp.write('%s %s\n'%(pid, ' '.join(line)))
@@ -160,7 +195,7 @@ if __name__ == '__main__':
 		outfile = '%s/%s.txt'%(outputdir, pid)
 		out = open(outfile, 'w')
 		# Write header
-		qids = [q[0] for q in run]
+		qids = [q for q in qrels]
 		qids.sort()
 		out.write(' '.join(qids)+'\n')
 		# Simulation
