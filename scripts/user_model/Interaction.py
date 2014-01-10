@@ -50,11 +50,11 @@ class Interaction:
 	# Start a simulation
 	def run(self):
 		# Only stop when all documents being examined, or K document has been found   
-		while not len(self.doc_seen) >= self.doc_count:	
+		while not sum([x+1 for x in self.last_visit]) >= self.doc_count:	
 			#print 'task_length', self.K, 'found:', self.rel_count
 			if self.rel_count >= self.K:
 				break
-			#print 'doc_seen_list', self.doc_seen
+			#print 'doc_seen_list', len(self.doc_seen), self.doc_count
 		
 			# Now we are at a new doc, decide if examine another document
 			if not self.examine_next():
