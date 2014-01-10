@@ -1,4 +1,0 @@
-index page_size gain_type e_model task_length
-0 10 binary ExpRank 1
-1 10 binary ExpRank 10
-2 10 binary ExpRank -1
