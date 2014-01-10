@@ -149,7 +149,7 @@ def simulate(run, judged_list, param):
 				prior = [b[param[2]] for b in B]	
 				#print prior
 				p = param[6](prior) 
-			f = FilterModel.FilterModel(sublists, p)
+			f = FilterModel.FilterModel(sublists, p, model_type=param[5])
 			inter = Interaction.Interaction(e, f, task_length=task_length)	
 			inter.run()
 			action_lists.append((qid, inter.action_list))

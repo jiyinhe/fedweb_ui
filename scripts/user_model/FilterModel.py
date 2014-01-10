@@ -85,19 +85,24 @@ class FilterModel:
 		return listid 
 	
 	""" update the prior"""
-	# record: a tuple (listid, rank, relevance), the selected doc
+	# record: current_visit: (listid, rank) 
 	def update_prior(self, record):
 		#print self.prior
 		listid = record[0]
 		rank = record[1]
+		#print listid, rank
 		res = self.resultlist[listid][0:rank + 1]			
 	
 		# Update the prior based on the seen relevant docs
 		# let alpha = (alpha_0 + #rel)/(alpha_0+#seen)
 		num_seen = len(res)
 		num_rel = sum([int(r[2]>0) for r in res])
+		#print num_seen, num_rel, self.alpha0
 		#print num_seen, num_rel, (self.alpha0 + num_rel)/(self.alpha0 + num_seen)	
-		self.prior[listid][0] = (self.alpha0 + num_rel)/(self.alpha0 + num_seen)			
+		#print self.prior[listid]
+		self.prior[listid][0] = float(self.alpha0[listid][0] + num_rel)/float(self.alpha0[listid][0] + num_seen)			
+		#print self.prior
+
 
 if __name__ == "__main__":
 	resultlist = [[(1, 0, 0),(2, 1, 1),(3, 2, 0)],
