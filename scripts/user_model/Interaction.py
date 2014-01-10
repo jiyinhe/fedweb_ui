@@ -101,7 +101,7 @@ class Interaction:
 			doc = self.resultlist[self.current_visit[0]][self.current_visit[1]]
 			self.action_list.append(('examine', (self.current_visit[0], self.current_visit[1], doc)))
 			# If FilterModel is dynamic, then update the model after examine
-			print self.F.model_type
+			#print self.F.model_type
 			if self.F.model_type == 'dynamic':
 				self.F.update_prior(self.current_visit)
 
