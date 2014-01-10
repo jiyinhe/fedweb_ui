@@ -8,7 +8,7 @@ import numpy as np
 import itertools
 import pylab as pl
 
-datadir = '../../data/simulation2/'
+datadir = '../../data/simulation3/'
 paramfile = '%s/%s'%(datadir, 'param.txt')
 
 basic_datadir = '../../data/simulation_basic/'
