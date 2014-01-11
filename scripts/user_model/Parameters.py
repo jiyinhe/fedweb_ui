@@ -11,6 +11,8 @@ uniform = lambda x: [1 for i in range(len(x))]
 ndcg = lambda x: x
 f_prior = [None, ndcg]
 f_model_type = ['static', 'dynamic']
+#f_model_type = ['dynamic']
+
 
 # ndcg@k as prior, -1 for all
 ndcg_k = [-1]
@@ -26,7 +28,7 @@ page_size = [10]
 # ===== Task parameters =====
 # Number of relevant documents to be found: -1: all
 task_length = [1, 10, -1] 
-
+#task_length = [10]
 
 interface = 'category' 
 

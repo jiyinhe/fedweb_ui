@@ -30,12 +30,14 @@ class FilterModel:
 		if prior == None:
 			# [0]: prior probability
 			# [2]: list index
-			self.prior = [[1, i] for i in range(len(resultlist))]
-			self.alpha0 = [[1, i] for i in range(len(resultlist))]
+			a = float(1)/float(len(resultlist))
+			self.prior = [[a, i] for i in range(len(resultlist))]
+			self.alpha0 = [[a, i] for i in range(len(resultlist))]
 		else:
 			#print prior
-			self.prior = [[prior[i], i] for i in range(len(prior))]
-			self.alpha0 = [[prior[i], i] for i in range(len(prior))] 
+			sum_a = sum(prior)
+			self.prior = [[prior[i]/sum_a, i] for i in range(len(prior))]
+			self.alpha0 = [[prior[i]/sum_a, i] for i in range(len(prior))] 
 			if not len(prior) == len(resultlist):
 				print 'ERROR: prior should have the same length as resultlist'
 				sys.exit()
@@ -63,14 +65,14 @@ class FilterModel:
 				prior.append((p[0], p[1]))
 			#else:
 				#print 'rank', rank, len(self.resultlist[p[1]])
-				#print p
+			#	print p
 		if prior == []:
 			return -1
-
+		
 		# hyperparameter
 		alpha = [p[0] for p in prior]
 		if sum(alpha) == 0:
-			alpha = [1 for p in prior]
+			alpha = [float(1)/float(len(prior)) for p in prior]
 		# We need to draw sample from a categorical distribution  
 		# Using Dirichlet as prior, we have p|a = (p_1, ..., p_k)~Dir(k, alpha)
 		# P is the parameter of the categorical distribution
@@ -82,6 +84,10 @@ class FilterModel:
 		idx = list(random.multinomial(1, P, size=1)[0]).index(1)	
 		listid = prior[idx][1]
 		#print 'select', idx, listid	
+		#if self.model_type == 'dynamic':
+		#	print
+		#	print prior
+		#	print listid
 		return listid 
 	
 	""" update the prior"""
@@ -99,9 +105,10 @@ class FilterModel:
 		num_rel = sum([int(r[2]>0) for r in res])
 		#print num_seen, num_rel, self.alpha0
 		#print num_seen, num_rel, (self.alpha0 + num_rel)/(self.alpha0 + num_seen)	
-		#print self.prior[listid]
+		#print 'update:', num_seen, num_rel, listid, self.prior[listid][0], self.alpha0[listid]
 		self.prior[listid][0] = float(self.alpha0[listid][0] + num_rel)/float(self.alpha0[listid][0] + num_seen)			
-		#print self.prior
+		#print 'new prior:', self.prior[listid][0]
+
 
 
 if __name__ == "__main__":
