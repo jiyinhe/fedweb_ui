@@ -3,7 +3,7 @@ var ALLRANKS = [];
 var CURRENTPAGE = 1;
 var PAGESIZE = 10;
 var CURRENT_PAGINATION_START = 1
-var PAGINATION_SIZE = 10
+var PAGINATION_SIZE = 1
 
 $(document).ready(function(){
 
@@ -322,20 +322,28 @@ function update_pagination(ele_id){
 		}
 	}*/
 
-	//update the pagination
-	pagination_html = ''
 	//It doesn't change the result list, just the
 	//pagination options shown in the pagination	
 	//Rotate pagination 1 step, and rebind the listener for logging
 	//and clicking  
 	if (ele_id == 'page_prev'){
 		CURRENT_PAGINATION_START = CURRENT_PAGINATION_START-PAGINATION_SIZE;	
-		pagination_html = create_pagination(docs);
+		CURRENTPAGE = CURRENT_PAGINATION_START+PAGINATION_SIZE-1;
+		//pagination_html = create_pagination(docs);
+		//update the look: but not updating the page!
+		//$('#pagination').html(pagination_html);
+		pagination();
+
 	}
 	else if (ele_id == 'page_next'){
 		CURRENT_PAGINATION_START = CURRENT_PAGINATION_START + PAGINATION_SIZE;
+		CURRENTPAGE = CURRENT_PAGINATION_START;
 		//create the pagination look
-		pagination_html = create_pagination(docs);
+		//pagination_html = create_pagination(docs);
+		//update the look: but not updating the page!
+		//$('#pagination').html(pagination_html);
+		pagination();
+
 	}
 	//In this case, the look of pagination doesn't change
 	//but the result list should change.
@@ -343,9 +351,7 @@ function update_pagination(ele_id){
 		CURRENTPAGE = parseInt(ele_id.split('_')[1]);
 		pagination();
 	}
-	//update the look: but not updating the page!
-	$('#pagination').html(pagination_html);
-	bind_resultlist_listeners()
+//	bind_resultlist_listeners()
 }
 
 function pagination(){
@@ -423,7 +429,6 @@ function create_pagination(docs){
 		html.push('<li><a id="page_prev" class="page">&laquo; Previous</a></li>');
 	}
 	// show the first 10 pages in pagination when new pagination is generated
-	//var num_pages_show = Math.min(num_pages, PAGINATION_SIZE)
 	var last_page_show = Math.min(CURRENT_PAGINATION_START + PAGINATION_SIZE-1, num_pages);
 	for (var i = CURRENT_PAGINATION_START; i <= last_page_show; i++){
 		p = $.validator.format('<li><a class="page" id="page_{0}">{1}</a></li>');
