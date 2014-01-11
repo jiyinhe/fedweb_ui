@@ -6,6 +6,7 @@ from whoosh.highlight import highlight, Highlighter, WholeFragmenter, HtmlFormat
 from whoosh.analysis import FancyAnalyzer
 import simplejson as js
 import operator
+from fw_userstudy import settings 
 
 # Create your models here.
 class ExperimentManager(models.Manager):
@@ -157,6 +158,9 @@ class Task(models.Model):
 	run = models.ForeignKey(Run)
 	# The topic
 	topic = models.ForeignKey(Topic)
+	# The maximum clicks allowed
+	maxclicks = models.IntegerField()
+
 	objects = TaskManager()
 
 class SessionManager(models.Manager):
@@ -208,20 +212,27 @@ class BookmarkManager(models.Manager):
 
 	# wrapper in case request does not have session_id and topic_id
 	# (i.e., on page load)
-	def get_bookmark_count_wrap(self, sess_id, t_id):
+	def get_bookmark_count_wrap(self, sess_id, t_id, task_id, user):
 		request = HttpRequest()	
-		request.POST=QueryDict('session_id='+str(sess_id)+'&topic_id='+str(t_id))
-		return self.get_bookmark_count(request)
+		request.POST=QueryDict('session_id='+str(sess_id)+'&topic_id='+str(t_id)+'&task_id='+str(task_id))
+		return self.get_bookmark_count(request, user)
 
-	def get_bookmark_count(self, request):
+	def get_bookmark_count(self, request, user):
 		sess_id=request.POST['session_id']
 		topic_id=request.POST['topic_id']
-		try:
-			bookmarks = Bookmark.objects.filter(topic_id=topic_id,session_id=sess_id,selected_state=1)
-				
-			return bookmarks.count()
-		except Bookmark.DoesNotExist:
-			return 0
+		task_id = request.POST['task_id']
+		bookmarks = Bookmark.objects.filter(topic_id=topic_id,session_id=sess_id,selected_state=1)
+
+		task = Task.objects.get(task_id = task_id)
+		clicksleft, maxclicks, relnum = UserScore.objects.get_score(user, task)
+		userscore = {
+			'clicksleft': clicksleft,
+			'clicks_perc': float(clicksleft)/float(maxclicks)*100,
+			'relnum': relnum,
+			'rel_perc': float(relnum)/float(settings.NumDocs)*100,
+			}
+
+		return bookmarks.count(), userscore
 
 	def training_feedback_bookmark(self, request):
 		# only in training
@@ -230,14 +241,24 @@ class BookmarkManager(models.Manager):
 			topic_id=request.POST['topic_id']
 			doc_id=request.POST['doc_id'].strip("_bookmark")
 			state = request.POST['selected_state']
+			user_id = request.user.id
+			task_id = request.POST['task_id']
 			# only feedback if bookmarking not unbookmarking
 			if state == "1":
 				try: # did we bookmark a relevant doc, pos feedback
 					Qrels.objects.get(topic_id=topic_id,doc_id=doc_id)
+					us = UserScore.objects.click_rel(user_id, task_id, doc_id, True, True)
 					return "positive_feedback"
 				except Qrels.DoesNotExist: # otherwise neg feedback
+					us = UserScore.objects.click_rel(user_id, task_id, doc_id, False, True)
 					return "negative_feedback"
 			if state == "0":
+				try:
+					# if a relevant doc is deleted from bookmark
+					Qrels.objects.get(topic_id=topic_id,doc_id=doc_id)
+					us = UserScore.objects.click_rel(user_id, task_id, doc_id, True, False)
+				except Qrels.DoesNotExist:
+					us = UserScore.objects.click_rel(user_id, task_id, doc_id, False, False)
 				return "delete_feedback"
 		return "no_feedback"
 
@@ -279,7 +300,6 @@ class BookmarkManager(models.Manager):
 					selected_state=state)
 				b.save()
 	
-	
 class Bookmark(models.Model):
 	session = models.ForeignKey(Session)
 	topic = models.ForeignKey(Topic)	
@@ -296,5 +316,59 @@ class Qrels(models.Model):
 	relevance = models.IntegerField() 
 	objects = QrelsManager()
 
+class UserScoreManager(models.Manager):
+	def create_userprofile(self, user, task):
+		u = User.objects.get(id = user.id)
+		us = UserScore(user=u, task=task, clickcount=0, score=0, numrel=0)		 
+		us.save()
+		return us
+
+	def get_score(self, user, task):
+		try:
+			us = self.get(user=user, task=task)
+		except UserScore.DoesNotExist:
+			us = self.create_userprofile(user, task)
+		clicksleft = task.maxclicks-us.clickcount
+		return  clicksleft, task.maxclicks, us.numrel
+
+	# select: true if it's selected, false if it's removed
+	def click_rel(self, user_id, task_id, doc_id, relevance, select):
+		us = self.get(user=user_id, task=task_id)
+		us.clickcount += 1
+		us.score = us.task.maxclicks - us.clickcount
+		if us.reldocs == "":
+			reldocs = []
+		else:
+			reldocs = js.loads(us.reldocs)
+		# If adding/removing a relevant document, update the relnum
+		if relevance:
+			if select:
+				reldocs.append(doc_id)
+				reldocs = set(reldocs)
+			else:
+				reldocs = set(reldocs)-set([doc_id])
+		us.reldocs = js.dumps(list(reldocs))
+		us.numrel = len(reldocs)
+		us.save()
+		return us
+
+	def add_click(self, request):
+		us = self.get(user=request.user.id, task=request.POST['task_id'])
+		us.clickcount += 1
+		us.score = us.task.maxclicks - us.clickcount
+		us.save()
+
+class UserScore(models.Model):
+	user = models.ForeignKey(User)
+	task = models.ForeignKey(Task)
+	# number of clicks for this task so far
+	clickcount = models.IntegerField() 
+	# score of this task, i.e., task.maxclicks - clickcount
+	score = models.IntegerField()	
+	# number of relevant document found
+	numrel = models.IntegerField()
+	# relevant documents found, stored as json object
+	reldocs = models.TextField()	
+	objects = UserScoreManager()		
 
 

@@ -22,6 +22,7 @@ $('#category_area').ready(function(){
 $('.category').click(function(){
 	ele_id = $(this).attr('id');
 	category_click(ele_id);
+	add_click();
 })
 
 //category tooltip
@@ -55,9 +56,11 @@ function bind_resultlist_listeners(){
 		ele_id = $(this).attr('id');
 		doc_bookmark(ele_id);
 	});
+	//pagination clicked
 	$('.page').click(function(){
 		ele_id = $(this).attr('id');
 		update_pagination(ele_id);
+		add_click();
 	});
 }
 
@@ -206,6 +209,7 @@ function doc_bookmark(ele_id){
                         session_id: session_id,
                         topic_id: topic_id,
                         doc_id: ele_id,
+			task_id: task_id,
                       }
         }).done(function(response) {
 			var responseTime = Date.now() - startRequest;
@@ -246,8 +250,8 @@ function doc_bookmark(ele_id){
 				}
 				notify_feedback(response.feedback);
 			}
-			$("#bookmark_count").html(response.count);
-
+			//$("#bookmark_count").html(response.count);
+			update_user_score(response.userscore);
 			if (response.done == true){
 				submit_complete_task()	
 			}
@@ -259,6 +263,17 @@ function doc_bookmark(ele_id){
 			item += '</div>';
 			RESULTLIST[rankindex]=item;
         });
+}
+
+function update_user_score(userscore){
+//	console.log(userscore.clicksleft);
+	console.log(userscore);
+	$('#clicks_left').html(userscore.clicksleft);
+	$('#rel_found').html(userscore.relnum);
+	$('#pgbar_c').attr('aria-valuenow', userscore.clicksleft);
+	$('#pgbar_c').attr('style', "width:"+userscore.clicks_perc+'%');
+	$('pgbar_t').attr('aria-valuenow', userscore.numrel);
+	$('#pgbar_t').attr('style', "width:"+userscore.rel_perc+'%');
 }
 
 function submit_complete_task(){
@@ -446,5 +461,14 @@ function create_pagination(docs){
 }
 
 
-
+function add_click(){
+        $.ajax({type: "POST",
+                url: add_click_url,
+                data: { 
+			task_id: task_id,
+                }
+        }).done(function(response) {
+		update_user_score(response.userscore);		
+	});
+}
 

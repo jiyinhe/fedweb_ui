@@ -2,7 +2,7 @@
 from django.shortcuts import render_to_response, get_object_or_404, redirect 
 from django.contrib.auth.models import User
 from questionnaire.models import UserProfile
-from fedtask.models import Session, Ranklist, Document, Bookmark, Experiment, Task
+from fedtask.models import Session, Ranklist, Document, Bookmark, Experiment, Task, UserScore
 from django.http import HttpResponseRedirect, HttpResponse, HttpRequest
 from django.core.context_processors import csrf
 from django.core.paginator import Paginator
@@ -100,8 +100,8 @@ def index(request):
 	# for now: these are the first X tasks in the experiment task
 	# list. Could make a separate field. Now we use progress as an
 	# index into the task list. (HACKY)
-	if sess.training_progress < REQ_TRAIN_TASKS:
-		return redirect('%sstudy/task-train/'%settings.HOME_ROOT)
+	#if sess.training_progress < REQ_TRAIN_TASKS:
+	return redirect('%sstudy/task-train/'%settings.HOME_ROOT)
 		
 	# task and task progress, task progress + train progress is an
 	# index in the experiment.exp_tasks list. 
@@ -140,6 +140,8 @@ def get_parameters(request):
 	session_id = current_session.session_id
 
 	task = Task.objects.get_session_task(current_session)
+	# get current user performance in terms of clicks
+	clicksleft, maxclicks, relnum = UserScore.objects.get_score(request.user, task)	
 
 	topic_id = task.topic.topic_id
 	topic_text = task.topic.topic_text
@@ -147,11 +149,12 @@ def get_parameters(request):
 	ui_id = task.ui_id
 	docs = Ranklist.objects.get_ranklist(topic_id, run_id, session_id)	
 	paginator = Paginator(docs,10)
-	bookmarks = Bookmark.objects.get_bookmark_count_wrap(session_id,topic_id)
+	bookmarks = Bookmark.objects.get_bookmark_count_wrap(session_id, topic_id, task.task_id, request.user)
 	# Group docs by category
 	category = process_category_info(docs)
 	c = {	
 		'num_docs': settings.NumDocs,
+		'task_id': task.task_id,	
 		'session_id': session_id,
 		'topic_id': topic_id,
 		'topic_text': topic_text,
@@ -163,6 +166,11 @@ def get_parameters(request):
 		'total_num_docs': len(docs),
 		'category': category,
 		'cate_json': simplejson.dumps(category),
+		'clicksleft': clicksleft,
+		'relnum': relnum,
+		'rel_perc': float(relnum)/float(settings.NumDocs)*100,
+		'maxclicks': maxclicks,
+		'clicks_perc': float(clicksleft)/float(maxclicks)*100,
 	}
 	return c
 
@@ -300,15 +308,40 @@ def register_bookmark(request):
 	if request.is_ajax:
 		data = {'done':False,'count':0,'feedback':"no_feedback"};
 		if request.POST['ajax_event'] == 'bookmark_document':
-			Bookmark.objects.update_bookmark(request)
-			data['count'] = Bookmark.objects.get_bookmark_count(request)
-			if data['count'] >= 10:
-				data['done'] = True
 			# give feedback on correct/incorrect bookmarked documents
 			# in training fase
+			Bookmark.objects.update_bookmark(request)
 			data['feedback']=Bookmark.objects.training_feedback_bookmark(request)
+			# Get bookmark count, and user scores
+			data['count'], data['userscore'] = Bookmark.objects.get_bookmark_count(request, request.user)
+			if data['userscore']['relnum'] >= 10 or data['userscore']['clicksleft']<=0:
+				data['done'] = True
 		json_data = simplejson.dumps(data)		
 		response = HttpResponse(json_data, mimetype="application/json")
 	else:
 		return render_to_response('errors/403.html')
 	return response
+
+
+def add_click(request):
+	# add click to user score
+	if request.is_ajax:
+		UserScore.objects.add_click(request)
+		task = Task.objects.get(task_id=request.POST['task_id'])
+		clicksleft, maxclicks, numrel = UserScore.objects.get_score(request.user.id, task)
+		data = {}
+		data['userscore'] = {
+			'clicksleft': clicksleft,
+			'clicks_perc': float(clicksleft)/float(maxclicks)*100,
+			'numrel': numrel,
+			'rel_perc': float(numrel)/float(settings.NumDocs)*100,
+			}		
+		json_data = simplejson.dumps(data)		
+		response = HttpResponse(json_data, mimetype="application/json")
+	else:
+		return render_to_response('errors/403.html')
+	return response
+
+
+
+

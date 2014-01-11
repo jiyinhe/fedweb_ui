@@ -17,8 +17,11 @@
 	<ul class="list-group">
 		{% for c in category %}
 		<a class="list-group-item category {{c.active}}"
-id="category_{{c.id}}" rel="tooltip"
-data-original-title="{{c.description}}"><span class="glyphicon glyphicon-chevron-right"></span><span class="badge pull-right">{{c.doc_count}}</span><span class="category_name">{{c.name}}</span></a>
+			id="category_{{c.id}}" rel="tooltip"
+			data-original-title="{{c.description}}">
+		<span class="glyphicon glyphicon-chevron-right"></span>
+		<span class="badge pull-right">{{c.doc_count}}</span>
+		<span class="category_name">{{c.name}}</span></a>
 		{% endfor %}
 	</ul>
 	</div>
