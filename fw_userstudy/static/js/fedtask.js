@@ -2,6 +2,8 @@ var RESULTLIST = [];
 var ALLRANKS = [];
 var CURRENTPAGE = 1;
 var PAGESIZE = 10;
+var CURRENT_PAGINATION_START = 1
+var PAGINATION_SIZE = 10
 
 $(document).ready(function(){
 
@@ -35,6 +37,8 @@ $("#docModal").on("hidden.bs.modal", function(){
 	var docid = $('#modal_title').html();
 	ILPSLogging.logEvent("doc_close",{"node_id":docid});
 });
+
+
 });//document
 
 function bind_resultlist_listeners(){
@@ -115,10 +119,6 @@ function load_results(){
         });
 }
 
-//function cache_results(){
-//	RESULTLIST = $('div[id^="rank_"]');
-//}
-
 function create_resultlist(response){
 	var reslist=[];
 	for (var i=0; i<response.length; i++){
@@ -136,14 +136,14 @@ function create_resultlist(response){
 
 		// setup templates and fillers for formatting of a result snippet
 		var doc= [
-['<div id="rank_{0}" class="list-group-item" name="doc-item">',d[0]],
-['<div id="feedback_{0}"></div>', d[1].id],
-['<div id="result-item_{0}" class="result-item">',d[1].id],
-['<div id="{0}_title" name="{1}"class="list-group-item-heading">',[d[1].id,d[1].title]],
-['{0}',bookmark],
-['<span class="doc_title" id="{0}"data-toggle="modal" data-target="#docModal">{1}</span></div>',[d[1].id,d[1].title]],
-['<div class="doc_url" id="url_{0}">{1}</div>',[d[1].id,d[1].url]],
-['<div class="list-group-item-text">{0}</div></div></div>',d[1].summary]];
+	['<div id="rank_{0}" class="list-group-item" name="doc-item">',d[0]],
+	['<div id="feedback_{0}"></div>', d[1].id],
+	['<div id="result-item_{0}" class="result-item">',d[1].id],
+	['<div id="{0}_title" name="{1}"class="list-group-item-heading">',[d[1].id,d[1].title]],
+	['{0}',bookmark],
+	['<span class="doc_title" id="{0}"data-toggle="modal" data-target="#docModal">{1}</span></div>',[d[1].id,d[1].title]],
+	['<div class="doc_url" id="url_{0}">{1}</div>',[d[1].id,d[1].url]],
+	['<div class="list-group-item-text">{0}</div></div></div>',d[1].summary]];
 	
 		// format the result snippet
 		var lines = [];
@@ -172,7 +172,7 @@ function doc_click(ele_id){
         }).done(function(response) {
 			var responseTime = Date.now() - startRequest;
 			ILPSLogging.logEvent("doc_view",{"node_id":ele_id,
-									"query_time_ms":responseTime,});	
+						"query_time_ms":responseTime,});	
 			$("#doc_content").html(response);
         });
 
@@ -211,12 +211,12 @@ function doc_bookmark(ele_id){
 			var responseTime = Date.now() - startRequest;
 			if (selected == 1){
 				ILPSLogging.logEvent("bookmark",{"node_id":ele_id,
-												"query_time_ms":responseTime,
-												 "response":response});
+					"query_time_ms":responseTime,
+				 	"response":response});
 			}else{
 				ILPSLogging.logEvent("unbookmark",{"node_id":ele_id,
-												"query_time_ms":responseTime,
-												"response":response});
+					"query_time_ms":responseTime,
+					"response":response});
 			}
 			// get the doc id (remove '_bookmark' from ele_id
 			doc_id = ele_id.substr(0,ele_id.lastIndexOf("_"));
@@ -280,6 +280,8 @@ function category_click(ele_id){
 	ILPSLogging.setState(state);
 	//reset current_page to 1
 	CURRENTPAGE = 1
+	//reset current_pageination to 1
+	CURRENT_PAGINATION_START = 1
 	//Then regenerate the pagination
 	pagination();
 }
@@ -320,21 +322,30 @@ function update_pagination(ele_id){
 		}
 	}*/
 
+	//update the pagination
+	pagination_html = ''
 	//It doesn't change the result list, just the
 	//pagination options shown in the pagination	
 	//Rotate pagination 1 step, and rebind the listener for logging
 	//and clicking  
 	if (ele_id == 'page_prev'){
-
+		CURRENT_PAGINATION_START = CURRENT_PAGINATION_START-PAGINATION_SIZE;	
+		pagination_html = create_pagination(docs);
 	}
 	else if (ele_id == 'page_next'){
-
+		CURRENT_PAGINATION_START = CURRENT_PAGINATION_START + PAGINATION_SIZE;
+		//create the pagination look
+		pagination_html = create_pagination(docs);
 	}
 	//In this case, the look of pagination doesn't change
 	//but the result list should change.
 	else{
-	
+		CURRENTPAGE = parseInt(ele_id.split('_')[1]);
+		pagination();
 	}
+	//update the look: but not updating the page!
+	$('#pagination').html(pagination_html);
+	bind_resultlist_listeners()
 }
 
 function pagination(){
@@ -408,15 +419,27 @@ function create_pagination(docs){
 	*/
 
 	html.push('<ul class="pagination">');
-	html.push('<li><a id="page_prev" class="page">&laquo; Previous</a></li>');
-
-	var num_pages_show = Math.min(num_pages, 10)
-	for (var i = 1; i <= num_pages_show; i++){
+	if (CURRENT_PAGINATION_START != 1){
+		html.push('<li><a id="page_prev" class="page">&laquo; Previous</a></li>');
+	}
+	// show the first 10 pages in pagination when new pagination is generated
+	//var num_pages_show = Math.min(num_pages, PAGINATION_SIZE)
+	var last_page_show = Math.min(CURRENT_PAGINATION_START + PAGINATION_SIZE-1, num_pages);
+	for (var i = CURRENT_PAGINATION_START; i <= last_page_show; i++){
 		p = $.validator.format('<li><a class="page" id="page_{0}">{1}</a></li>');
+		//set current page
+		if (i == CURRENTPAGE)
+			p = $.validator.format('<li class="active"><a class="page" id="page_{0}">{1}</a></li>');
 		html.push(p(i, i));
 	}
-	html.push('<li><a id="page_next" class="page">Next &raquo; </a></li>');
+	//if there are more than 
+	if (last_page_show < num_pages){
+		html.push('<li><a id="page_next" class="page">More &raquo; </a></li>');
+	}	
 	html.push('</ul>');
-
 	return 	html.join( '\n');
 }
+
+
+
+
