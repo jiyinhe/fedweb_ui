@@ -17,6 +17,7 @@
 	var session_id = {{session_id}};
 	var total_num_docs = {{total_num_docs}};
 	var task_id = {{task_id}};
+	var highscore_url = '{% url fedtask.views.highscores %}';
 	//var docs = eval('('+"{{docs_json|escapejs}}"+')');	
     </script>
    {% block globalvar %}
@@ -25,6 +26,17 @@
 {% endblock %}
 
 {% block navbar %}
+	<div class="navbar-text pull-right instruction ">
+	<a href="{% url fedtask.views.instructions %}" >
+		Instructions
+	</a>
+	</div>	
+	<div class="navbar-text pull-right">
+	<a href="{% url fedtask.views.highscores %}" >
+		Highscores
+		<span class="glyphicon glyphicon-certificate highscore"></span>
+	</a>
+	</div>	
 {% endblock %}
 
 {% block content %}

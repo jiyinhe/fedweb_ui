@@ -253,7 +253,7 @@ function doc_bookmark(ele_id){
 			//$("#bookmark_count").html(response.count);
 			update_user_score(response.userscore);
 			if (response.done == true){
-				submit_complete_task()	
+				submit_complete_task();
 			}
 			// update resultlist cache
 			rankid = $('#result-item_'+doc_id).parent().attr('id');

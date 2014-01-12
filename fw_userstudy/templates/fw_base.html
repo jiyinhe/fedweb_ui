@@ -66,8 +66,7 @@
    {% block header %}
     <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
 	<a class="navbar-brand">FedSearch</a>
-	{% block navbar %}
-	{% endblock %}	
+
 	{% if user.is_authenticated %}
 	<div class="navbar-right">
 	<p class="navbar-text">
@@ -81,8 +80,14 @@
 	</p>
 	</div>
 	{% endif %}
+
+	{% block navbar %}
+	{% endblock %}	
+
     </nav>
+
    {% endblock %}
+
     <div id="content" class="content" >
         {% block content %}{% endblock %}
     </div>

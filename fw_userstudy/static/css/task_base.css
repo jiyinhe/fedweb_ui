@@ -109,3 +109,24 @@ a.category {
 .page{
 	cursor: pointer;
 }
+
+.highscore{
+	font-size: 16px;
+	color: orange;
+	text-shadow: 1px 1px #ff0000;
+}
+.instruction{
+	font-size: 16px;
+}
+
+.scoreboard{
+	font-size: 18px;
+	text-align: center;
+}
+.scoretab{
+	color: #61210B;
+	font-weight: bold;
+}
+.odd{
+	background-color:#CEE3F6;
+}

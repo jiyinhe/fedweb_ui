@@ -135,6 +135,21 @@ def test(request):
 	template = 'fedtask/task_ui%s_test.html'%c['ui_id']
 	return render_to_response(template, c)
 
+def instructions(request):
+	user = request.user
+	c = {'user': user}
+	c.update(csrf(request))
+	template = 'fedtask/instructions.html'
+	return render_to_response(template, c)
+
+def highscores(request):
+	user = request.user
+	last_score, total_score, highscores = UserScore.objects.get_highscores(user)
+	c = {'user': user, 'highscores': highscores, 'last_score':last_score, 'total_score': total_score}
+	c.update(csrf(request))
+	template = 'fedtask/highscores.html'
+	return render_to_response(template, c)
+
 def get_parameters(request):
 	current_session = Session.objects.get_session(request)
 	session_id = current_session.session_id
