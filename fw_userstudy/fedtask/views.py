@@ -144,8 +144,12 @@ def instructions(request):
 
 def highscores(request):
 	user = request.user
-	last_score, total_score, highscores = UserScore.objects.get_highscores(user)
-	c = {'user': user, 'highscores': highscores, 'last_score':last_score, 'total_score': total_score}
+	last_score, total_score, highscores, has_score = UserScore.objects.get_highscores(user)
+	c = {'user': user, 
+		'highscores': highscores, 
+		'last_score':last_score, 
+		'total_score': total_score,
+		'has_score': has_score}
 	c.update(csrf(request))
 	template = 'fedtask/highscores.html'
 	return render_to_response(template, c)

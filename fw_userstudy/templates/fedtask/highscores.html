@@ -5,19 +5,29 @@
 <div class="row">
     <div class="col-md-1"></div>
     <div class="col-md-5">
-	<div class="panel panel-warning">
-	<div class="panel-heading">
+	{% if has_score %}
+		<div class="panel panel-warning">
+		<div class="panel-heading">
 		<h3>Congratulations!</h3> 
-	</div>
-	<div class="panel-body congrats">
-	<p>You have achieved <span class="emph">{{last_score}}</span> points in last round, 
-	and a total of <span class="emph">{{total_score}}</span> points!	
-	</p>
-	</div>
-	</div>
-	<a class="btn btn-success btn-block" href="{% url fedtask.views.index %}"> 
-	Play another round <span class="glyphicon glyphicon-share-alt"></span>
-	</a>
+		</div>
+		<div class="panel-body congrats">
+		<p>You have achieved <span class="emph">{{last_score}}</span> points in last completed round, 
+		and a total of <span class="emph">{{total_score}}</span> points!	
+		</p>
+		</div>
+		</div>
+
+		<a class="btn btn-success btn-block" href="{% url fedtask.views.index %}"> 
+		Play another round <span class="glyphicon glyphicon-share-alt"></span>
+		</a>
+	{% else %}
+		<div class="alert alert-warning">
+		<h3>You have not completed any task yet ...</h3>
+		</div>
+		<a class="btn btn-success btn-block" href="{% url fedtask.views.index %}"> 
+                Let's start now! <span class="glyphicon glyphicon-share-alt"></span>
+                </a>
+	{% endif %}
     </div>
     <div class="col-md-3">
 	<div class="panel panel-primary">
