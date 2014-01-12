@@ -140,3 +140,11 @@ a.category {
 	color: orange;
 	text-shadow: 0px 1px #000000;
 }
+
+.affix-left{
+	width: 250px;
+}
+
+.affix-right{
+	width: 200px;
+}
