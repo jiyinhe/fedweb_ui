@@ -10,6 +10,7 @@
 	var document_url = '{% url fedtask.views.fetch_document %}';
 	var bookmark_url = '{% url fedtask.views.register_bookmark %}';
 	var submit_complete_task_url = '{% url fedtask.views.submit_complete_task %}';
+	var submit_uncomplete_task_url = '{% url fedtask.views.submit_uncomplete_task %}';
 	var add_click_url = '{% url fedtask.views.add_click %}';
 	var topic_id = {{topic_id}};
 	var run_id = {{run_id}};
@@ -113,24 +114,10 @@
 				<span class="glyphicon glyphicon-share-alt"></span>
 			</button>
 			</a>
-		{% block notification %}
-		{% endblock %}
 		</div>
 		{% block rightblock %}
 		{% endblock %}
 	</div>
-	<div class="modal fade" id="docModal" tabindex="-1" role="dialog" aria-labelledby="docModalLabel" aria-hidden="true">
-	  <div class="modal-dialog">
-	    <div class="modal-content">
-		<div class="modal-header">
-       			<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-			<h3 class="modal-title" id="modal_title"></h3>
-		</div>
-		<div class="modal-body" id="doc_content">
-		</div>
-	    </div>
-	  </div>
-	</div>	
 
 </div>
 </div>

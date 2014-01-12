@@ -59,14 +59,14 @@ class RanklistManager(models.Manager):
 		docs = Document.objects.filter(doc_id__in=ranklist)
 		bookmarks = Bookmark.objects.filter(topic_id=topic_id,
 										session_id=session_id)
+		# get the docids, and the relevance of the bookmarks
+		bookmarks = [(b.doc_id.strip("_bookmark"),b.selected_state) for b in bookmarks]
+		bookmarks = dict(bookmarks) # faster lookup
+
 		# get the query for highlighting
 		query = [q.text for q in analyzer(Topic.objects.get(topic_id=topic_id).topic_text)]
-		# get the docids
-		bookmarks = [b.doc_id.strip("_bookmark") for b in bookmarks]
-		bookmarks = set(bookmarks) # faster lookup
+
 		ids = [(d.summary, d.doc_id) for d in docs]	
-		for (sum,id) in ids[:10]:
-			print 
 		docs = [[id_ranklist[d.doc_id], 
 			{
 				'id':d.doc_id, 
@@ -75,7 +75,7 @@ class RanklistManager(models.Manager):
 				'summary':self.get_highlighted_summary(d.summary,query,analyzer,frag,format),
 				'site': d.site.site_name,
 				'category': d.site.category.split(","),
-				'bookmarked': 1 if d.doc_id in bookmarks else 0
+				'bookmarked': bookmarks[d.doc_id] if d.doc_id in bookmarks else 0,
 			}] for d in docs]
 		docs.sort(key=operator.itemgetter(0))
 		
@@ -130,7 +130,7 @@ class TaskManager(models.Manager):
 	def get_session_task(self, sess):
 	    # to get the task we first get the index of the task our
 		# experiment
-		task_index = sess.task_progress + sess.training_progress
+		task_index = sess.task_progress
 		expmnt = Experiment.objects.get(experiment_id=sess.experiment_id)
 		tasks = js.loads(expmnt.exp_tasks)
 		# we get the task_id using the task list and index
@@ -138,13 +138,7 @@ class TaskManager(models.Manager):
 		task = Task.objects.get(task_id=task_id)
 		return task
 
-	def completed_train_task(self, user):
-		sess_id = User.objects.get(username=user).id
-		sess = Session.objects.get(session_id=sess_id)
-		sess.training_progress +=1
-		sess.save()
-
-	def completed_test_task(self, user):
+	def completed_task(self, user):
 		sess_id = User.objects.get(username=user).id
 		sess = Session.objects.get(session_id=sess_id)
 		sess.task_progress +=1
@@ -172,11 +166,10 @@ class SessionManager(models.Manager):
 	def register_session(self, user_id):
 		new_sess = Session(user_id=user_id)
 		return new_sess
-
+	
+	# get user session
 	def get_session_stage(self, user_id):
-		# session may be multiple if we have a within subject design
-		# we use stage to keep track of this
-		qryset = self.filter(user_id=user_id).order_by('-stage')
+		qryset = self.filter(user_id=user_id)
 		if qryset:
 			return qryset[0]
 		else:
@@ -190,7 +183,7 @@ class SessionManager(models.Manager):
 	def completed_pre_qst(self, request):
 		user_id = User.objects.get(username=request.user).id
 		sess = self.get(session_id=user_id)
-		sess.pre_qst_progress=1
+		sess.consent_progress=1
 		sess.save()
 
 class Session(models.Model):
@@ -199,13 +192,9 @@ class Session(models.Model):
 
 	# progress indicates whether a user has completed this step
 	# a zero is not complete, a 1 or higher is complete
-	pre_qst_progress = models.IntegerField() 
-	post_qst_progress = models.IntegerField()
-	training_progress = models.IntegerField()
+	consent_progress = models.IntegerField() 
 	task_progress = models.IntegerField()
-
 	user = models.ForeignKey(User)
-	stage = models.IntegerField()
 	objects = SessionManager()
 
 class BookmarkManager(models.Manager):
@@ -234,56 +223,58 @@ class BookmarkManager(models.Manager):
 
 		return bookmarks.count(), userscore
 
-	def training_feedback_bookmark(self, request):
-		# only in training
-		if "task-train" in request.META['HTTP_REFERER']:
-			sess_id=request.POST['session_id']
-			topic_id=request.POST['topic_id']
-			doc_id=request.POST['doc_id'].strip("_bookmark")
-			state = request.POST['selected_state']
-			user_id = request.user.id
-			task_id = request.POST['task_id']
-			# only feedback if bookmarking not unbookmarking
-			if state == "1":
-				try: # did we bookmark a relevant doc, pos feedback
-					Qrels.objects.get(topic_id=topic_id,doc_id=doc_id)
-					us = UserScore.objects.click_rel(user_id, task_id, doc_id, True, True)
-					return "positive_feedback"
-				except Qrels.DoesNotExist: # otherwise neg feedback
-					us = UserScore.objects.click_rel(user_id, task_id, doc_id, False, True)
-					return "negative_feedback"
-			if state == "0":
-				try:
-					# if a relevant doc is deleted from bookmark
-					Qrels.objects.get(topic_id=topic_id,doc_id=doc_id)
-					us = UserScore.objects.click_rel(user_id, task_id, doc_id, True, False)
-				except Qrels.DoesNotExist:
-					us = UserScore.objects.click_rel(user_id, task_id, doc_id, False, False)
-				return "delete_feedback"
-		return "no_feedback"
+	def get_feedback_bookmark(self, request):
+		topic_id=request.POST['topic_id']
+		doc_id=request.POST['doc_id'].strip("_bookmark")
+		state = request.POST['selected_state']
+		user_id = request.user.id
+		task_id = request.POST['task_id']
+		# if bookmarking
+		if state == "1":
+			try: # did we bookmark a relevant doc, pos feedback
+				Qrels.objects.get(topic_id=topic_id,doc_id=doc_id)
+				us = UserScore.objects.click_rel(user_id, task_id, doc_id, True, True)
+				return 1
+			except Qrels.DoesNotExist: # otherwise neg feedback
+				us = UserScore.objects.click_rel(user_id, task_id, doc_id, False, True)
+				return -1
+		# if unbookmarking
+		if state == "0":
+			try:
+				# if a relevant doc is deleted from bookmark
+				Qrels.objects.get(topic_id=topic_id,doc_id=doc_id)
+				us = UserScore.objects.click_rel(user_id, task_id, doc_id, True, False)
+			except Qrels.DoesNotExist:
+				us = UserScore.objects.click_rel(user_id, task_id, doc_id, False, False)
+		return 0
 
-	def update_bookmark(self, request):
+	def update_bookmark(self, request, feedback):
+		print 'update bookmark'
 		d_id = request.POST['doc_id']
 		s_id = request.POST['session_id']
 		t_id = request.POST['topic_id']
 		state = request.POST['selected_state']
 #		   insert bookmark activity
 		if state == "0": # unregister bookmark
+			print 'state',0
 #		   first find the bookmarked document
 			try:
+				print 'try','state',0
 				b = Bookmark.objects.get(\
 							doc_id=d_id,\
 							session_id=s_id,\
 							topic_id=t_id,\
-							selected_state=1)
+							selected_state=feedback)
 				b.delete()
-			except Bookmark.MultipleObjectsReturned:
+				print 'try','finish','state',0
+			except Exception,e: #Bookmark.MultipleObjectsReturned:
+				print e
 				print "removing all entries of the bookmarks"
 				b = Bookmark.objects.filter(\
 							doc_id=d_id,\
 							session_id=s_id,\
 							topic_id=t_id,\
-							selected_state=1)
+							selected_state=feedback)
 				b.delete() # delete complete queryset
 		else:
 #		   save the new entry for the bookmarked document
@@ -297,7 +288,7 @@ class BookmarkManager(models.Manager):
 					doc_id=d_id,\
 					session_id=s_id,\
 					topic_id=t_id,\
-					selected_state=state)
+					selected_state=feedback)
 				b.save()
 	
 class Bookmark(models.Model):

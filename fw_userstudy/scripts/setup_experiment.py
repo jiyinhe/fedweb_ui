@@ -78,6 +78,14 @@ passwd = DB['PASSWORD']
 database = DB['NAME']
 host = DB['HOST']
 conn = db.db_connect(host, user, passwd, database)
+maxclicks = settings.MaxClicks
+
+qry='set foreign_key_checks=0'
+db.run_qry(qry, conn)
+
+print 'clearing UI table'
+qry = 'delete from fedtask_ui'
+db.run_qry(qry, conn)
 
 print 'Storing UIs'
 qry = 'delete from fedtask_ui'
@@ -85,6 +93,10 @@ db.run_qry(qry, conn)
 for u_id in UI:
 	qry = 'insert into fedtask_ui (ui_id, ui_description) values(%s, "%s")'%(u_id, UI[u_id])
 	db.run_qry(qry, conn)
+
+print 'clearing RUNS table'
+qry = 'delete from fedtask_run'
+db.run_qry(qry, conn)
 
 print 'Storing RUNS'
 qry = 'delete from fedtask_run'
@@ -95,6 +107,9 @@ for run_id in RUNS:
 	db.run_qry(qry, conn)
 
 
+print 'clearing tasks table'
+qry = 'delete from fedtask_task'
+db.run_qry(qry, conn)
 # Make tasks	
 print "Fill task table"
 qry = 'delete from fedtask_task'
@@ -112,12 +127,16 @@ for r in RUNS:
 		expmnt = Experiment_description[expmnt_indx]
 		for t in topics:
 			expmnt["TASKS"].append(task_id)
-			qry = 'insert into fedtask_task (task_id, run_id, topic_id, ui_id) values(%s, %s, %s, %s)'%(task_id, r, t[0], u)
+			qry = 'insert into fedtask_task (task_id, run_id,\
+ topic_id, ui_id, maxclicks) values(%s, %s, %s, %s, %s)\
+'%(task_id, r, t[0], u, maxclicks)
 			db.run_qry(qry, conn)
 			task_id += 1
 		expmnt_indx+=1
-print Experiment_description[0]['TASKS']			
 
+print 'clearing experiment table'
+qry = 'delete from fedtask_experiment'
+db.run_qry(qry, conn)
 # Store the experiments
 print 'Storing experiments'
 qry = 'delete from fedtask_experiment'
@@ -131,6 +150,7 @@ for e in Experiment_description:
 				e['POST'], e['TUT'])
 	db.run_qry(qry, conn)
 
+qry='set foreign_key_checks=1'
 
 
 

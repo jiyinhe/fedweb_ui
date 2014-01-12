@@ -15,7 +15,7 @@ class UserProfileManager(models.Manager):
 	def store_profile(self, request):
 		user_id = User.objects.get(username=request.user).id
 		up = UserProfile(user_id=user_id,
-	                IP="11121212",
+	                IP=request.META['REMOTE_ADDR'],
 	                gender=request.POST['gender'],
 	                year_of_birth=request.POST['age'],
 	                computer_exp=request.POST['computer'],
@@ -23,6 +23,8 @@ class UserProfileManager(models.Manager):
 	                search_exp=request.POST['search'],
 	                education=request.POST['education'],
 	                consent=request.POST['consent'] )
+
+		print request.META['REMOTE_ADDR']
 		up.save()
 
 class UserProfile(models.Model):

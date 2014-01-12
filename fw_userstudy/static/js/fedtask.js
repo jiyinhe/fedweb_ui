@@ -29,32 +29,14 @@ $('.category').click(function(){
 	add_click();
 })
 
-//category tooltip
-$('[rel=tooltip]').tooltip({
-	placement: "auto",
-});
-
 load_results(); // also caches the results
 
 bind_resultlist_listeners();
-// log on close listener
-$("#docModal").on("hidden.bs.modal", function(){
-	var docid = $('#modal_title').html();
-	ILPSLogging.logEvent("doc_close",{"node_id":docid});
-});
 
 
 });//document
 
 function bind_resultlist_listeners(){
-	//When click document title, show document
-	$('.doc_title').click(function(){
-		ele_id = $(this).attr('id');
-		doc_click(ele_id);
-		//set the modal title
-		title = $('#'+ele_id+'_title').attr('name');
-		$('#modal_title').html(title);
-	});
 	//When click bookmark, bookmark document
 	$('.bookmark').click(function(){
 		ele_id = $(this).attr('id');
@@ -98,12 +80,8 @@ function load_results(){
 			state['run_id']=run_id;
 			state['session_id']=session_id;
 			state['results_list'] = ALLRANKS.slice(0,PAGESIZE);
-			state['study_mode'] = 'test';
 			state['query'] = {'query_string':topic_id,
 							  'current_page_n':CURRENTPAGE,};
-			if (training == true){
-				state['study_mode'] = 'training';
-			}
 			ILPSLogging.setState(state);
 			ILPSLogging.userLogin(username,{
 				'n_total_results':RESULTLIST.length, 
@@ -115,9 +93,6 @@ function load_results(){
 			// create_pagination expects a parameter, so we pass
 			// response, it is just to get the lenght
 			$('#pagination').html(create_pagination(response));
-			//clear the modal section
-			$('#modal_title').html('');
-			$('#doc_content').html('');
 
 			//rebind the listner for clicking documents
 			bind_resultlist_listeners();
@@ -131,25 +106,46 @@ function create_resultlist(response){
 	for (var i=0; i<response.length; i++){
 		var d = response[i];
 		// choose bookmarked / not bookmarked glyph style
-		var bookmark = "";
-		if (d[1].bookmarked == 1){
-			// t is the template
-	    	t='<span class="glyphicon glyphicon-star bookmark bookmark-selected" id="{0}_bookmark"></span>'
-			bookmark = $.validator.format(t,d[1].id);
+		// if bookmarked add relevant/not relevant feedback
+		// bookmarked one of {1,0,-1}
+		// 1 is bookmarked and relevant
+		// -1 is bookmarked and not relevant
+		// 0 is not bookmarked
+		// the bookmark icon (star full/empty)
+		var bookmark ='';
+		// t is the template
+		var t = '';
+		// contains the alert class (alert-danger/alert-success/empty)
+		var feedback_alert = '';
+		// contains the icon to display (bookcorrect/bookerror)
+		var feedback_icon = '';
+		// result-item class: result-item-error/ result-item-correct
+		var feedback_result_item =''
+		if (d[1].bookmarked === 1){
+			t='<span class="glyphicon glyphicon-star bookmark bookmark-selected" id="{0}_bookmark"></span>';
+			feedback_alert = ' alert alert-success';
+			feedback_icon = '<span class="bookcorrect glyphicon glyphicon-ok pull-right"></span>';
+			 feedback_result_item ='result-item-correct'
+		}else if (d[1].bookmarked === -1){
+			t='<span class="glyphicon glyphicon-star bookmark bookmark-selected" id="{0}_bookmark"></span>';
+			feedback_alert = ' alert alert-danger';
+			feedback_icon = '<span class="bookerror glyphicon glyphicon-remove pull-right"></span>';
+			 feedback_result_item ='result-item-error'
 		}else{
 			t='<span class="glyphicon glyphicon-star-empty bookmark" id="{0}_bookmark"></span>'
-			bookmark = $.validator.format(t,d[1].id);
 		}
-
+		// format the glyph icon (full/empty)
+		bookmark = $.validator.format(t,d[1].id);
 		// setup templates and fillers for formatting of a result snippet
 		var doc= [
 	['<div id="rank_{0}" class="list-group-item" name="doc-item">',d[0]],
-	['<div id="feedback_{0}"></div>', d[1].id],
-	['<div id="result-item_{0}" class="result-item">',d[1].id],
-	['<div id="{0}_title" name="{1}"class="list-group-item-heading">',[d[1].id,d[1].title]],
+	['<div id="feedback_{0}">{1}</div>', [d[1].id, feedback_icon]],
+	['<div id="result-item_{0}" class="result-item {1}">',[d[1].id, feedback_result_item]],
+	['<div id="{0}_title" name="{1}"class="list-group-item-heading{2}">',
+		[d[1].id, d[1].title, feedback_alert]],
 	['{0}',bookmark],
-	['<span class="doc_title" id="{0}"data-toggle="modal" data-target="#docModal">{1}</span></div>',[d[1].id,d[1].title]],
-	['<div class="doc_url" id="url_{0}">{1}</div>',[d[1].id,d[1].url]],
+	['<span class="doc_title" id="{0}">{1}</span></div>',[d[1].id, d[1].title]],
+	['<div class="doc_url" id="url_{0}">{1}</div>',[d[1].id, d[1].url]],
 	['<div class="list-group-item-text">{0}</div></div></div>',d[1].summary]];
 	
 		// format the result snippet
@@ -195,7 +191,6 @@ function doc_bookmark(ele_id){
 		$('#'+ele_id).addClass('glyphicon-star');
         selected=1;
 		ILPSLogging.logEvent("bookmark_try",{"node_id":ele_id});	
-//		state = ILPSLogging.getState();
 	}
 	else{
 		$('#'+ele_id).removeClass('glyphicon-star');
@@ -216,6 +211,7 @@ function doc_bookmark(ele_id){
 			task_id: task_id,
                       }
         }).done(function(response) {
+			// log time and action
 			var responseTime = Date.now() - startRequest;
 			if (selected == 1){
 				ILPSLogging.logEvent("bookmark",{"node_id":ele_id,
@@ -226,40 +222,30 @@ function doc_bookmark(ele_id){
 					"query_time_ms":responseTime,
 					"response":response});
 			}
+			console.log(response);
 			// get the doc id (remove '_bookmark' from ele_id
 			doc_id = ele_id.substr(0,ele_id.lastIndexOf("_"));
-			// only show feedback when training is true
-			if (training == true){
-				if (response.feedback == "positive_feedback"){
-					$("#"+doc_id+"_title").toggleClass("alert alert-success");
-					$("#result-item_"+doc_id).toggleClass("result-item-correct");
-					$("#feedback_"+doc_id).html(
-					'<span class="bookcorrect glyphicon glyphicon-ok pull-right"></span>'
-					);
-
-				}else if(response.feedback == "negative_feedback"){
-					$("#"+doc_id+"_title").toggleClass("alert alert-danger");
-					$("#result-item_"+doc_id).toggleClass("result-item-error");
-				        $("#feedback_"+doc_id).html( 
-                                        '<span class="bookerror glyphicon glyphicon-remove pull-right"></span>'
-                                        );   
-
-				}else if(response.feedback == "delete_feedback"){
-					$("#"+doc_id+"_title").removeClass("alert alert-danger alert-success");
-					$("#result-item_"+doc_id).removeClass("result-item-correct result-item-error");
-					$("#feedback_"+doc_id).html('');
-				}
-				else{
-					console.log("no_feedback");		
-				}
-				notify_feedback(response.feedback);
+			// remove any previous feedback
+			remove_feedback(doc_id);
+			// show feedback, i.e., whether doc is relevant or not
+			if (response.feedback === 1){
+				add_pos_feedback(doc_id);
+			}else if(response.feedback === -1){
+				add_neg_feedback(doc_id);
+			}else{ 
+				console.log("error, no feedback");
 			}
-			//$("#bookmark_count").html(response.count);
+			
+			// update the score (number of relevant documents found)
 			update_user_score(response.userscore);
+			// if the target of number of relevant documents has been
+			// reached, quit this task. 
 			if (response.done == true){
 				submit_complete_task();
 			}
-			// update resultlist cache
+
+			// update resultlist cache (with feedback and bookmark
+			// decorations)
 			rankid = $('#result-item_'+doc_id).parent().attr('id');
 			rankindex = parseInt(rankid.replace('rank_',''));
 			item = '<div id="'+rankid+'" class="list-group-item" name="doc-item">';
@@ -269,9 +255,28 @@ function doc_bookmark(ele_id){
         });
 }
 
+// helper functions
+// remove any type of feedback from a snippet
+function remove_feedback(doc_id){
+	$("#"+doc_id+"_title").removeClass("alert alert-danger alert-success");
+	$("#result-item_"+doc_id).removeClass("result-item-correct result-item-error");
+	$("#feedback_"+doc_id).html('');
+}
+// add positive feedback to a snippet
+function add_pos_feedback(doc_id){
+	$("#"+doc_id+"_title").toggleClass("alert alert-success");
+	$("#result-item_"+doc_id).toggleClass("result-item-correct");
+	$("#feedback_"+doc_id).html('<span class="bookcorrect glyphicon glyphicon-ok pull-right"></span>');
+}
+// add negative feedback to a snippet
+function add_neg_feedback(doc_id){
+	$("#"+doc_id+"_title").toggleClass("alert alert-danger");
+	$("#result-item_"+doc_id).toggleClass("result-item-error");
+	$("#feedback_"+doc_id).html('<span class="bookerror glyphicon glyphicon-remove pull-right"></span>'	);   
+}
+
 function update_user_score(userscore){
 //	console.log(userscore.clicksleft);
-	console.log(userscore);
 	$('#clicks_left').html(userscore.clicksleft);
 	$('#rel_found').html(userscore.relnum);
 	$('#pgbar_c').attr('aria-valuenow', userscore.clicksleft);
@@ -282,8 +287,14 @@ function update_user_score(userscore){
 
 function submit_complete_task(){
 	console.log("submit complete task")
-	ILPSLogging.logEvent("done",{});
+	ILPSLogging.logEvent("completed_task",{});
 	window.location = submit_complete_task_url;
+}
+
+function submit_uncomplete_task(){
+	console.log("submit uncomplete task")
+	ILPSLogging.logEvent("gave_up_task",{});
+	window.location = submit_uncomplete_task_url;
 }
 
 function category_click(ele_id){

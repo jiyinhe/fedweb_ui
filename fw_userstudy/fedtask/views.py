@@ -18,9 +18,6 @@ import operator
 import simplejson
 import pdb;
 
-# set required number of training tasks
-REQ_TRAIN_TASKS=3
-
 # This is the single entry point after user login
 # basic user life cycle:
 # 	register -> assign user_id -> assign session -> prequestionnaire
@@ -54,22 +51,9 @@ def index(request):
 	# load the tasks for this experiment
 	tasks = simplejson.loads(expmnt.exp_tasks)
 	if not sess: 
-		# nosession means no prequestionnaire 
-		pre_qstnr = 0
-
-		# we have a within subject design so our stage is -1
-		# within could have stage 0,1,2,3, for experiment 0,1,2,3
-		stage = -1
-
 		# set progress for task, new user so no progress
 		task_prog = 0
 		
-		# check in experiment whether training is required otherwise
-		# set to completed. 
-		train_prog  = REQ_TRAIN_TASKS
-		if expmnt.tutorial:
-			train_prog = 0
-
 		# Look in the experiment whether a questionnaire is required
 		# otherwise set progress to completed
 		pre_qst_prog  = 1
@@ -84,60 +68,35 @@ def index(request):
 						experiment_id=expmnt.experiment_id,\
 						user_id = user_id,\
 						task_progress = task_prog,\
-						stage = stage,\
-						training_progress = train_prog,\
-						pre_qst_progress = pre_qst_prog,\
-						post_qst_progress = post_qst_prog)
+						consent_progress = pre_qst_prog)
 		sess.save()
 
-	# now we are sure we have a session now we check for
-	# pre questionnaire  progress
-	# once preqst is finished we set the session flag 
-	if not sess.pre_qst_progress:
+	# now we are sure we have a session now we check
+	# if the user has signed the consent
+	# once consent is finished we set the session flag 
+	if not sess.consent_progress:
 		return redirect('%squestion/pre/'%settings.HOME_ROOT)	
 	
-	# training and training progress, user does 3 training tasks
-	# for now: these are the first X tasks in the experiment task
-	# list. Could make a separate field. Now we use progress as an
-	# index into the task list. (HACKY)
-	#if sess.training_progress < REQ_TRAIN_TASKS:
-	return redirect('%sstudy/task-train/'%settings.HOME_ROOT)
-		
-	# task and task progress, task progress + train progress is an
-	# index in the experiment.exp_tasks list. 
-	if sess.task_progress+sess.training_progress < len(tasks):
-		return redirect('%sstudy/task-work/'%settings.HOME_ROOT)
+	# 
+	# redirect user to play the game 
+	#
+	return redirect('%sstudy/task/'%settings.HOME_ROOT)
 
-	# When all tasks have been done we check whether a post
-	# questionnaire is required
-	if not sess.post_qst_progress:
-		return redirect('%squestion/post/'%settings.HOME_ROOT)
-
-	# finally we thank the user for participating
-	return redirect('%squestion/done/'%settings.HOME_ROOT)	
-
-def train(request):
+def play(request):
 	user = request.user
 	# prepare contexts 
 	c = {'user': user}	
 	context = get_parameters(request)
 	c.update(context)
 	c.update(csrf(request))
-	template = 'fedtask/task_ui%s_train.html'%c['ui_id']
-	return render_to_response(template, c)
-
-def test(request):
-	c = {'user': request.user}	
-	context = get_parameters(request)
-	c.update(context)
-	c.update(csrf(request))
-
-	template = 'fedtask/task_ui%s_test.html'%c['ui_id']
+	template = 'fedtask/task_ui%s_play.html'%c['ui_id']
 	return render_to_response(template, c)
 
 def instructions(request):
 	user = request.user
 	c = {'user': user}
+	context = get_parameters(request)
+	c.update(context)
 	c.update(csrf(request))
 	template = 'fedtask/instructions.html'
 	return render_to_response(template, c)
@@ -150,6 +109,8 @@ def highscores(request):
 		'last_score':last_score, 
 		'total_score': total_score,
 		'has_score': has_score}
+	context = get_parameters(request)
+	c.update(context)
 	c.update(csrf(request))
 	template = 'fedtask/highscores.html'
 	return render_to_response(template, c)
@@ -268,14 +229,13 @@ def process_category_info(docs):
 		i += 1
 	return category 
 
-def submit_complete_task(request):
-	# is the user still training
-	referer = request.META['HTTP_REFERER']
-	if 'task-train' in referer:
-		Task.objects.completed_train_task(request.user)	
-	else:
-		Task.objects.completed_test_task(request.user)
+def submit_uncomplete_task(request):
+	Task.objects.completed_task(request.user)
 	return redirect("/")
+
+def submit_complete_task(request):
+	Task.objects.completed_task(request.user)
+	return redirect("%sstudy/highscores"%settings.HOME_ROOT)
 
 
 def clean_html(html):
@@ -330,25 +290,27 @@ def clean_html(html):
 	return text_final
 
 def register_bookmark(request):
-	print "register bookmark"
-	# TODO: only provide feedback for training, not in test
-	# test whether URL contains "test" or "train"
 	if request.is_ajax:
-		data = {'done':False,'count':0,'feedback':"no_feedback"};
+		# feedback = 0 for unbookmark
+		# feedback = 1 for bookmark of relevant doc
+		# feedback = -1 for bookmark of unrelevant doc
+		data = {'done':False,'count':0,'feedback':0};
 		if request.POST['ajax_event'] == 'bookmark_document':
 			# give feedback on correct/incorrect bookmarked documents
-			# in training fase
-			Bookmark.objects.update_bookmark(request)
-			data['feedback']=Bookmark.objects.training_feedback_bookmark(request)
+			data['feedback']=Bookmark.objects.get_feedback_bookmark(request)
+			print data['feedback']
+			Bookmark.objects.update_bookmark(request, data['feedback'])
+			print 'before'
 			# Get bookmark count, and user scores
 			data['count'], data['userscore'] = Bookmark.objects.get_bookmark_count(request, request.user)
+			print 'here'
 			if data['userscore']['relnum'] >= 10 or data['userscore']['clicksleft']<=0:
 				data['done'] = True
 		json_data = simplejson.dumps(data)		
 		response = HttpResponse(json_data, mimetype="application/json")
+		return response
 	else:
 		return render_to_response('errors/403.html')
-	return response
 
 
 def add_click(request):
