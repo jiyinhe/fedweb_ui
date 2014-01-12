@@ -142,9 +142,9 @@ a.category {
 }
 
 .affix-left{
-	width: 250px;
+	width: 100%;
 }
 
 .affix-right{
-	width: 200px;
+	width: 100%;
 }

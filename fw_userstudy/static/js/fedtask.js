@@ -6,6 +6,10 @@ var CURRENT_PAGINATION_START = 1
 var PAGINATION_SIZE = 1
 
 $(document).ready(function(){
+//var viewportWidth  = $(window).width()
+//  , viewportHeight = $(window).height()
+//console.log(viewportWidth);
+//console.log(viewportHeight);
 
 
 // when done button for training task is pressed update session

@@ -6,7 +6,7 @@ function affixWidth() {
 
     var affixright = $(".affix-right");
     var widthright = affixright.width();
-    var affixright.width(widthright);
+    affixright.width(widthright);
 }
 
 
