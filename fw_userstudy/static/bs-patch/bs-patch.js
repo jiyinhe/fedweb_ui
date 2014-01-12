@@ -1,12 +1,12 @@
 function affixWidth() {
     // ensure the affix element maintains it width
-    var affix = $(".affix-left");
-    var width = affix.width();
-    affix.width(width);	
+    var affixleft = $(".affix-left");
+    var widthleft = affixleft.width();
+    affixleft.width(widthleft);	
 
-    affix = $(".affix-right");
-    width = affix.width();
-    affix.width(width);
+    var affixright = $(".affix-right");
+    var widthright = affixright.width();
+    var affixright.width(widthright);
 }
 
 
