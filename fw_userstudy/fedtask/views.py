@@ -232,12 +232,19 @@ def fetch_document(request):
 
 # Input: ranked document objects [(doc_object, rank)...]
 def process_category_info(docs):
-	cates = [(d[1]['category'], d[0], d[1]['site']) for d in docs]
+	# nested list comprehension:
+	# d[1]['categories'] is a list of categories (c)
+	# for each c we add a rank (d[0]) and the site (d[1]['site'])
+	# eg: d=(12,{'site':'http://url.com','category':['News','Blogs']})
+	# result: [('News',12,'http://url.com'),('Blogs',12,'http://url.com')]
+	cates = [(c, d[0], d[1]['site']) for d in docs for c in d[1]['category'] ]
 	cates.sort(key=operator.itemgetter(0))
 	i = 0
 	all_category = {
 		"name": "All categories",
 		"doc_count": len(docs),
+	# doc_ranks uses original docs list so no double documents here as
+	# we would have when using cates
 		"doc_ranks": sorted([d[0] for d in docs]),
 		"description": 'all documents are available', 
 		"id": 'all',
@@ -246,6 +253,8 @@ def process_category_info(docs):
 	category = [all_category]
 	for k, g in itertools.groupby(cates, lambda x: x[0]):
 		gg = list(g)
+		# here we group by category so double documents each go into
+		# their own category.
 		desc = ', '.join(sorted(list(set([d[2] for d in gg]))))
 		item = {
 			"name": k,

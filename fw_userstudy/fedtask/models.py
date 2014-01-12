@@ -74,7 +74,7 @@ class RanklistManager(models.Manager):
 				'url': d.url if len(d.url)<=80 else d.url[0:80]+'...', 
 				'summary':self.get_highlighted_summary(d.summary,query,analyzer,frag,format),
 				'site': d.site.site_name,
-				'category': d.site.category,
+				'category': d.site.category.split(","),
 				'bookmarked': 1 if d.doc_id in bookmarks else 0
 			}] for d in docs]
 		docs.sort(key=operator.itemgetter(0))

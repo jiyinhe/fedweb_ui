@@ -30,7 +30,7 @@ topicfile = '../../data/FW13-topics.txt'
 # Remember to remove the duplicates in the runfiles
 rundir = '../../data/testruns/nodup'
 # Site categorization
-sitefile = '../../data/resources-FW13-categorization.tsv'
+sitefile = '../../data/official-resources-FW13-categorization.tsv'
 # Qrels
 qrels = '../../data/FW13-QRELS-RM.txt'
 # Snippets: FW13-topics-search/eXXX/topicid.xml
