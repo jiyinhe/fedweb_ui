@@ -1,6 +1,6 @@
 from django.db import models, connection
 from django.contrib.auth.models import User
-from django.db.models import Max
+from django.db.models import Max, Count
 from django.http import HttpRequest, QueryDict
 from whoosh.highlight import highlight, Highlighter, WholeFragmenter, HtmlFormatter
 from whoosh.analysis import FancyAnalyzer
@@ -368,15 +368,16 @@ class UserScoreManager(models.Manager):
 			last_score = us[len(us)-1].score
 			total_score = sum([s.score for s in us])
 		# Get every one's score
-		all_scores = self.filter(numrel=10).values('user').annotate(total_score=Sum('score'))	
+		all_scores = self.filter(numrel=10).values('user').annotate(total_score=Sum('score'), num_tasks=Count('score'))	
 		if len(all_scores) == 0:
 			all_scores = []
 		else:
-			all_scores = [(User.objects.get(id=a['user']).username, a['total_score']) for a in all_scores]
+			all_scores = [(User.objects.get(id=a['user']).username, a['total_score'], a['num_tasks']) for a in all_scores]
 			all_scores.sort(key=lambda x: x[1], reverse=True)
 			all_scores = all_scores[0:10]	
 		row = ["even", "odd"]
-		highscores = [(row[i%2], i+1, all_scores[i][0], all_scores[i][1]) for i in range(len(all_scores))]
+		highscores = [(row[i%2], i+1, all_scores[i][0], all_scores[i][1], all_scores[i][2]) for i in range(len(all_scores))]
+		#print highscores
 		has_score = True
 		if total_score == 0:
 			has_score = False

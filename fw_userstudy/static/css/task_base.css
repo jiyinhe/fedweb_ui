@@ -133,3 +133,10 @@ a.category {
 .congrats{
 	color: #61210B;
 }
+
+.scoreheader{
+	font-weight: bold;
+	background-color: steelblue; 
+	color: orange;
+	text-shadow: 0px 1px #000000;
+}

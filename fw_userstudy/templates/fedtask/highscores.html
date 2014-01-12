@@ -35,12 +35,15 @@
 
   	<!-- Table -->
   	<table class="table scoretab">
+		<tr class="scoreheader">
+			<td>Rank</td><td>Name</td><td>Score</td><td>#Tasks</td>
+		</tr>
 		{% for s in highscores %}
 		<tr class="{{s.0}}">
-			<td></td>
 			<td>{{s.1}}</td>
 			<td>{{s.2}}</td>
 			<td>{{s.3}}</td>
+			<td>{{s.4}}</td>
 		</tr>	
 		{% endfor %}
   	</table>
