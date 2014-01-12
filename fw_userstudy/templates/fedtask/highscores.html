@@ -1,0 +1,42 @@
+{% extends "fedtask/task_base.html" %}
+{% load i18n %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-1"></div>
+    <div class="col-md-5">
+	<div class="panel panel-warning">
+	<div class="panel-heading">
+		<h3>Congratulations!</h3> 
+	</div>
+	<div class="panel-body congrats">
+	<p>You have achieved <span class="emph">{{last_score}}</span> points in last round, 
+	and a total of <span class="emph">{{total_score}}</span> points!	
+	</p>
+	</div>
+	</div>
+	<a class="btn btn-success btn-block" href="{% url fedtask.views.index %}"> 
+	Play another round <span class="glyphicon glyphicon-share-alt"></span>
+	</a>
+    </div>
+    <div class="col-md-3">
+	<div class="panel panel-primary">
+  	<div class="panel-heading scoreboard">High Scores!</div>
+
+  	<!-- Table -->
+  	<table class="table scoretab">
+		{% for s in highscores %}
+		<tr class="{{s.0}}">
+			<td></td>
+			<td>{{s.1}}</td>
+			<td>{{s.2}}</td>
+			<td>{{s.3}}</td>
+		</tr>	
+		{% endfor %}
+  	</table>
+	</div>
+    	</div>
+    <div class="col-md-1"></div>
+</div>
+{% endblock %}
+
