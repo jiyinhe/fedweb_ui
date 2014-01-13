@@ -325,7 +325,7 @@ def add_click(request):
 			'clicks_perc': float(clicksleft)/float(maxclicks)*100,
 			'relnum': numrel,
 			'rel_perc': float(numrel)/float(settings.NumDocs)*100,
-			'rel_to_reach': settings.NumDocs-relnum,
+			'rel_to_reach': settings.NumDocs-numrel,
 			}		
 		json_data = simplejson.dumps(data)		
 		response = HttpResponse(json_data, mimetype="application/json")
