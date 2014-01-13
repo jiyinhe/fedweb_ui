@@ -27,9 +27,9 @@ Experiment_description = [
 	{
 		'ID': 0,  
 		'DESC': 'Understanding user behaviour, the joint effect of UIxRanking\
-				all topics with the same UI basic and run bst',
+				all topics with the same UI basic and run ql',
 		'TASKS': [],
-		'TYPE': 'Thinkaloud',
+		'TYPE': 'Game',
 		'PREQ': True,
 		'POST': False,
 		'TUT': True,
@@ -37,33 +37,13 @@ Experiment_description = [
 	{
 		'ID': 1,  
 		'DESC': 'Understanding user behaviour, the joint effect of UIxRanking\
-				all topics with the same UI basic and run ql',
-		'TASKS': [],
-		'TYPE': 'Thinkaloud',
-		'PREQ': True,
-		'POST': False,
-		'TUT': True,
-	},
-	{
-		'ID': 2,  
-		'DESC': 'Understanding user behaviour, the joint effect of UIxRanking\
-				all topics with the same UI category and run bst',
-		'TASKS': [],
-		'TYPE': 'Thinkaloud',
-		'PREQ': True,
-		'POST': False,
-		'TUT': True,
-	},
-	{
-		'ID': 3,  
-		'DESC': 'Understanding user behaviour, the joint effect of UIxRanking\
 				all topics with the same UI category and run ql',
 		'TASKS': [],
-		'TYPE': 'Thinkaloud',
+		'TYPE': 'Game',
 		'PREQ': True,
 		'POST': False,
 		'TUT': True,
-	}
+	},
 ]
 
 # Set the tasks
