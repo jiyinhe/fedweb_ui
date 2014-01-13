@@ -221,6 +221,7 @@ class BookmarkManager(models.Manager):
 			'clicks_perc': float(clicksleft)/float(maxclicks)*100,
 			'relnum': relnum,
 			'rel_perc': float(relnum)/float(settings.NumDocs)*100,
+			'rel_to_reach': settings.NumDocs-relnum,
 			}
 
 		return bookmarks.count(), userscore

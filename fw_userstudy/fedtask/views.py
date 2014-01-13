@@ -147,6 +147,7 @@ def get_parameters(request):
 		'cate_json': simplejson.dumps(category),
 		'clicksleft': clicksleft,
 		'relnum': relnum,
+		'rel_to_reach': settings.NumDocs-relnum,
 		'rel_perc': float(relnum)/float(settings.NumDocs)*100,
 		'maxclicks': maxclicks,
 		'clicks_perc': float(clicksleft)/float(maxclicks)*100,
@@ -322,8 +323,9 @@ def add_click(request):
 		data['userscore'] = {
 			'clicksleft': clicksleft,
 			'clicks_perc': float(clicksleft)/float(maxclicks)*100,
-			'numrel': numrel,
+			'relnum': numrel,
 			'rel_perc': float(numrel)/float(settings.NumDocs)*100,
+			'rel_to_reach': settings.NumDocs-relnum,
 			}		
 		json_data = simplejson.dumps(data)		
 		response = HttpResponse(json_data, mimetype="application/json")

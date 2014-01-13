@@ -278,10 +278,10 @@ function add_neg_feedback(doc_id){
 function update_user_score(userscore){
 //	console.log(userscore.clicksleft);
 	$('#clicks_left').html(userscore.clicksleft);
-	$('#rel_found').html(userscore.relnum);
+	$('#rel_found').html(userscore.rel_to_reach);
 	$('#pgbar_c').attr('aria-valuenow', userscore.clicksleft);
 	$('#pgbar_c').attr('style', "width:"+userscore.clicks_perc+'%');
-	$('pgbar_t').attr('aria-valuenow', userscore.numrel);
+	$('#pgbar_t').attr('aria-valuenow', userscore.relnum);
 	$('#pgbar_t').attr('style', "width:"+userscore.rel_perc+'%');
 }
 
