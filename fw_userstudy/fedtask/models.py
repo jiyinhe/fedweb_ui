@@ -135,7 +135,7 @@ class TaskManager(models.Manager):
 		tasks = js.loads(expmnt.exp_tasks)
 		# we get the task_id using the task list and index
 		print len(tasks)
-		print task_id
+		print task_index
 		task_id = tasks[task_index]
 		task = Task.objects.get(task_id=task_id)
 		return task
@@ -171,8 +171,6 @@ class SessionManager(models.Manager):
 	
 	# get user session
 	def get_session_stage(self, user_id):
-		for s in self.all():
-			print s
 		qryset = self.filter(user_id=user_id)
 		if qryset:
 			return qryset[0]
