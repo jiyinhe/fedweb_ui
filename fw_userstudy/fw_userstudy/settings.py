@@ -7,6 +7,8 @@ Experment_id = 1
 # Number of relevant docs to be found
 NumDocs = 10
 
+MaxClicks = 100
+
 HOSTNAME = socket.gethostname()
 
 # Check if it's local host of product server, and set debug
@@ -40,7 +42,7 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'fw_userstudy',                      # Or path to database file if using sqlite3.
+        'NAME': 'fw_user_game',                      # Or path to database file if using sqlite3.
         'USER': 'jhe',                      # Not used with sqlite3.
         'PASSWORD': 'jhe',                  # Not used with sqlite3.
         'HOST': '127.0.0.1',                      # Set to empty string for localhost. Not used with sqlite3.

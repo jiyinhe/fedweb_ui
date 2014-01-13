@@ -39,12 +39,18 @@ bind_resultlist_listeners();
 function bind_resultlist_listeners(){
 	//When click bookmark, bookmark document
 	$('.bookmark').click(function(){
-		ele_id = $(this).attr('id');
+		var ele_id = $(this).attr('id');
 		doc_bookmark(ele_id);
 	});
+	//when doc_title is clicked, also bookmark it
+	$('.doc_title').click(function(){
+		var ele_id = $(this).attr('id')+'_bookmark';
+		doc_bookmark(ele_id);
+	})
+
 	//pagination clicked
 	$('.page').click(function(){
-		ele_id = $(this).attr('id');
+		var ele_id = $(this).attr('id');
 		update_pagination(ele_id);
 		add_click();
 	});

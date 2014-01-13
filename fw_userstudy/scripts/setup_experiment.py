@@ -18,7 +18,7 @@ UI = {
 RUNS = {
 #	1: 'run13.bst.nodup',
 #	2: 'run13.ql.nodop'
-	1: 'run13.ql.nodup',
+	3: 'run13.ql.nodup',
 }
 
 # Set the experiment
