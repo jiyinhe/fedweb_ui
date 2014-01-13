@@ -74,6 +74,11 @@
 	</div>
 	<div class="col-md-2">
 		<div class="list-group affix-right" data-spy="affix" data-offset-top="200">
+
+			<a class="list-group-item selected_documents active">
+			<strong>Current topic:</strong> {{topic_text}}
+			</a>
+
                         <a class="list-group-item">
                         <span id="clicks_left" class="badge pull-right">{{clicksleft}}</span>
                                	Clicks left:
@@ -89,6 +94,7 @@
                                 </div>
 
                         </a>
+	
   			<a class="list-group-item">
             		<span id="rel_found" class="badge pull-right">{{num_docs}}</span>
 				Target to reach
@@ -104,17 +110,13 @@
   				</div>
 	
   			</a>
-				
-	  		<a class="list-group-item selected_documents active">
-			<strong>Current topic:</strong> {{topic_text}}
-			</a>
-	
-			<a class="list-group-item selected_documents">
+
+			<!--a class="list-group-item selected_documents">
 			<button type="button" id="done" class="btn btn-success btn-block">
 				<strong>Next topic </strong>
 				<span class="glyphicon glyphicon-share-alt"></span>
 			</button>
-			</a>
+			</a-->
 		</div>
 		{% block rightblock %}
 		{% endblock %}

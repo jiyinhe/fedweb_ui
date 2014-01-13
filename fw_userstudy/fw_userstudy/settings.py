@@ -7,7 +7,7 @@ Experment_id = 1
 # Number of relevant docs to be found
 NumDocs = 10
 
-MaxClicks = 100
+MaxClicks = 50
 
 HOSTNAME = socket.gethostname()
 

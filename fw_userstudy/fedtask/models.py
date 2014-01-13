@@ -352,30 +352,53 @@ class UserScoreManager(models.Manager):
 		us.score = us.task.maxclicks - us.clickcount
 		us.save()
 
-	def get_highscores(self, user):
-		# Get user score
-		us = self.filter(user=user, numrel=10).order_by('task')
+	# The users do not have changes to switch topics
+	# so either they find 10 documents, or the score 0
+	def get_highscores_restrict(self, user):
+		# Get user score. 
+		us = self.filter(user=user).order_by('task')
+		print [(u.score, u.numrel, u.clickcount) for u in us]
 		if len(us) == 0:
+			last_rel_found = 0	
 			last_score = 0
 			total_score = 0
 		else:
+			last_rel_found = us[len(us)-1].numrel
 			last_score = us[len(us)-1].score
+			last_click_counts = us[len(us)-1].clickcount
 			total_score = sum([s.score for s in us])
-		# Get every one's score
+
+		# Get every one's score, only counts completed job
+		# failed job would get 0 points.
 		all_scores = self.filter(numrel=10).values('user').annotate(total_score=Sum('score'), num_tasks=Count('score'))	
 		if len(all_scores) == 0:
 			all_scores = []
 		else:
 			all_scores = [(User.objects.get(id=a['user']).username, a['total_score'], a['num_tasks']) for a in all_scores]
 			all_scores.sort(key=lambda x: x[1], reverse=True)
+			# Get top 10
 			all_scores = all_scores[0:10]	
 		row = ["even", "odd"]
 		highscores = [(row[i%2], i+1, all_scores[i][0], all_scores[i][1], all_scores[i][2]) for i in range(len(all_scores))]
 		#print highscores
+
+		# Check user status
+		# if user has done anything
 		has_score = True
+		completed = False
+		fail = False 
 		if total_score == 0:
 			has_score = False
-		return last_score, total_score, highscores, has_score
+		else:
+			# if it's a fail or success or need to be finished 
+			if last_rel_found == settings.NumDocs:
+				#success
+				completed = True
+			else:
+				if last_score == 0 and last_click_counts>0:
+					fail = True
+
+		return last_score, total_score, highscores, has_score, completed, fail
 
 class UserScore(models.Model):
 	user = models.ForeignKey(User)
