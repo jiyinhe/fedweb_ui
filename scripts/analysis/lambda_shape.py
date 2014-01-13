@@ -6,7 +6,7 @@ import pylab
 import numpy as np
 
 steps = np.array(range(30))
-styles = ['-b', '.-r', '--g', 'x-k']
+styles = ['-b', '.-r', '--g', 'x-m']
 legends = ['$\lambda=1$', '$\lambda=0.1$', '$\lambda=0.01$', '$\lambda=0.001$']
 
 X = steps+1
