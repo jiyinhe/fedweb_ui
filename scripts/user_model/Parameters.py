@@ -4,12 +4,16 @@ Set the parameters for simulation
 
 # ===== Parameters for ExamineModel =====
 e_model_type = ['ExpRank']
-e_lambda = [1, 0.1, 0.01, 0.001] 
+#e_lambda = [1, 0.1, 0.01, 0.001] 
+e_lambda = [0.5, 0.05, 0.005, 0.0005]
+#e_lambda = [1]
 
 # ===== Parameters for FilterModel ======
 uniform = lambda x: [1 for i in range(len(x))]
 ndcg = lambda x: x
 f_prior = [None, ndcg]
+#f_prior = [None]
+
 f_model_type = ['static', 'dynamic']
 #f_model_type = ['dynamic']
 

@@ -73,6 +73,9 @@ class FilterModel:
 		alpha = [p[0] for p in prior]
 		if sum(alpha) == 0:
 			alpha = [float(1)/float(len(prior)) for p in prior]
+		# Otherwise renormalize it to sum up to 1, to avoide NaN
+		alpha = [a/sum(alpha) for a in alpha]
+	
 		# We need to draw sample from a categorical distribution  
 		# Using Dirichlet as prior, we have p|a = (p_1, ..., p_k)~Dir(k, alpha)
 		# P is the parameter of the categorical distribution
@@ -81,6 +84,9 @@ class FilterModel:
 		# In fact here we only need to draw one x at a time
 		# Use the numpy.multinomial function to generate a random value
 		# It seems to be equivelent 
+		#print alpha
+		#print P
+		#print 
 		idx = list(random.multinomial(1, P, size=1)[0]).index(1)	
 		listid = prior[idx][1]
 		#print 'select', idx, listid	
@@ -126,7 +132,7 @@ if __name__ == "__main__":
 			j = 0
 		record = [j, 2, resultlist[j][2][2]]
 		j += 1
-		print record
+		#print record
 		fm.update_prior(record)
 		s.append(fm.select_list())
 	s.sort()

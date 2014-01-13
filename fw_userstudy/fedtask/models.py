@@ -134,6 +134,8 @@ class TaskManager(models.Manager):
 		expmnt = Experiment.objects.get(experiment_id=sess.experiment_id)
 		tasks = js.loads(expmnt.exp_tasks)
 		# we get the task_id using the task list and index
+		print len(tasks)
+		print task_id
 		task_id = tasks[task_index]
 		task = Task.objects.get(task_id=task_id)
 		return task
