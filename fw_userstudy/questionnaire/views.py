@@ -49,7 +49,7 @@ def prequestion(request):
 		'likertscale': range(1,6)}
 	c.update(csrf(request))
 
-	template = 'questionnaire/pre-question.html'
+	template = 'questionnaire/pre-question-simple.html'
 	return render_to_response(template, c)
 
 def postquestion(request):

@@ -7,13 +7,20 @@
 {% endblock %}
 
 {% block content %}
-
 <div class="jumbotron jumbotron-white">
 <div class="container">
 	<div class="row">
+
+	<h3>Welcome!</h3>
+	<p>
+		Thank you for your interest in our game!
+		In this game you can score points by selecting documents in a search interface.
+		After logging in, you can start playing.
+	</p>
+
 	<div class="col-md-6">
 		<div class="alert alert-success bigbox">
-		<h2>I already registered!</h2>
+		<h3>I already registered!</h3>
 		<div class="space10">
 		<p>
 		<form id="loginform" class="form-horizontal" method="post" action="{% url auth_login %}">{% csrf_token %}
@@ -29,7 +36,7 @@
 
 	<div class="col-md-6">
 	<div class="alert alert-danger bigbox">
-		<h2>I am new!</h2>
+		<h3>I am new!</h3>
 		<div class="space10">
 		<form id="#reg_form" class="form-horizontal" role="form" >
 		  <div class="row">
@@ -44,7 +51,8 @@
 		  <div class="row">
     			<label for="email" class="col-sm-4">Email:</label>
     			<div class="col-sm-7">
-      			  <input type="email" class="form-control" id="email" placeholder="Email">
+      			  <input type="email" class="form-control" 
+				id="email" placeholder="Your email will not be shared with others.">
            	  	  <div class="err" id="err_email"></div>	
     			</div>
 			<div id="errsign_email" class="col-sm-1 glyphicon glyphicon-info-sign errsign-valid"></div>
