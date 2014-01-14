@@ -356,7 +356,7 @@ class UserScoreManager(models.Manager):
 	# so either they find 10 documents, or the score 0
 	def get_highscores_restrict(self, user):
 		# Get user score. 
-		us = self.filter(user=user).order_by('task')
+		us = self.filter(user=user).order_by('id')
 		print [(u.score, u.numrel, u.clickcount) for u in us]
 		if len(us) == 0:
 			last_rel_found = 0	
