@@ -97,7 +97,7 @@ def instructions(request):
 	context = get_parameters(request)
 	c.update(context)
 	c.update(csrf(request))
-	template = 'fedtask/instructions.html'
+	template = 'fedtask/instructions-facet.html'
 	return render_to_response(template, c)
 
 def highscores(request):
