@@ -45,7 +45,7 @@ def store_preqst(request):
 
 def prequestion(request):
 	c = {'user': request.user,
-		'ageoptions': range(18,100),
+		'ageoptions': [(1, '18-30'), (2, '31-40'), (3, '41-50'), (4, '51-60'), (5, '61-')],
 		'likertscale': range(1,6)}
 	c.update(csrf(request))
 
