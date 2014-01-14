@@ -9,6 +9,16 @@ NumDocs = 10
 
 MaxClicks = 50
 
+# As a documentation, the age ranges are
+# It is set in the views	
+ageooptions = {
+(1, '18-30'),
+(2, '31-40'),
+(3, '41-50'),
+(4, '51-60'),
+(5, '61-'),
+}
+
 HOSTNAME = socket.gethostname()
 
 # Check if it's local host of product server, and set debug

@@ -15,7 +15,7 @@
 	</div>
 
 	<div class="col-md-10">
-	<h4>Player agreement</h4>
+	<h4><i>Player agreement</i></h4>
 	<blockquote>
 	<p>Thank you for helping us to make search interfaces
 		better. In this pre-questionnaire we would like to get a better
@@ -55,10 +55,10 @@
 		</div>
 		<div class="col-md-4">
 			<div class="btn-group" id="gender_btn">	
-			<label class="btn btn-xs btn-warning likert" id="gender">
+			<label class="btn btn-xs btn-success likert" id="gender">
     			<input type="radio" name="gender" id="gender_M" value="M"> Male
   			</label>
-			<label class="btn btn-xs btn-warning likert" id="gender">
+			<label class="btn btn-xs btn-success likert" id="gender">
     			<input type="radio" name="gender" id="gender_F" value="F"> Female	
   			</label>
 			</div> {# end gender-btns#}
@@ -80,7 +80,7 @@
 		<div class="col-md-4">
 			<div class="btn-group" id="age_btn">	
 			{% for age in ageoptions %}
-			<label class="btn btn-xs btn-warning likert" id="age">
+			<label class="btn btn-xs btn-success likert" id="age">
     			<input type="radio" name="age" id="age_{{age.0}}" value="{{age.0}}">
 			{{age.1}}
   			</label>
@@ -103,23 +103,23 @@
 		</div>
 		<div class="col-md-4">
 		<div class="btn-group" id="education_btn">
-	        	<label class="btn btn-warning btn-xs likert" id="education">
+	        	<label class="btn btn-success btn-xs likert" id="education">
                 	<input type="radio" name="education" id="education_N" value="N">
                		NA
                 	</label>
-		 	<label class="btn btn-warning btn-xs likert" id="education">
+		 	<label class="btn btn-success btn-xs likert" id="education">
                 	<input type="radio" name="education" id="education_H" value="H">
                		Highschool	
                	 	</label>
-		 	<label class="btn btn-warning btn-xs likert" id="education">
+		 	<label class="btn btn-success btn-xs likert" id="education">
                	 	<input type="radio" name="education" id="education_B" value="B">
                		Bachelor
                 	</label>
-		 	<label class="btn btn-warning btn-xs likert" id="education">
+		 	<label class="btn btn-success btn-xs likert" id="education">
                 	<input type="radio" name="education" id="education_M" value="M">
                		Master
                 	</label>
-		 	<label class="btn btn-warning btn-xs likert" id="education">
+		 	<label class="btn btn-success btn-xs likert" id="education">
                 	<input type="radio" name="education" id="education_D" value="D">
                		PhD
                 	</label>
@@ -134,7 +134,7 @@
 		</div>{# end edu row #}
 		</div>{# end edu container #}
 	
-		<div class="container space5"><div class="row"><div class="col-md-10">
+		<div class="container space5"><div class="row"><div class="col-md-9">
 		<br/>
 		<p>Please indicate the extend to which the following
 		statements apply to you on a scale of 1 to 5, where 1 indicates no
@@ -149,7 +149,7 @@
 		<div class="col-md-4">
 			<div class="btn-group" id="computer_btn">	
 			{% for i in likertscale %}
-			<label class="btn btn-xs btn-warning likert" id="computers_{{i}}">
+			<label class="btn btn-xs btn-success likert" id="computers_{{i}}">
     			<input type="radio" name="computer" id="computers_{{i}}" value="{{i}}">
 			{{i}} 
   			</label>
@@ -174,7 +174,7 @@
 		<div class="col-md-4">
 			<div class="btn-group" id="english_btn">	
 			{% for i in likertscale %}
-			<label class="btn btn-xs btn-warning likert" id="english_{{i}}">
+			<label class="btn btn-xs btn-success likert" id="english_{{i}}">
     			<input type="radio" name="english" id="english_{{i}}" value="{{i}}">
 			{{i}} 
   			</label>
@@ -199,7 +199,7 @@
 		<div class="col-md-4">
 			<div class="btn-group" id="search_btn">	
 			{% for i in likertscale %}
-			<label class="btn btn-xs btn-warning likert" id="search_{{i}}">
+			<label class="btn btn-xs btn-success likert" id="search_{{i}}">
     			<input type="radio" name="search" id="search_{{i}}" value="{{i}}">
 			{{i}} 
   			</label>
@@ -216,7 +216,7 @@
 		</div>{# end search container #}
 
 		<div class="container"><div class="row"><div class="col-md-9">
-		<button type ="submit" id="preqst_btn" class="btn btn-primary pull-right">Submit</button>
+		<button type ="submit" id="preqst_btn" class="btn btn-success pull-right">Submit</button>
 		</div></div></div>
 	</div> {# End alert area #}
 	</form> {# end questionnaire #}	

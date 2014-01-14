@@ -20,9 +20,9 @@ $('.likert').click(function(){
 function validate_prequestionnaire_form(){
 	rules = {
 		'consent': {'required': true, 'checkbox': true, 'terms': true },
-		'gender': {'required': true},
-		'age': {'required': true },
-		'education': {'required': true},
+		'gender': {'required': true, 'radio': true},
+		'age': {'required': true, 'radio': true },
+		'education': {'required': true, 'radio': true},
 		'computer': {'required': true, 'radio': true},
 		'english': {'required': true, 'radio': true},
 		'search': {'required': true, 'radio': true},
