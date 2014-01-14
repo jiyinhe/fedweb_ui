@@ -408,7 +408,7 @@ class UserScoreManager(models.Manager):
 					completed = True	
 			# otherwise, it's an uncompleted job	
 			# fail = False, completed = False
-
+		print has_score, completed, fail
 		return last_round_score, total_score, highscores, has_score, completed, fail
 
 class UserScore(models.Model):
