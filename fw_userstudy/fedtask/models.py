@@ -1,13 +1,13 @@
 from django.db import models, connection
 from django.contrib.auth.models import User
-from django.db.models import Max, Count
+from django.db.models import Max, Count,Sum,Q
 from django.http import HttpRequest, QueryDict
 from whoosh.highlight import highlight, Highlighter, WholeFragmenter, HtmlFormatter
 from whoosh.analysis import FancyAnalyzer
 import simplejson as js
 import operator
 from fw_userstudy import settings 
-from django.db.models import Sum
+
 # Create your models here.
 class ExperimentManager(models.Manager):
 	def find_experiment(self, expmnt_id):
@@ -353,7 +353,8 @@ class UserScoreManager(models.Manager):
 
 		# Get every one's score, only counts completed job
 		# failed job would get 0 points.
-		all_scores = self.filter(numrel=10).values('user').annotate(total_score=Sum('score'), num_tasks=Count('score'))	
+		all_scores = self.filter(Q(clickcount=50)|Q(numrel=10)).values('user').annotate(total_score=Sum('score'), num_tasks=Count('score'))	
+		print all_scores
 		if len(all_scores) == 0:
 			all_scores = []
 		else:
@@ -367,7 +368,8 @@ class UserScoreManager(models.Manager):
 
 		# Get user score. 
 		us = self.filter(user=user).order_by('id')
-		#print [(u.score, u.numrel, u.clickcount) for u in us]
+		#number of rounds played
+		rounds = len(us)
 
 		total_clicks = sum([u.clickcount for u in us])
 		total_score = sum([u.score for u in us])
@@ -402,7 +404,7 @@ class UserScoreManager(models.Manager):
 					completed = True	
 			# otherwise, it's an uncompleted job	
 			# fail = False, completed = False
-		return last_round_score, total_score, highscores, has_score, completed, fail
+		return last_round_score, total_score, highscores, has_score, completed, fail, rounds
 
 class UserScore(models.Model):
 	user = models.ForeignKey(User)
@@ -416,5 +418,3 @@ class UserScore(models.Model):
 	# relevant documents found, stored as json object
 	reldocs = models.TextField()	
 	objects = UserScoreManager()		
-
-

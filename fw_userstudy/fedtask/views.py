@@ -103,14 +103,16 @@ def instructions(request):
 
 def highscores(request):
 	user = request.user
-	last_score, total_score, highscores, has_score, completed, fail = UserScore.objects.get_highscores_restrict(user)
+	last_score, total_score, highscores, has_score, completed, fail, rounds = UserScore.objects.get_highscores_restrict(user)
 	c = {'user': user, 
 		'highscores': highscores, 
 		'last_score':last_score, 
 		'total_score': total_score,
 		'has_score': has_score,
 		'completed': completed,
-		'fail': fail}
+		'fail': fail,
+		'rounds': rounds,
+		}
 	context = get_parameters(request)
 	c.update(context)
 	c.update(csrf(request))
