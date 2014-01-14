@@ -2,3 +2,4 @@
 *settings.py
 *downloaded
 *.sql
+*wsgi.py
