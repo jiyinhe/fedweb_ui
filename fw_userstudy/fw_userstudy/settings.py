@@ -30,7 +30,7 @@ ABSOLUTE_URL_OVERRIDES={
 }
 
 # Place where large data is stored, in DB, only store the relative path under this root
-DATA_ROOT = '/Users/jiyinhe/Documents/workspace/fedweb_ui/data/'
+DATA_ROOT = '/scratch1/mbron/sigir2014/fedweb_ui/data/'
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
