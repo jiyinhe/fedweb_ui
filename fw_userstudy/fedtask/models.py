@@ -352,21 +352,10 @@ class UserScoreManager(models.Manager):
 		us.score = us.task.maxclicks - us.clickcount
 		us.save()
 
+
 	# The users do not have changes to switch topics
 	# so either they find 10 documents, or the score 0
 	def get_highscores_restrict(self, user):
-		# Get user score. 
-		us = self.filter(user=user).order_by('id')
-		print [(u.score, u.numrel, u.clickcount) for u in us]
-		if len(us) == 0:
-			last_rel_found = 0	
-			last_score = 0
-			total_score = 0
-		else:
-			last_rel_found = us[len(us)-1].numrel
-			last_score = us[len(us)-1].score
-			last_click_counts = us[len(us)-1].clickcount
-			total_score = sum([s.score for s in us])
 
 		# Get every one's score, only counts completed job
 		# failed job would get 0 points.
@@ -382,23 +371,45 @@ class UserScoreManager(models.Manager):
 		highscores = [(row[i%2], i+1, all_scores[i][0], all_scores[i][1], all_scores[i][2]) for i in range(len(all_scores))]
 		#print highscores
 
+		# Get user score. 
+		us = self.filter(user=user).order_by('id')
+		#print [(u.score, u.numrel, u.clickcount) for u in us]
+
+		total_clicks = sum([u.clickcount for u in us])
+		total_score = sum([u.score for u in us])
+		if len(us) == 0:
+			last_round_clicks = 0
+			last_round_relfound = 0
+			last_round_score = 0
+		else:
+			last_round = us[len(us)-1]
+			last_round_clicks = last_round.clickcount
+			last_round_relfound = last_round.numrel
+			last_round_score = last_round.score
+
 		# Check user status
-		# if user has done anything
 		has_score = True
 		completed = False
-		fail = False 
-		if total_score == 0:
+		fail = False
+ 
+		# If he hasn't click anything, nothing is done
+		if total_clicks  == 0:
 			has_score = False
+
+		# If something has been done, check how far it is
 		else:
-			# if it's a fail or success or need to be finished 
-			if last_rel_found == settings.NumDocs:
+			# check if a task is finished (get 10 rel/no clicks left)
+			if last_round_relfound == settings.NumDocs:
 				#success
 				completed = True
-			else:
-				if last_score == 0 and last_click_counts>0:
+				fail = False
+			elif last_round_clicks == settings.MaxClicks: 
 					fail = True
+					completed = True	
+			# otherwise, it's an uncompleted job	
+			# fail = False, completed = False
 
-		return last_score, total_score, highscores, has_score, completed, fail
+		return last_round_score, total_score, highscores, has_score, completed, fail
 
 class UserScore(models.Model):
 	user = models.ForeignKey(User)

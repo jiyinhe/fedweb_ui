@@ -7,37 +7,37 @@
     <div class="col-md-5">
 	{% if has_score %}
 		{% if completed %}
-		<div class="panel panel-warning">
-		<div class="panel-heading">
-		<h3>Congratulations!</h3> 
-		</div>
-		<div class="panel-body congrats">
-		<p>You have achieved <span class="emph">{{last_score}}</span> points in last completed round, 
-		and a total of <span class="emph">{{total_score}}</span> points!	
-		</p>
-		</div>
-		<a class="btn btn-success btn-block" 
-		href="{% url fedtask.views.index %}">Play another round <span 
-		class="glyphicon glyphicon-share-alt"></span></a>
-		</div>
+			{% if fail %}
+				<div class="alert alert-warning">
+  		                <h3>Hmmm ... it was a tough one. Want to try again? </h3>
+		                </div>
+		                <a class="btn btn-success btn-block" 
+				href="{% url fedtask.views.index %}">Try again! <span 
+				class="glyphicon glyphicon-share-alt"></span></a>
 
-		{% else %}
-		{% if fail %}
-		<div class="alert alert-warning">
-                <h3>Hmmm ... it was a tough one. Want to try again? </h3>
-                </div>
-                <a class="btn btn-success btn-block" 
-		href="{% url fedtask.views.index %}">Try again! <span 
-		class="glyphicon glyphicon-share-alt"></span></a>
-		{% else %}
-                <div class="alert alert-warning">
-                <h3> Good job, but we are not done yet! </h3>
-                </div>
-                <a class="btn btn-success btn-block" 
-                href="{% url fedtask.views.index %}">Back to game <span 
-                class="glyphicon glyphicon-share-alt"></span></a>
+			{% else %}
+				<div class="panel panel-warning">
+				<div class="panel-heading">
+				<h3>Congratulations!</h3> 
+				</div>
+				<div class="panel-body congrats">
+				<p>You have achieved <span class="emph">{{last_score}}</span> points in last completed round, 
+				and a total of <span class="emph">{{total_score}}</span> points!	
+				</p>
+				</div>
+				<a class="btn btn-success btn-block" 
+				href="{% url fedtask.views.index %}">Play another round <span 
+				class="glyphicon glyphicon-share-alt"></span></a>
+				</div>
 
-		{% endif %}
+			{% endif %}
+		{% else %}
+	                <div class="alert alert-warning">
+        	        <h3> Good job, but we are not done yet! </h3>
+               		</div>
+              		<a class="btn btn-success btn-block" 
+         			href="{% url fedtask.views.index %}">Back to game <span 
+             		   	class="glyphicon glyphicon-share-alt"></span></a>
 		{% endif %}
 
 	{% else %}
@@ -47,7 +47,9 @@
 		<a class="btn btn-success btn-block" href="{% url fedtask.views.index %}"> 
                 Let's start now! <span class="glyphicon glyphicon-share-alt"></span>
                 </a>
-	{% endif %}
+	{% endif %}	
+
+
     </div>
     <div class="col-md-3">
 	<div class="panel panel-primary">
