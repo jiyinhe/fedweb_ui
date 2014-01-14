@@ -49,7 +49,7 @@ a.category {
 }
 
 .category-area {
-	overflow: scroll;
+	overflow: auto;
 }
 
 .list-group-item.category{
