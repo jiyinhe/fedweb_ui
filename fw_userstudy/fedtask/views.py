@@ -75,8 +75,8 @@ def index(request):
 	# once consent is finished we set the session flag 
 	if not sess.consent_progress:
 		return redirect('%squestion/pre/'%settings.HOME_ROOT)	
+
 	
-	# 
 	# redirect user to play the game 
 	#
 	return redirect('%sstudy/task/'%settings.HOME_ROOT)
@@ -97,7 +97,8 @@ def instructions(request):
 	context = get_parameters(request)
 	c.update(context)
 	c.update(csrf(request))
-	template = 'fedtask/instructions-facet.html'
+	ui = c['ui_id']
+	template = 'fedtask/instructions%s.html'%ui
 	return render_to_response(template, c)
 
 def highscores(request):
