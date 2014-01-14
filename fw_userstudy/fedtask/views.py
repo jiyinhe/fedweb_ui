@@ -12,7 +12,7 @@ import mimetypes
 from django.core.servers.basehttp import FileWrapper
 import os
 from fw_userstudy import settings
-import re
+import re,sys
 import itertools
 import operator
 import simplejson
@@ -330,12 +330,10 @@ def add_click(request):
 			'rel_perc': float(numrel)/float(settings.NumDocs)*100,
 			'rel_to_reach': settings.NumDocs-numrel,
 			}		
+		if data['userscore']['relnum'] >= 10 or data['userscore']['clicksleft']<=0:
+			data['done'] = True
 		json_data = simplejson.dumps(data)		
 		response = HttpResponse(json_data, mimetype="application/json")
 	else:
 		return render_to_response('errors/403.html')
 	return response
-
-
-
-

@@ -490,6 +490,10 @@ function add_click(){
                 }
         }).done(function(response) {
 		update_user_score(response.userscore);		
+		console.log(response.userscore.clicksleft);
+        if (response.done == true){
+            submit_complete_task();
+        }
 	});
 }
 
