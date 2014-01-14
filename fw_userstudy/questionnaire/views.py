@@ -40,7 +40,7 @@ def store_preqst(request):
 	UserProfile.objects.store_profile(request)
 	# update the session, that we finished the prequestionnaire
 	Session.objects.completed_pre_qst(request)
-	return redirect('%s'%settings.HOME_ROOT)
+	return redirect('%sstudy/instructions/'%settings.HOME_ROOT)
 
 
 def prequestion(request):
