@@ -136,6 +136,7 @@ def get_parameters(request):
 	category = process_category_info(docs)
 	c = {	
 		'num_docs': settings.NumDocs,
+		'task_progress': current_session.task_progress,
 		'task_id': task.task_id,	
 		'session_id': session_id,
 		'topic_id': topic_id,
@@ -301,12 +302,9 @@ def register_bookmark(request):
 		if request.POST['ajax_event'] == 'bookmark_document':
 			# give feedback on correct/incorrect bookmarked documents
 			data['feedback']=Bookmark.objects.get_feedback_bookmark(request)
-			print data['feedback']
 			Bookmark.objects.update_bookmark(request, data['feedback'])
-			print 'before'
 			# Get bookmark count, and user scores
 			data['count'], data['userscore'] = Bookmark.objects.get_bookmark_count(request, request.user)
-			print 'here'
 			if data['userscore']['relnum'] >= 10 or data['userscore']['clicksleft']<=0:
 				data['done'] = True
 		json_data = simplejson.dumps(data)		

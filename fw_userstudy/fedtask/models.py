@@ -134,8 +134,6 @@ class TaskManager(models.Manager):
 		expmnt = Experiment.objects.get(experiment_id=sess.experiment_id)
 		tasks = js.loads(expmnt.exp_tasks)
 		# we get the task_id using the task list and index
-		print len(tasks)
-		print task_index
 		task_id = tasks[task_index]
 		task = Task.objects.get(task_id=task_id)
 		return task
@@ -252,24 +250,20 @@ class BookmarkManager(models.Manager):
 		return 0
 
 	def update_bookmark(self, request, feedback):
-		print 'update bookmark'
 		d_id = request.POST['doc_id']
 		s_id = request.POST['session_id']
 		t_id = request.POST['topic_id']
 		state = request.POST['selected_state']
 #		   insert bookmark activity
 		if state == "0": # unregister bookmark
-			print 'state',0
 #		   first find the bookmarked document
 			try:
-				print 'try','state',0
 				b = Bookmark.objects.get(\
 							doc_id=d_id,\
 							session_id=s_id,\
 							topic_id=t_id,\
 							selected_state=feedback)
 				b.delete()
-				print 'try','finish','state',0
 			except Exception,e: #Bookmark.MultipleObjectsReturned:
 				print e
 				print "removing all entries of the bookmarks"
@@ -408,7 +402,6 @@ class UserScoreManager(models.Manager):
 					completed = True	
 			# otherwise, it's an uncompleted job	
 			# fail = False, completed = False
-		print has_score, completed, fail
 		return last_round_score, total_score, highscores, has_score, completed, fail
 
 class UserScore(models.Model):
