@@ -59,6 +59,10 @@ def clear_tables():
 	qry = 'delete from fedtask_run'
 	db.run_qry(qry, conn)
 
+# django site table
+def fill_django_site():
+    qry = "insert into django_site (domain,name) VALUES ('example.com','example.com');"
+    db.run_qry(qry,conn)       
 
 # Topic table
 def fill_topic_table(topicfile):

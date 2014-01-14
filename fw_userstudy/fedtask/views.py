@@ -83,6 +83,9 @@ def index(request):
 
 def play(request):
 	user = request.user
+	# If not authenticated, redirect to login
+	if not user.is_authenticated():
+		return redirect('%saccounts/login/'%settings.HOME_ROOT)	
 	# prepare contexts 
 	c = {'user': user}	
 	context = get_parameters(request)
@@ -93,6 +96,9 @@ def play(request):
 
 def instructions(request):
 	user = request.user
+	# If not authenticated, redirect to login
+	if not user.is_authenticated():
+		return redirect('%saccounts/login/'%settings.HOME_ROOT)	
 	c = {'user': user}
 	context = get_parameters(request)
 	c.update(context)
@@ -103,16 +109,17 @@ def instructions(request):
 
 def highscores(request):
 	user = request.user
-	last_score, total_score, highscores, has_score, completed, fail, rounds = UserScore.objects.get_highscores_restrict(user)
+	# If not authenticated, redirect to login
+	if not user.is_authenticated():
+		return redirect('%saccounts/login/'%settings.HOME_ROOT)	
+	last_score, total_score, highscores, has_score, completed, fail = UserScore.objects.get_highscores_restrict(user)
 	c = {'user': user, 
 		'highscores': highscores, 
 		'last_score':last_score, 
 		'total_score': total_score,
 		'has_score': has_score,
 		'completed': completed,
-		'fail': fail,
-		'rounds': rounds,
-		}
+		'fail': fail}
 	context = get_parameters(request)
 	c.update(context)
 	c.update(csrf(request))
@@ -236,10 +243,18 @@ def process_category_info(docs):
 	return category 
 
 def submit_uncomplete_task(request):
+	user = request.user
+	# If not authenticated, redirect to login
+	if not user.is_authenticated():
+		return redirect('%saccounts/login/'%settings.HOME_ROOT)	
 	Task.objects.completed_task(request.user)
 	return redirect("/")
 
 def submit_complete_task(request):
+	user = request.user
+	# If not authenticated, redirect to login
+	if not user.is_authenticated():
+		return redirect('%saccounts/login/'%settings.HOME_ROOT)	
 	Task.objects.completed_task(request.user)
 	return redirect("%sstudy/highscores"%settings.HOME_ROOT)
 

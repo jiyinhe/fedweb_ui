@@ -10,35 +10,32 @@
 
 	<div class="col-md-6">
 	<h3>Instructions</h3>
+<p>
+    In this game you collect documents about the <span
+    class="emph">topic</span> at the <span class="emph">top</span> of the
+    page.
+</p>
+<p>
+    Your task is to select <span class="emph">10</span> documents relevant
+    to the topic in as <span class="emph">few</span> clicks as possible.
+</p>
+    <p>
+Select a document by <span class="emph">clicking</span> on it. 
+If it is relevant it will be highlighted in green and a <span class="glyphicon
+glyphicon-ok emph" style="color:green"></span> will appear.  
+If it is not relevant, it will be highlighted in red and a <span class="glyphicon
+glyphicon-remove emph" style="color:red"></span> will appear.
+</p>
 	<p>
-	In the game you should imagine that you want to know more
-	about a topic that is mentioned on top of the page.
-	</p>
-	<p>
-	Your task is to select <span class="emph">10</span> relevant documents about the topic in
-	as <span class="emph">few</span> clicks as possible.
-	</p>
-	
-	<p>Below the description of the topic, a list of different documents
-will be shown. You can click on the documents to indicate that
-you would use that document to gather more information about the
-topic. If you select a relevant document, it will be highlighted
-in green and a <span class="glyphicon glyphicon-ok emph" style="color:green"></span> 
-will appear on the right of the title.
-If the document you selected is not relevant, it will be
-highlighted in red and a <span class="glyphicon glyphicon-remove emph" style="color:red"></span> 
-will appear on the right.
-	</p>
-	<p>
-On the left of the page, you can filter the documents based 
-on the categories they belong to.
-
-On the right of the page, you can see how many clicks you have 
-left (starting with <span class="emph">50</span> clicks) and how many relevant documents 
-you still need to select. The more clicks you have left after 
-selecting 10 relevant documents, the higher your score!
-
-You can check your score at <a href="{% url fedtask.views.highscores %}">Highscores</a>.
+    On the left of the page, you can filter the documents based on the
+categories they belong to.
+    </p>
+    <p>
+    On the right of the page, you can see how many clicks you have left
+(starting with <span class="emph">50</span> clicks) and how many relevant
+documents you still need to select. The more clicks you have left after
+selecting 10 relevant documents, the higher your score!  You can check your
+score at <a href="{% url fedtask.views.highscores %}">Highscores</a>.
 	</p>
 	<!--p>
 If you are not able to find 10 relevant documents in 100 clicks,

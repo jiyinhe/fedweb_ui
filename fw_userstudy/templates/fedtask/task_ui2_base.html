@@ -12,16 +12,16 @@
 
 
 {% block leftblock %}
-	<div class="affix-left" data-spy="affix" data-offset-top="200">
-	<div class="category-area" id="category_area">
-	<ul class="list-group">
+	<div data-ilpslogging-groupid='categorypanel' class="affix-left" data-spy="affix" data-offset-top="200">
+	<div data-ilpslogging-groupid='categorypanel' class="category-area" id="category_area">
+	<ul data-ilpslogging-groupid='categorypanel' class="list-group">
 		{% for c in category %}
-		<a class="list-group-item category {{c.active}}"
+		<a data-ilpslogging-groupid='category_{{c.id}}' class="list-group-item category {{c.active}}"
 			id="category_{{c.id}}" 
 			data-original-title="{{c.description}}">
-		<span class="glyphicon glyphicon-chevron-right"></span>
-		<span class="badge pull-right">{{c.doc_count}}</span>
-		<span class="category_name">{{c.name}}</span></a>
+		<span data-ilpslogging-groupid='category_{{c.id}}' class="glyphicon glyphicon-chevron-right"></span>
+		<span data-ilpslogging-groupid='category_{{c.id}}' class="badge pull-right">{{c.doc_count}}</span>
+		<span data-ilpslogging-groupid='category_{{c.id}}' class="category_name">{{c.name}}</span></a>
 		{% endfor %}
 	</ul>
 	</div>

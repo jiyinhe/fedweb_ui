@@ -128,31 +128,32 @@ function create_resultlist(response){
 		// result-item class: result-item-error/ result-item-correct
 		var feedback_result_item =''
 		if (d[1].bookmarked === 1){
-			t='<span class="glyphicon glyphicon-star bookmark bookmark-selected" id="{0}_bookmark"></span>';
+			t='<span data-ilpslogging-groupid="rank_{0}" class="glyphicon glyphicon-star bookmark bookmark-selected" id="{1}_bookmark"></span>';
 			feedback_alert = ' alert alert-success';
-			feedback_icon = '<span class="bookcorrect glyphicon glyphicon-ok pull-right"></span>';
+			feedback_icon = '<span data-ilpslogging-groupid="rank_{0}" class="bookcorrect glyphicon glyphicon-ok pull-right"></span>';
 			 feedback_result_item ='result-item-correct'
 		}else if (d[1].bookmarked === -1){
-			t='<span class="glyphicon glyphicon-star bookmark bookmark-selected" id="{0}_bookmark"></span>';
+			t='<span data-ilpslogging-groupid="rank_{0}" class="glyphicon glyphicon-star bookmark bookmark-selected" id="{1}_bookmark"></span>';
 			feedback_alert = ' alert alert-danger';
-			feedback_icon = '<span class="bookerror glyphicon glyphicon-remove pull-right"></span>';
+			feedback_icon = '<span data-ilpslogging-groupid="rank_{0}" class="bookerror glyphicon glyphicon-remove pull-right"></span>';
 			 feedback_result_item ='result-item-error'
 		}else{
-			t='<span class="glyphicon glyphicon-star-empty bookmark" id="{0}_bookmark"></span>'
+			t='<span data-ilpslogging-groupid="rank_{0}" class="glyphicon glyphicon-star-empty bookmark" id="{1}_bookmark"></span>'
 		}
 		// format the glyph icon (full/empty)
-		bookmark = $.validator.format(t,d[1].id);
+		bookmark = $.validator.format(t,[d[0],d[1].id]);
+        feedback_icon = $.validator.format(feedback_icon,d[0]);
 		// setup templates and fillers for formatting of a result snippet
 		var doc= [
-	['<div id="rank_{0}" class="list-group-item" name="doc-item">',d[0]],
-	['<div id="feedback_{0}">{1}</div>', [d[1].id, feedback_icon]],
-	['<div id="result-item_{0}" class="result-item {1}">',[d[1].id, feedback_result_item]],
-	['<div id="{0}_title" name="{1}"class="list-group-item-heading{2}">',
-		[d[1].id, d[1].title, feedback_alert]],
+	['<div data-ilpslogging-groupid="rank_{0}" id="rank_{1}" class="list-group-item" name="doc-item">',[d[0],d[0]]],
+	['<div data-ilpslogging-groupid="rank_{0}" id="feedback_{1}">{2}</div>', [d[0],d[1].id, feedback_icon]],
+	['<div data-ilpslogging-groupid="rank_{0}" id="result-item_{1}" class="result-item {2}">',[d[0],d[1].id, feedback_result_item]],
+	['<div data-ilpslogging-groupid="rank_{0}" id="{1}_title" name="{2}" class="list-group-item-heading{3}">',
+		[d[0],d[1].id, d[1].title, feedback_alert]],
 	['{0}',bookmark],
-	['<span class="doc_title" id="{0}">{1}</span></div>',[d[1].id, d[1].title]],
-	['<div class="doc_url" id="url_{0}">{1}</div>',[d[1].id, d[1].url]],
-	['<div class="list-group-item-text">{0}</div></div></div>',d[1].summary]];
+	['<span data-ilpslogging-groupid="rank_{0}" class="doc_title" id="{1}">{2}</span></div>',[d[0],d[1].id, d[1].title]],
+	['<div data-ilpslogging-groupid="rank_{0}" class="doc_url" id="url_{1}">{2}</div>',[d[0],d[1].id, d[1].url]],
+	['<div data-ilpslogging-groupid="rank_{0}" class="list-group-item-text">{1}</div></div></div>',[d[0],d[1].summary]]];
 	
 		// format the result snippet
 		var lines = [];
@@ -228,7 +229,7 @@ function doc_bookmark(ele_id){
 					"query_time_ms":responseTime,
 					"response":response});
 			}
-			console.log(response);
+			//console.log(response);
 			// get the doc id (remove '_bookmark' from ele_id
 			doc_id = ele_id.substr(0,ele_id.lastIndexOf("_"));
 			// remove any previous feedback
@@ -253,8 +254,9 @@ function doc_bookmark(ele_id){
 			// update resultlist cache (with feedback and bookmark
 			// decorations)
 			rankid = $('#result-item_'+doc_id).parent().attr('id');
+			//console.log(rankid);
 			rankindex = parseInt(rankid.replace('rank_',''));
-			item = '<div id="'+rankid+'" class="list-group-item" name="doc-item">';
+			item = '<div data-ilpslogging-groupid="'+rankid+'" id="'+rankid+'" class="list-group-item" name="doc-item">';
 			item += $('#'+rankid).html();
 			item += '</div>';
 			RESULTLIST[rankindex]=item;
@@ -272,13 +274,13 @@ function remove_feedback(doc_id){
 function add_pos_feedback(doc_id){
 	$("#"+doc_id+"_title").toggleClass("alert alert-success");
 	$("#result-item_"+doc_id).toggleClass("result-item-correct");
-	$("#feedback_"+doc_id).html('<span class="bookcorrect glyphicon glyphicon-ok pull-right"></span>');
+	$("#feedback_"+doc_id).html('<span data-ilpslogging-groupid="'+doc_id+'" class="bookcorrect glyphicon glyphicon-ok pull-right"></span>');
 }
 // add negative feedback to a snippet
 function add_neg_feedback(doc_id){
 	$("#"+doc_id+"_title").toggleClass("alert alert-danger");
 	$("#result-item_"+doc_id).toggleClass("result-item-error");
-	$("#feedback_"+doc_id).html('<span class="bookerror glyphicon glyphicon-remove pull-right"></span>'	);   
+	$("#feedback_"+doc_id).html('<span data-ilpslogging-groupid="'+doc_id+'" class="bookerror glyphicon glyphicon-remove pull-right"></span>'	);   
 }
 
 function update_user_score(userscore){
@@ -292,13 +294,13 @@ function update_user_score(userscore){
 }
 
 function submit_complete_task(){
-	console.log("submit complete task")
+	//console.log("submit complete task")
 	ILPSLogging.logEvent("completed_task",{});
 	window.location = submit_complete_task_url;
 }
 
 function submit_uncomplete_task(){
-	console.log("submit uncomplete task")
+	//console.log("submit uncomplete task")
 	ILPSLogging.logEvent("gave_up_task",{});
 	window.location = submit_uncomplete_task_url;
 }
@@ -325,12 +327,12 @@ function category_click(ele_id){
 //Update the result list and pagination when an element 
 //in the pagination is clicked
 function update_pagination(ele_id){
-	var docs = ALLRANKS
-	if (typeof(current_active_category) != 'undefined'){	
-		if (current_active_category != 'category_all'){
-			docs = cate[1+parseInt(current_active_category.replace('category_',''))]['doc_ranks'];
-		}
-	}
+//	var docs = ALLRANKS
+//	if (typeof(current_active_category) != 'undefined'){	
+//		if (current_active_category != 'category_all'){
+//			docs = cate[1+parseInt(current_active_category.replace('category_',''))]['doc_ranks'];
+//		}
+//	}
 	/*
 	if (ele_id == 'pagination_first'){
 		ILPSLogging.paginate(1,CURRENTPAGE);
@@ -363,6 +365,7 @@ function update_pagination(ele_id){
 	//Rotate pagination 1 step, and rebind the listener for logging
 	//and clicking  
 	if (ele_id == 'page_prev'){
+        ILPSLogging.paginate(CURRENTPAGE-1, CURRENTPAGE);
 		CURRENT_PAGINATION_START = CURRENT_PAGINATION_START-PAGINATION_SIZE;	
 		CURRENTPAGE = CURRENT_PAGINATION_START+PAGINATION_SIZE-1;
 		//pagination_html = create_pagination(docs);
@@ -372,8 +375,10 @@ function update_pagination(ele_id){
 
 	}
 	else if (ele_id == 'page_next'){
+        ILPSLogging.paginate(CURRENTPAGE+1, CURRENTPAGE);
 		CURRENT_PAGINATION_START = CURRENT_PAGINATION_START + PAGINATION_SIZE;
 		CURRENTPAGE = CURRENT_PAGINATION_START;
+
 		//create the pagination look
 		//pagination_html = create_pagination(docs);
 		//update the look: but not updating the page!
@@ -385,6 +390,7 @@ function update_pagination(ele_id){
 	//but the result list should change.
 	else{
 		CURRENTPAGE = parseInt(ele_id.split('_')[1]);
+        ILPSLogging.paginate(CURRENTPAGE, CURRENTPAGE);
 		pagination();
 	}
 //	bind_resultlist_listeners()
@@ -400,7 +406,7 @@ function pagination(){
 	$('#n_query_results').html(docs.length);
 	// all future log events wiil have the updated list
 	var state = ILPSLogging.getState();
-	state['results_list'] = docs;
+	state['results_list'] = docs.slice(0,PAGESIZE);
 	ILPSLogging.setState(state);
 
 	var html = [];
@@ -460,22 +466,22 @@ function create_pagination(docs){
 	  '</ul>']
 	*/
 
-	html.push('<ul class="pagination">');
+	html.push('<ul data-ilpslogging-groupid="pagination" class="pagination">');
 	if (CURRENT_PAGINATION_START != 1){
-		html.push('<li><a id="page_prev" class="page">&laquo; Previous</a></li>');
+		html.push('<li><a data-ilpslogging-groupid="pagination" id="page_prev" class="page">&laquo; Previous</a></li>');
 	}
 	// show the first 10 pages in pagination when new pagination is generated
 	var last_page_show = Math.min(CURRENT_PAGINATION_START + PAGINATION_SIZE-1, num_pages);
 	for (var i = CURRENT_PAGINATION_START; i <= last_page_show; i++){
-		p = $.validator.format('<li><a class="page" id="page_{0}">{1}</a></li>');
+		p = $.validator.format('<li><a data-ilpslogging-groupid="pagination" class="page" id="page_{0}">{1}</a></li>');
 		//set current page
 		if (i == CURRENTPAGE)
-			p = $.validator.format('<li class="active"><a class="page" id="page_{0}">{1}</a></li>');
+			p = $.validator.format('<li data-ilpslogging-groupid="pagination" class="active"><a class="page" id="page_{0}">{1}</a></li>');
 		html.push(p(i, i));
 	}
 	//if there are more than 
 	if (last_page_show < num_pages){
-		html.push('<li><a id="page_next" class="page">More &raquo; </a></li>');
+		html.push('<li><a data-ilpslogging-groupid="pagination" id="page_next" class="page">More &raquo; </a></li>');
 	}	
 	html.push('</ul>');
 	return 	html.join( '\n');
@@ -490,7 +496,7 @@ function add_click(){
                 }
         }).done(function(response) {
 		update_user_score(response.userscore);		
-		console.log(response.userscore.clicksleft);
+		//console.log(response.userscore.clicksleft);
         if (response.done == true){
             submit_complete_task();
         }

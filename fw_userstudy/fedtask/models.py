@@ -176,7 +176,7 @@ class SessionManager(models.Manager):
 			return 0
 		
 	def get_session(self, request):
-		user_id = User.objects.get(username=request.user).id
+		user_id = request.user.id #User.objects.get(username=request.user).id
 		sess = self.get(session_id=user_id)
 		return sess
 
@@ -368,8 +368,6 @@ class UserScoreManager(models.Manager):
 
 		# Get user score. 
 		us = self.filter(user=user).order_by('id')
-		#number of rounds played
-		rounds = len(us)
 
 		total_clicks = sum([u.clickcount for u in us])
 		total_score = sum([u.score for u in us])
@@ -404,7 +402,7 @@ class UserScoreManager(models.Manager):
 					completed = True	
 			# otherwise, it's an uncompleted job	
 			# fail = False, completed = False
-		return last_round_score, total_score, highscores, has_score, completed, fail, rounds
+		return last_round_score, total_score, highscores, has_score, completed, fail
 
 class UserScore(models.Model):
 	user = models.ForeignKey(User)
