@@ -190,20 +190,18 @@ function doc_click(ele_id){
 
 //when a document is bookmarked
 function doc_bookmark(ele_id){
-    selected=0;
+    selected=1;
 	//change the class and icon
-	$('#'+ele_id).toggleClass('bookmark-selected');
 	if ($('#'+ele_id).hasClass('glyphicon-star-empty')){
+        $('#'+ele_id).addClass('bookmark-selected');
 		$('#'+ele_id).removeClass('glyphicon-star-empty');
 		$('#'+ele_id).addClass('glyphicon-star');
-        selected=1;
 		ILPSLogging.logEvent("bookmark_try",{"node_id":ele_id});	
 	}
-	else{
-		$('#'+ele_id).removeClass('glyphicon-star');
-		$('#'+ele_id).addClass('glyphicon-star-empty');
-		ILPSLogging.logEvent("unbookmark_try",{"node_id":ele_id});	
-	}
+    else{
+        //ignore clicks when a document is already selected
+        return true;
+    }
 	//send selection to db
 	var startRequest = Date.now();
 	$.ajax({
@@ -220,16 +218,10 @@ function doc_bookmark(ele_id){
         }).done(function(response) {
 			// log time and action
 			var responseTime = Date.now() - startRequest;
-			if (selected == 1){
-				ILPSLogging.logEvent("bookmark",{"node_id":ele_id,
-					"query_time_ms":responseTime,
-				 	"response":response});
-			}else{
-				ILPSLogging.logEvent("unbookmark",{"node_id":ele_id,
-					"query_time_ms":responseTime,
-					"response":response});
-			}
-			//console.log(response);
+            ILPSLogging.logEvent("bookmark",{"node_id":ele_id,
+                "query_time_ms":responseTime,
+                "response":response});
+
 			// get the doc id (remove '_bookmark' from ele_id
 			doc_id = ele_id.substr(0,ele_id.lastIndexOf("_"));
 			// remove any previous feedback
