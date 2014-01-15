@@ -11,13 +11,15 @@
 	<div class="col-md-6">
 	<h3>Instructions</h3>
 <p>
-    In this game you collect documents about the <span
-    class="emph">topic</span> at the <span class="emph">top</span> of the
-    page.
-</p>
+    In this game you collect documents about the <span class="emph">keyword
+    query</span> at the <span class="emph">top</span> of the page.</p>
 <p>
     Your task is to select <span class="emph">10</span> documents relevant
-    to the topic in as <span class="emph">few</span> clicks as possible.
+    to the query in as <span class="emph">few</span> clicks as possible.
+</p>
+<p>
+    We know the majority of relevant documents - your job is to find them as
+    quickly as possible.
 </p>
 <p>
     Select a document by <span class="emph">clicking</span> on it.
@@ -26,14 +28,20 @@
     If it is not relevant, it will be highlighted in red and a <span class="glyphicon
     glyphicon-remove emph" style="color:red"></span> will appear.
 </p>
-
-	<p>
+<p>
     On the right of the page, you can see how many clicks you have left
     (starting with <span class="emph">50</span> clicks) and how many relevant
     documents you still need to select. The more clicks you have left after
     selecting 10 relevant documents, the higher your score!  You can check your
     score at <a href="{% url fedtask.views.highscores %}">Highscores</a>.
-	</p>
+</p>
+<p>
+    What makes a document <span class="emph">relevant</span>? Well, you have to
+    find out. A tip. You may see duplicates and these should be judged
+    independently.
+<!--Only documents in <span class="emph">English</span> are
+    relevant.Also -->
+</p>
 	<!--p>
 If you are not able to find 10 relevant documents in 100 clicks,
 you can have another try with the next topic. If you don't want
@@ -54,10 +62,12 @@ click "next topic" to select a new topic.
 	 <h4>Here you can see how the task will look like</h4>
 	<img src="{% static "img/interface-blurred.jpg" %}" width="100%"/>
 	</div>
+<!--
 	<div class="thumbnail">
 	 <h4>The highscores.</h4>
 	<img src="{% static "img/highscore.jpg" %}" width="100%"/>
 	</div>
+-->
 	</div>
 
 	</div>
