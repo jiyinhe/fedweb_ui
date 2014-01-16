@@ -53,6 +53,7 @@ $('#give_up').click(function(){
 	submit_uncomplete_task();
 });
 
+$('#give_up').tooltip();
 
 });//document
 

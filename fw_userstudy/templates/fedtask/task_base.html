@@ -122,7 +122,11 @@
 	
   			</a>
 			<a id='give_up_area' class="list-group-item {{give_up_hidden}}">
-			<span id="give_up" class="btn btn-danger btn-block"><b>I give up!</b></span>
+			<span id="give_up" class="btn btn-danger btn-block" 
+				data-original-title="Warning: if given up, the remaining clicks in this round will be lost!">
+				<b>I give up!</b>
+			</span>
+
 			</a>
 		</div>
 		{% block rightblock %}
