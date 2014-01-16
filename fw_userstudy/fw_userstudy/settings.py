@@ -9,6 +9,8 @@ NumDocs = 10
 
 MaxClicks = 50
 
+GiveUpThresh = 25
+
 # As a documentation, the age ranges are
 # It is set in the views	
 ageooptions = {
