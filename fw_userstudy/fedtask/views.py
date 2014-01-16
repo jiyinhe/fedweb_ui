@@ -2,7 +2,7 @@
 from django.shortcuts import render_to_response, get_object_or_404, redirect 
 from django.contrib.auth.models import User
 from questionnaire.models import UserProfile
-from fedtask.models import Session, Ranklist, Document, Bookmark, Experiment, Task, UserScore
+from fedtask.models import Session, Ranklist, Document, Bookmark, Experiment, Task, UserScore, Example
 from django.http import HttpResponseRedirect, HttpResponse, HttpRequest
 from django.core.context_processors import csrf
 from django.core.paginator import Paginator
@@ -146,9 +146,6 @@ def get_parameters(request):
 	
 	# Get a positive and a negative example for the current topic
 	# This is a fake example, replace it with the real examples
-	examples = docs[0:2]
-	examples[0][1]['bookmarked'] = -1
-	examples[1][1]['bookmarked'] = 1
 
 	# The give up threhs set in settings.py is when users have at least 
 	# clicked X times. Here we convert it to the left clicks allowed

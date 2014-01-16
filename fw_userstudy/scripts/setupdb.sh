@@ -4,3 +4,4 @@ python manage.py syncdb
 cd scripts
 python prepare_data.py
 python setup_experiment.py
+python get_judged.py
