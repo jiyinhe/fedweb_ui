@@ -44,13 +44,17 @@ tables = ['auth_group',
 
 # Clear all tables
 def clear_tables():
-    for t in tables:
-        print 'Clear %s table'%t
-        qry = 'delete from %s'%t
-        db.run_qry(qry, conn)
-    # drop django_site because it wants to be special
-    qry = 'drop table %s'%"django_site"
-    db.run_qry(qry, conn)
+	qry='set foreign_key_checks=0'
+	db.run_qry(qry,conn)
+	for t in tables:
+		print 'Clear %s table'%t
+		qry = 'delete from %s'%t
+		db.run_qry(qry, conn)
+	# drop django_site because it wants to be special
+	qry = 'drop table %s'%"django_site"
+	db.run_qry(qry, conn)
+	qry='set foreign_key_checks=1'
+	db.run_qry(qry,conn)
 
 clear_tables()
 

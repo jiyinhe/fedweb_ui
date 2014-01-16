@@ -196,6 +196,7 @@ fill_site_table(sitefile)
 fill_run_table(rundir)
 fill_doc_table(snippets, docs)
 fill_qrels_table(qrels)
+#fill_django_site()
 
 
 

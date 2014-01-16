@@ -8,6 +8,17 @@ import simplejson as js
 import operator
 from fw_userstudy import settings 
 
+# util function to highlight queries in a snippet
+def get_highlighted_summary(summary,query, analyzer,frag,format):
+	summary = unicode(summary.replace('\n', ' '))
+	if len(summary) > 350:
+		summary = unicode(summary.replace('\n', ' '))[0:350]+'...'
+	hl = highlight(summary,query,analyzer,frag,format)
+	if hl:
+		return hl
+	else:
+		return summary
+
 # Create your models here.
 class ExperimentManager(models.Manager):
 	def find_experiment(self, expmnt_id):
@@ -72,7 +83,7 @@ class RanklistManager(models.Manager):
 				'id':d.doc_id, 
 				'title': '.' if d.title=='' else d.title, 
 				'url': d.url if len(d.url)<=80 else d.url[0:80]+'...', 
-				'summary':self.get_highlighted_summary(d.summary,query,analyzer,frag,format),
+				'summary':get_highlighted_summary(d.summary,query,analyzer,frag,format),
 				'site': d.site.site_name,
 				'category': d.site.category.split(","),
 				'bookmarked': bookmarks[d.doc_id] if d.doc_id in bookmarks else 0,
@@ -81,15 +92,6 @@ class RanklistManager(models.Manager):
 		
 		return docs 
 
-	def get_highlighted_summary(self,summary,query, analyzer,frag,format):
-		summary = unicode(summary.replace('\n', ' '))
-		if len(summary) > 350:
-			summary = unicode(summary.replace('\n', ' '))[0:350]+'...'
-		hl = highlight(summary,query,analyzer,frag,format)
-		if hl:
-			return hl
-		else:
-			return summary
 
 class Ranklist(models.Model):
 	run = models.ForeignKey(Run)
@@ -442,17 +444,37 @@ class UserScore(models.Model):
 
 class ExampleManager(models.Manager):
 
-    def get_examples(self,topic_id,run_id,session_id): 
-        print topic_id,run_id,session_id
-        pos_id = self.filter(topic_id=topic_id,judgement=1)[0].doc_id;
-        neg_id = self.filter(topic_id=topic_id,judgement=-1)[0].doc_id;
-        print pos_id
-        docs = Ranklist.objects.get_ranklist(topic_id, run_id, session_id)
-        pos_example = [[rank,d] for [rank,d] in docs if d['id'] == pos_id][0]
-        neg_example = [[rank,d] for [rank,d] in docs if d['id'] == neg_id][0]
-        pos_example[1]['bookmarked']=1
-        neg_example[1]['bookmarked']=-1
-        return [pos_example,neg_example] 
+	def get_examples(self,topic_id,run_id,session_id): 
+		pos_id = self.filter(topic_id=topic_id,judgement=1)[0].doc_id;
+		neg_id = self.filter(topic_id=topic_id,judgement=-1)[0].doc_id;
+		#docs = Ranklist.objects.get_ranklist(topic_id, run_id, session_id)
+
+		# setup highlighting
+		frag = WholeFragmenter()
+		analyzer = FancyAnalyzer()
+		format = HtmlFormatter(tagname="b")
+		# get the query for highlighting
+		query = [q.text for q in analyzer(Topic.objects.get(topic_id=topic_id).topic_text)]
+
+		pd = Document.objects.get(doc_id=pos_id)
+		nd = Document.objects.get(doc_id=neg_id)
+		pd =[1,{'id':pd.doc_id, 
+				'title': '.' if pd.title=='' else pd.title, 
+				'url': pd.url if len(pd.url)<=80 else pd.url[0:80]+'...', 
+				'summary':get_highlighted_summary(pd.summary,query,analyzer,frag,format),
+				'site': pd.site.site_name,
+				'category': pd.site.category.split(","),
+				'bookmarked': 1,
+			}]
+		nd =[1,{'id':nd.doc_id, 
+				'title': '.' if nd.title=='' else nd.title, 
+				'url': nd.url if len(nd.url)<=80 else nd.url[0:80]+'...', 
+				'summary':get_highlighted_summary(nd.summary,query,analyzer,frag,format),
+				'site': nd.site.site_name,
+				'category': nd.site.category.split(","),
+				'bookmarked': -1,
+			}]
+		return [pd,nd]
 
 class Example(models.Model):
     topic = models.ForeignKey(Topic)
