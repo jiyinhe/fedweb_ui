@@ -416,3 +416,26 @@ class UserScore(models.Model):
 	# relevant documents found, stored as json object
 	reldocs = models.TextField()	
 	objects = UserScoreManager()		
+
+class ExampleManager(models.Manager):
+
+    def get_examples(self,topic_id,run_id,session_id): 
+        print topic_id,run_id,session_id
+        pos_id = self.filter(topic_id=topic_id,judgement=1)[0].doc_id;
+        neg_id = self.filter(topic_id=topic_id,judgement=-1)[0].doc_id;
+        print pos_id
+        docs = Ranklist.objects.get_ranklist(topic_id, run_id, session_id)
+        pos_example = [[rank,d] for [rank,d] in docs if d['id'] == pos_id][0]
+        neg_example = [[rank,d] for [rank,d] in docs if d['id'] == neg_id][0]
+        pos_example[1]['bookmarked']=1
+        neg_example[1]['bookmarked']=-1
+        return [pos_example,neg_example] 
+
+class Example(models.Model):
+    topic = models.ForeignKey(Topic)
+    doc = models.ForeignKey(Document)
+# one of {-1,1} indicating relevant non relevant
+    judgement = models.IntegerField()
+# one of {0,1,3,7} indicating relevance level 0 lowest and 7 highest
+    relevance = models.IntegerField()
+    objects = ExampleManager()		

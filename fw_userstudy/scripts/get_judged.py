@@ -43,14 +43,17 @@ def produce_judgement_list():
 #    output_csv(judgement_list)
     examples = click_based_examples(judgement_list)
     qrel_based_examples(examples, qrels)
+    create_table(examples)
 
 
 def create_table(examples):
     rows = examples.items()
     rows.sort()
-    qry = "insert into fedtask_examples (topic_id, doc_id, rel, cnt, use) VALUES (%d, %d, %d, %d, %d);"
+    qry = "insert into fedtask_example (topic_id, doc_id, judgement, relevance) VALUES (%d, '%s', %d, %d);"
     for (k,v) in rows:
-        print k,v
+        val = (k[0],v[1],k[1],v[2])
+        print qry%val
+        db.run_qry(qry%val,conn)
 
 # find examples based on the frequency that users clicked a particular document
 # for a topic. Produces a dictionary with two keys for each topic, i.e., a
