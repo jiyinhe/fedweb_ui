@@ -143,6 +143,12 @@ def get_parameters(request):
 	bookmarks = Bookmark.objects.get_bookmark_count_wrap(session_id, topic_id, task.task_id, request.user)
 	# Group docs by category
 	category = process_category_info(docs)
+	
+	# Get a positive and a negative example for the current topic
+	# This is a fake example, replace it with the real examples
+	examples = docs[0:2]
+	examples[0][1]['bookmarked'] = -1
+	examples[1][1]['bookmarked'] = 1
 	c = {	
 		'num_docs': settings.NumDocs,
 		'task_progress': current_session.task_progress,
@@ -164,9 +170,11 @@ def get_parameters(request):
 		'rel_perc': float(relnum)/float(settings.NumDocs)*100,
 		'maxclicks': maxclicks,
 		'clicks_perc': float(clicksleft)/float(maxclicks)*100,
+		'examples': simplejson.dumps(examples),
 	}
 	return c
 
+# Is this function actually used?
 def fetch_results(request):
 	current_session = Session.objects.get_session(request)
 	session_id = current_session.session_id

@@ -33,8 +33,30 @@ load_results(); // also caches the results
 
 bind_resultlist_listeners();
 
+//create examples
+create_example();
+
+//hide/show examples
+$('#hide_examples').click(function(){
+	if ($(this).text() == 'Hide examples'){
+		$('#examples').collapse('hide');
+		$(this).text('Show examples');
+	}
+	else{
+		$('#examples').collapse('show');
+		$(this).text('Hide examples');
+	}	
+});
+
 
 });//document
+
+
+
+function create_example(){
+	var html_eg = create_resultlist(examples);
+	$('#examples').html(html_eg.join('\n'));	
+}
 
 function bind_resultlist_listeners(){
 	//When click bookmark, bookmark document

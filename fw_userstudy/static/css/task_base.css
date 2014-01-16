@@ -9,6 +9,12 @@ span.emph {
 	font-size:20px;
 }
 
+.example_desc{
+	font-size:15px;
+	color: green;	
+	font-weight: bold;
+}
+
 .doc_title {
 	font-size:17px;
 	color: blue;

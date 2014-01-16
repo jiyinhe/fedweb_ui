@@ -19,7 +19,7 @@
 	var total_num_docs = {{total_num_docs}};
 	var task_id = {{task_id}};
 	var highscore_url = '{% url fedtask.views.highscores %}';
-	//var docs = eval('('+"{{docs_json|escapejs}}"+')');	
+	var examples = eval('('+"{{examples|escapejs}}"+')');	
     </script>
    {% block globalvar %}
    {% endblock %}
@@ -60,6 +60,16 @@
 			<div data-ilpslogging-groupid='taskpanel' class="panel-body">
 				<div data-ilpslogging-groupid='taskpanel' class="topic-text">{{topic_text}}</div>
 			</div>	
+			<div class="list-group">
+				<div id="desc_example" class="list-group-item example_desc">Example relevant and irrelevant results: 
+					<span id="hide_examples" class="btn btn-xs btn-success pull-right" data-toggle="collapse" data-target="#example">
+						Hide examples
+					</span>
+				</div>
+				<div id="examples" class="collapse in">
+				</div>
+			</div>
+
 		</div>
 
 		<div data-ilpslogging-groupid='resultscounter' class="topic-info">Number of results found:
