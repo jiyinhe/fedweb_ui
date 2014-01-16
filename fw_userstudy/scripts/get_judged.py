@@ -18,12 +18,57 @@ passwd = DB['PASSWORD']
 database = DB['NAME']
 host = DB['HOST']
 conn = db.db_connect(host, user, passwd, database)
+QRELSFILE = "../../data/FW13-QRELS-RM.txt"
 
 def produce_judgement_list():
-	judgements = get_judgements()
-	snippets = get_snippets()
-	judgement_list = combine(judgements,snippets)
-	output(judgement_list)
+    judgements = get_judgements()
+    snippets = get_snippets()
+#    qrels = get_qrels()        
+    qrels = get_qrels_from_file(QRELSFILE)        
+    judgement_list = combine(judgements,snippets,qrels)
+#    output(judgement_list)
+#    output_csv(judgement_list)
+    table = create_table(judgement_list)
+    fill_missing(table, qrels)
+    rows = table.items()
+    rows.sort()
+    for (k,v) in rows:
+        print k,v
+
+def create_table(judgement_list):
+    qry = "insert into fedtask_examples (topic_id, doc_id, rel, cnt, use) VALUES (%d, %d, %d, %d, %d);"
+    j_list = groupby(judgement_list, key=lambda x: (x[0],x[2]))
+    table = {}
+    for  k,g in j_list:
+        (tID,jdg) = k
+        #print "k:", k
+        if jdg == -1: # neg example sort on frequency
+            max = sorted(list(g), key=lambda x: x[3],reverse=True)
+        else: # pos example sort on relevance
+            max = sorted(list(g), key=lambda x: (x[4],x[3]),reverse=True)
+        (tID,dID,jdg,cnt,rel,tle,url,sum) = max[0]
+#        print "max:", [(tID,dID,jdg,cnt,rel) for (tID,dID,jdg,cnt,rel,tle,url,sum) in max[:3]]
+#        db.run_qry(qry%(tID,dID,cnt,rel),conn)
+#        print "max:", max[0]
+        table[(tID,jdg)]=(tID,dID,rel)
+    return table
+
+def fill_missing(table,qrels):
+    qrels = [(tID,rel,dID) for ((tID,dID),rel) in qrels]
+    qrels.sort()        
+    qrels = groupby(qrels,key=lambda x: x[0])
+    for k,g in qrels:
+        group = list(g)
+        group.sort()
+        min = group[0]
+        max = group[-1]
+        if not (k,-1) in table:
+            tID,rel,dID = min
+            table[(tID,-1)]=(tID,dID,rel)                
+        if not (k,1) in table:
+            tID,rel,dID = max
+            table[(tID,1)]=(tID,dID,rel)                
+
 
 
 def get_judgements():
@@ -33,9 +78,12 @@ def get_judgements():
 	# r[3]: strip the _bookmark suffix form doc id
 	# r[4]: turn long judgement one of {-1L,1L} into integer
 	judgements = [(int(r[2]),r[3].strip("_bookmark"),int(r[4])) for r in res]
-	judgements = sorted(judgements, key=lambda x: x)
-	for k, g in groupby(judgements, key=lambda x: x):
-		print k , len(list(g)), list(g) 
+	# sort first on topic ID, then docID then relevance
+	judgements = sorted(judgements, key=lambda x: (x[0],x[1],x[2]))
+	# groupby topicID,docID,rel and count the group lengths
+	judgements = [(k[0],k[1],k[2],len(list(g))) for k, g in groupby(judgements, key=lambda x: (x[0],x[1],x[2]))]
+	# sort again now also with group length
+	judgements = sorted(judgements, key=lambda x: (x[0],x[2],x[1]))
 	return judgements
 
 def get_snippets():
@@ -49,16 +97,55 @@ def get_snippets():
 	snippets = [(r[0],(r[2],r[3],r[4])) for r in res]
 	return snippets
 
-def combine(judgements,snippets):
-	sd = dict(snippets)
-	for (tID,dID,jdg) in judgements:
-		(tle,sum,url) = sd[dID]
-		print tID, dID, tle, url, sum
+def get_qrels_from_file(file): 
+    fh = open(file,'r')
+    text = fh.read() 
+    fh.close()
+    lines = text.split("\n")
+    qrels = []
+    for l in lines:
+        l = l.strip()
+        if l:
+            tID,void,dID,rel = l.split()
+            qrels.append(((int(tID),dID),int(rel)))
+    return qrels
 
-	return []
+def get_qrels():
+    qry = "select * from fedtask_qrels"
+    res = db.run_qry_with_results(qry,conn)       
+# r[1] topicID
+# r[2] doc id
+# r[3] relevance
+# put as key-value pair for easy dict creation
+    qrels = [((int(r[1]),r[2]),int(r[3])) for r in res]
+    return qrels
+
+def combine(judgements,snippets,qrels):
+    sd = dict(snippets)
+    qd = dict(qrels)
+    combined = []       
+    for (tID,dID,jdg,cnt) in judgements:
+        (tle,sum,url) = sd[dID]
+        k = (tID,dID)            
+        rel = 0
+        if k in qd: 
+            rel = qd[k]
+        combined.append((tID, dID, jdg, cnt, rel, tle, url, sum))
+    return combined
 
 def output(judgement_list):
-	pass
+    for (tID,dID,jdg,cnt, rel, tle,url,sum) in judgement_list:
+        print tID, dID, jdg, cnt, rel
+#        print tle[:80]
+#        print url
+#        print sum[:350]
+#        print
+
+def output_csv(judgement_list):
+    t = "'%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s'"        
+    for (tID,dID,jdg,cnt,rel,tle,url,sum) in judgement_list:
+        print t%(str(tID), str(dID), str(jdg), str(cnt),str(rel),tle[:80].replace(","," ").replace('\n'," "),url.replace(","," ").replace('\n'," "),sum[:350].replace(","," ").replace('\n'," "))
+
 
 produce_judgement_list()
 
