@@ -20,6 +20,7 @@
 	var task_id = {{task_id}};
 	var highscore_url = '{% url fedtask.views.highscores %}';
 	var examples = eval('('+"{{examples|escapejs}}"+')');	
+	var give_up_thresh = {{give_up_thresh}};
     </script>
    {% block globalvar %}
    {% endblock %}
@@ -120,7 +121,9 @@
   				</div>
 	
   			</a>
-
+			<a id='give_up_area' class="list-group-item {{give_up_hidden}}">
+			<span id="give_up" class="btn btn-danger btn-block"><b>I give up!</b></span>
+			</a>
 		</div>
 		{% block rightblock %}
 		{% endblock %}

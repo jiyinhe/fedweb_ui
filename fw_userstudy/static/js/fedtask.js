@@ -48,6 +48,11 @@ $('#hide_examples').click(function(){
 	}	
 });
 
+//when give_up is clicked
+$('#give_up').click(function(){
+	submit_uncomplete_task();
+});
+
 
 });//document
 
@@ -305,6 +310,10 @@ function update_user_score(userscore){
 	$('#pgbar_c').attr('style', "width:"+userscore.clicks_perc+'%');
 	$('#pgbar_t').attr('aria-valuenow', userscore.relnum);
 	$('#pgbar_t').attr('style', "width:"+userscore.rel_perc+'%');
+	
+	//after updating the score, check if the score is above the give up thresh
+	if (userscore.clicksleft < give_up_thresh )
+		$('#give_up_area').removeClass('hidden');
 }
 
 function submit_complete_task(){

@@ -347,14 +347,18 @@ class UserScoreManager(models.Manager):
 		us.save()
 
 
-	# The users do not have changes to switch topics
-	# so either they find 10 documents, or the score 0
-	def get_highscores_restrict(self, user):
+	# Scoring rule:
+	# - only count completed tasks
+	# - a task is completed if the user has found requested number of relevant docs
+	#   or has used up his clicks
+	# - a task is incomplete if the user gives up 
+	# In both cases: give up or use up clicks, it's 0 score
 
+	def get_highscores_restrict(self, user):
 		# Get every one's score, only counts completed job
 		# failed job would get 0 points.
-		all_scores = self.filter(Q(clickcount=50)|Q(numrel=10)).values('user').annotate(total_score=Sum('score'), num_tasks=Count('score'))	
-		print all_scores
+		all_scores = self.filter(Q(clickcount=settings.MaxClicks)|Q(numrel=settings.NumDocs)).values('user').annotate(total_score=Sum('score'), num_tasks=Count('score'))	
+
 		if len(all_scores) == 0:
 			all_scores = []
 		else:
@@ -362,25 +366,29 @@ class UserScoreManager(models.Manager):
 			all_scores.sort(key=lambda x: x[1], reverse=True)
 			# Get top 10
 			all_scores = all_scores[0:10]	
+
 		row = ["even", "odd"]
 		highscores = [(row[i%2], i+1, all_scores[i][0], all_scores[i][1], all_scores[i][2]) for i in range(len(all_scores))]
-		#print highscores
 
-		# Get user score. 
+
+		# Get current user's scores after the last round
 		us = self.filter(user=user).order_by('id')
-
+		# Check if the user has done anything
 		total_clicks = sum([u.clickcount for u in us])
-		total_score = sum([u.score for u in us])
+		# also get the total score, only include finished runs
+		total_score = sum([s.score for s in self.filter(Q(clickcount=settings.MaxClicks)|Q(numrel=settings.NumDocs)).filter(user=user)])	
+		
 		if len(us) == 0:
 			last_round_clicks = 0
 			last_round_relfound = 0
 			last_round_score = 0
+			giveup = 0
 		else:
 			last_round = us[len(us)-1]
 			last_round_clicks = last_round.clickcount
 			last_round_relfound = last_round.numrel
 			last_round_score = last_round.score
-
+			giveup = last_round.giveup
 		# Check user status
 		has_score = True
 		completed = False
@@ -394,15 +402,26 @@ class UserScoreManager(models.Manager):
 		else:
 			# check if a task is finished (get 10 rel/no clicks left)
 			if last_round_relfound == settings.NumDocs:
-				#success
+			#success
 				completed = True
 				fail = False
-			elif last_round_clicks == settings.MaxClicks: 
+
+			# fail: used up clicks or given up 
+			elif last_round_clicks == settings.MaxClicks or giveup == 1: 
 					fail = True
 					completed = True	
+			
 			# otherwise, it's an uncompleted job	
 			# fail = False, completed = False
 		return last_round_score, total_score, highscores, has_score, completed, fail
+
+	def register_giveup(self, user):
+		sess_id = user.id
+		sess = Session.objects.get(session_id=sess_id)
+		task = Task.objects.get_session_task(sess)		 
+		us = self.get(user=user, task=task)
+		us.giveup = 1
+		us.save()
 
 class UserScore(models.Model):
 	user = models.ForeignKey(User)
@@ -415,4 +434,8 @@ class UserScore(models.Model):
 	numrel = models.IntegerField()
 	# relevant documents found, stored as json object
 	reldocs = models.TextField()	
+	# whether user has given up
+	giveup = models.IntegerField(default=0)
 	objects = UserScoreManager()		
+		
+
