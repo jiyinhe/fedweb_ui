@@ -14,19 +14,24 @@
     In this game you collect documents about the <span class="emph">keyword
     query</span> at the <span class="emph">top</span> of the page.</p>
 <p>
-    Your task is to select <span class="emph">10</span> documents relevant
-    to the query in as <span class="emph">few</span> clicks as possible.
+    Your task is to click on <span class="emph">10</span> documents relevant to
+    the query in as <span class="emph">few clicks</span>  as possible.
 </p>
 <p>
-    The persons who have posted these queries have already marked the documents
-    they found relevant - your job is to locate these documents as quickly as possible. 
+    If it is relevant it a <span class="glyphicon glyphicon-ok emph"
+    style="color:green"></span> will appear.  If it is not relevant a <span
+    class="glyphicon glyphicon-remove emph" style="color:red"></span> will
+    appear.
 </p>
 <p>
-    Select a document by <span class="emph">clicking</span> on it.
-    If it is relevant it will be highlighted in green and a <span class="glyphicon
-    glyphicon-ok emph" style="color:green"></span> will appear.
-    If it is not relevant, it will be highlighted in red and a <span class="glyphicon
-    glyphicon-remove emph" style="color:red"></span> will appear.
+    What makes a document <span class="emph">relevant</span>? Well, you have to
+    find out. To help you, at the top of the page, we provide two example
+    documents, one is relevant, the other is irrelevant, and a description of
+    why. You got it, just hide them with this button: <span class="btn
+    btn-success">Hide examples</span>.
+</br>
+    A tip: You may see duplicated results and these should be judged
+    independently.
 </p>
 <p>
     On the right of the page, you can see how many clicks you have left
@@ -35,7 +40,6 @@
     selecting 10 relevant documents, the higher your score!  You can check your
     score at <a href="{% url fedtask.views.highscores %}">Highscores</a>.
 </p>
-
 <p>
     In case you feel a query is especially difficult for you, you can decide to 
     given up after 25 clicks. 
@@ -46,15 +50,6 @@
 </p>
 
 <p>
-    What makes a document <span class="emph">relevant</span>? Well, you have to
-    find out. 
-    on the top part of the page, you can see two example documents, one is relevant,
-    and the other is irrelevant.
-
-    A tip: You may see duplicated results and these should be judged
-    independently.
-<!--Only documents in <span class="emph">English</span> are
-    relevant.Also -->
 </p>
 	<!--p>
 If you are not able to find 10 relevant documents in 100 clicks,
@@ -73,7 +68,7 @@ click "next topic" to select a new topic.
 
 	<div class="col-md-6 space50">
 	<div class="thumbnail">
-	 <h4>Here you can see how the task will look like</h4>
+	 <h4>Here you can see what the game will look like</h4>
 	<img src="{% static "img/screenshot_ui1.jpg" %}" width="100%"/>
 	</div>
 <!--
