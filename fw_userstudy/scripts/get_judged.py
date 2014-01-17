@@ -100,6 +100,7 @@ def create_table(examples):
 # remove any ' from a string and quote it with ''
 def clean(s):
     s = s.replace("'"," ")
+    s = s.replace("\n"," ")
     return "'%s'"%s
     
 

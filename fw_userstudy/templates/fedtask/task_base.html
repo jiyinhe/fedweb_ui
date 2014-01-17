@@ -21,7 +21,7 @@
 	var highscore_url = '{% url fedtask.views.highscores %}';
 	var examples = eval('('+"{{examples|escapejs}}"+')');	
 	var description = "{{topic_description}}";
-{#	var narrative = "{{topic_narrative}}";	#}
+	var narrative = "{{topic_narrative}}";	
 	var give_up_thresh = {{give_up_thresh}};
     </script>
    {% block globalvar %}
