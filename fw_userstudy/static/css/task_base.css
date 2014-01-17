@@ -14,6 +14,10 @@ span.emph {
 	color: green;	
 	font-weight: bold;
 }
+.topic-narrative{
+	.font-size:15px;
+	color: green;
+}
 
 .doc_title {
 	font-size:17px;

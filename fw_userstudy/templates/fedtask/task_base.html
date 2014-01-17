@@ -20,6 +20,8 @@
 	var task_id = {{task_id}};
 	var highscore_url = '{% url fedtask.views.highscores %}';
 	var examples = eval('('+"{{examples|escapejs}}"+')');	
+	var description = "{{topic_description}}";
+	var narrative = "{{topic_narrative}}";	
 	var give_up_thresh = {{give_up_thresh}};
     </script>
    {% block globalvar %}
@@ -60,14 +62,16 @@
 			</div>	
 			<div data-ilpslogging-groupid='taskpanel' class="panel-body">
 				<div data-ilpslogging-groupid='taskpanel' class="topic-text">{{topic_text}}</div>
+				<div class="space5">{{topic_description}}</div>
 			</div>	
 			<div data-ilpslogging-groupid='examplepanel' class="list-group">
-				<div data-ilpslogging-groupid='examplepanel' id="desc_example" class="list-group-item example_desc">Example relevant and irrelevant results: 
+				<div data-ilpslogging-groupid='examplepanel' id="desc_example" class="list-group-item example_desc">Explanations and example relevant/irrelevant results: 
 					<span data-ilpslogging-groupid='examplepanel' id="hide_examples" class="btn btn-xs btn-success pull-right" data-toggle="collapse" data-target="#example">
 						Hide examples
 					</span>
 				</div>
 				<div data-ilpslogging-groupid='examplepanel' id="examples" class="collapse in">
+					<div class="list-group-item topic-narrative">{{topic_narrative}}</div>
 				</div>
 			</div>
 
