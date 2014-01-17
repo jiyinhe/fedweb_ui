@@ -38,7 +38,7 @@ create_example();
 
 //hide/show examples
 $('#hide_examples').click(function(){
-	if ($(this).text() == 'Hide examples'){
+	if ($("#examples").hasClass('in')){
 		$('#examples').collapse('hide');
 		$(this).text('Show examples');
 	}
