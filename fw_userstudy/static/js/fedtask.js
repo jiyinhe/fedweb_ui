@@ -475,10 +475,6 @@ function pagination(){
 		}
 	}
 	$('#n_query_results').html(docs.length);
-	// all future log events wiil have the updated list
-	var state = ILPSLogging.getState();
-	state['results_list'] = docs.slice(0,PAGESIZE);
-	ILPSLogging.setState(state);
 
 	var html = [];
 
@@ -486,6 +482,13 @@ function pagination(){
 
 	startindex = (CURRENTPAGE-1) * PAGESIZE;
 	endindex = CURRENTPAGE * PAGESIZE;
+
+	// all future log events wiil have the updated list
+	var state = ILPSLogging.getState();
+	state['results_list'] = ALLRANKS.slice(startindex,endindex);
+	state['query']['current_page_n']=CURRENTPAGE;
+	ILPSLogging.setState(state);
+
 	if (endindex > docs.length){ endindex = docs.length;}
 	docs = docs.slice(startindex,endindex);
 	for (d in docs){
