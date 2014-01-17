@@ -146,30 +146,29 @@ function create_examplelist(response){
 		var feedback_icon = '';
 		var feedback_result_item =''
 		if (d[1].bookmarked === 1){
-			t='<span data-ilpslogging-groupid="example_rank_{0}" class="glyphicon glyphicon-star bookmark bookmark-selected" id="example_{1}_bookmark"></span>';
+			t='<span data-ilpslogging-groupid="example_rank_{0}" data-ilpslogging-groupid="example_id_{1}" class="glyphicon glyphicon-star bookmark bookmark-selected" id="example_{2}_bookmark"></span>';
 			feedback_alert = ' alert alert-success';
-			feedback_icon = '<span data-ilpslogging-groupid="example_rank_{0}" class="bookcorrect glyphicon glyphicon-ok pull-right"></span>';
+			feedback_icon = '<span data-ilpslogging-groupid="example_rank_{0}" data-ilpslogging-groupid="example_id_{1}" class="bookcorrect glyphicon glyphicon-ok pull-right"></span>';
 			 feedback_result_item ='result-item-correct'
 		}else if (d[1].bookmarked === -1){
-			t='<span data-ilpslogging-groupid="example_rank_{0}" class="glyphicon glyphicon-star bookmark bookmark-selected" id="example_{1}_bookmark"></span>';
+			t='<span data-ilpslogging-groupid="example_rank_{0}" data-ilpslogging-groupid="example_id_{1}" class="glyphicon glyphicon-star bookmark bookmark-selected" id="example_{2}_bookmark"></span>';
 			feedback_alert = ' alert alert-danger';
-			feedback_icon = '<span data-ilpslogging-groupid="example_rank_{0}" class="bookerror glyphicon glyphicon-remove pull-right"></span>';
+			feedback_icon = '<span data-ilpslogging-groupid="example_rank_{0}" data-ilpslogging-groupid="example_id_{1}" class="bookerror glyphicon glyphicon-remove pull-right"></span>';
 			 feedback_result_item ='result-item-error'
 		}else{
-			t='<span data-ilpslogging-groupid="example_rank_{0}" class="glyphicon glyphicon-star-empty bookmark" id="example_{1}_bookmark"></span>'
+			t='<span data-ilpslogging-groupid="example_rank_{0}" data-ilpslogging-groupid="example_id_{1}" class="glyphicon glyphicon-star-empty bookmark" id="example_{2}_bookmark"></span>'
 		}
-		bookmark = $.validator.format(t,[d[0],d[1].id]);
-        feedback_icon = $.validator.format(feedback_icon,d[0]);
+		bookmark = $.validator.format(t,[i,d[1].id,d[1].id]);
+        feedback_icon = $.validator.format(feedback_icon,[i,d[1].id]);
 		var doc= [
-	['<div data-ilpslogging-groupid="example_rank_{0}" id="example_rank_{1}" class="list-group-item" name="doc-item">',[d[0],d[0]]],
-	['<div data-ilpslogging-groupid="example_rank_{0}" id="example_feedback_{1}">{2}</div>', [d[0],d[1].id, feedback_icon]],
-	['<div data-ilpslogging-groupid="example_rank_{0}" id="example_result-item_{1}" class="result-item {2}">',[d[0],d[1].id, feedback_result_item]],
-	['<div data-ilpslogging-groupid="example_rank_{0}" id="example_{1}_title" name="{2}" class="list-group-item-heading{3}">',
-		[d[0],d[1].id, d[1].title, feedback_alert]],
+	['<div data-ilpslogging-groupid="example_rank_{0}" data-ilpslogging-groupid="example_id_{1}" id="example_rank_{2}" class="list-group-item" name="doc-item">',[i,d[1].id,d[0]]],
+	['<div data-ilpslogging-groupid="example_rank_{0}" data-ilpslogging-groupid="example_id_{1}" id="example_feedback_{2}">{3}</div>', [i, d[1].id,d[1].id, feedback_icon]],
+	['<div data-ilpslogging-groupid="example_rank_{0}" data-ilpslogging-groupid="example_id_{1}" id="example_result-item_{2}" class="result-item {3}">',[i, d[1].id,d[1].id, feedback_result_item]],
+	['<div data-ilpslogging-groupid="example_rank_{0}" data-ilpslogging-groupid="example_id_{1}" id="example_{2}_title" name="{3}" class="list-group-item-heading{4}">', [i,d[1].id,d[1].id, d[1].title, feedback_alert]],
 	['{0}',bookmark],
-	['<span data-ilpslogging-groupid="example_rank_{0}" class="doc_title" id="example_{1}">{2}</span></div>',[d[0],d[1].id, d[1].title]],
-	['<div data-ilpslogging-groupid="example_rank_{0}" class="doc_url" id="example_url_{1}">{2}</div>',[d[0],d[1].id, d[1].url]],
-	['<div data-ilpslogging-groupid="example_rank_{0}" class="list-group-item-text">{1}</div></div></div>',[d[0],d[1].summary]]];
+	['<span data-ilpslogging-groupid="example_rank_{0}" data-ilpslogging-groupid="example_id_{1}" class="doc_title" id="example_{2}">{3}</span></div>',[i,d[1].id,d[1].id, d[1].title]],
+	['<div data-ilpslogging-groupid="example_rank_{0}" data-ilpslogging-groupid="example_id_{1}" class="doc_url" id="example_url_{2}">{3}</div>',[i,d[1].id,d[1].id, d[1].url]],
+	['<div data-ilpslogging-groupid="example_rank_{0}" data-ilpslogging-groupid="example_id_{1}" class="list-group-item-text">{2}</div></div></div>',[i,d[1].id,d[1].summary]]];
 	
 		// format the result snippet
 		var lines = [];
@@ -203,32 +202,31 @@ function create_resultlist(response){
 		// result-item class: result-item-error/ result-item-correct
 		var feedback_result_item =''
 		if (d[1].bookmarked === 1){
-			t='<span data-ilpslogging-groupid="rank_{0}" class="glyphicon glyphicon-star bookmark bookmark-selected" id="{1}_bookmark"></span>';
+			t='<span data-ilpslogging-groupid="rank_{0}" data-ilpslogging-groupid="id_{1}" class="glyphicon glyphicon-star bookmark bookmark-selected" id="{2}_bookmark"></span>';
 			feedback_alert = ' alert alert-success';
-			feedback_icon = '<span data-ilpslogging-groupid="rank_{0}" class="bookcorrect glyphicon glyphicon-ok pull-right"></span>';
+			feedback_icon = '<span data-ilpslogging-groupid="rank_{0}" data-ilpslogging-groupid="id_{1}" class="bookcorrect glyphicon glyphicon-ok pull-right"></span>';
 			 feedback_result_item ='result-item-correct'
 		}else if (d[1].bookmarked === -1){
-			t='<span data-ilpslogging-groupid="rank_{0}" class="glyphicon glyphicon-star bookmark bookmark-selected" id="{1}_bookmark"></span>';
+			t='<span data-ilpslogging-groupid="rank_{0}" data-ilpslogging-groupid="id_{1}" class="glyphicon glyphicon-star bookmark bookmark-selected" id="{2}_bookmark"></span>';
 			feedback_alert = ' alert alert-danger';
-			feedback_icon = '<span data-ilpslogging-groupid="rank_{0}" class="bookerror glyphicon glyphicon-remove pull-right"></span>';
+			feedback_icon = '<span data-ilpslogging-groupid="rank_{0}" data-ilpslogging-groupid="id_{1}" class="bookerror glyphicon glyphicon-remove pull-right"></span>';
 			 feedback_result_item ='result-item-error'
 		}else{
-			t='<span data-ilpslogging-groupid="rank_{0}" class="glyphicon glyphicon-star-empty bookmark" id="{1}_bookmark"></span>'
+			t='<span data-ilpslogging-groupid="rank_{0}" data-ilpslogging-groupid="id_{1}" class="glyphicon glyphicon-star-empty bookmark" id="{2}_bookmark"></span>'
 		}
 		// format the glyph icon (full/empty)
-		bookmark = $.validator.format(t,[d[0],d[1].id]);
-        feedback_icon = $.validator.format(feedback_icon,d[0]);
+		bookmark = $.validator.format(t,[i,d[1].id,d[1].id]);
+        feedback_icon = $.validator.format(feedback_icon,[i,d[1].id]);
 		// setup templates and fillers for formatting of a result snippet
 		var doc= [
-	['<div data-ilpslogging-groupid="rank_{0}" id="rank_{1}" class="list-group-item" name="doc-item">',[d[0],d[0]]],
-	['<div data-ilpslogging-groupid="rank_{0}" id="feedback_{1}">{2}</div>', [d[0],d[1].id, feedback_icon]],
-	['<div data-ilpslogging-groupid="rank_{0}" id="result-item_{1}" class="result-item {2}">',[d[0],d[1].id, feedback_result_item]],
-	['<div data-ilpslogging-groupid="rank_{0}" id="{1}_title" name="{2}" class="list-group-item-heading{3}">',
-		[d[0],d[1].id, d[1].title, feedback_alert]],
+	['<div data-ilpslogging-groupid="rank_{0}" data-ilpslogging-groupid="id_{1}" id="rank_{2}" class="list-group-item" name="doc-item">',[i,d[1].id,d[0]]],
+	['<div data-ilpslogging-groupid="rank_{0}" data-ilpslogging-groupid="id_{1}" id="feedback_{2}">{3}</div>', [i, d[1].id,d[1].id, feedback_icon]], 	
+	['<div data-ilpslogging-groupid="rank_{0}" data-ilpslogging-groupid="id_{1}" id="result-item_{2}" class="result-item {3}">',[i,d[1].id,d[1].id, feedback_result_item]],
+	['<div data-ilpslogging-groupid="rank_{0}" data-ilpslogging-groupid="id_{1}" id="{2}_title" name="{3}" class="list-group-item-heading{4}">', [i,d[1].id,d[1].id, d[1].title, feedback_alert]],
 	['{0}',bookmark],
-	['<span data-ilpslogging-groupid="rank_{0}" class="doc_title" id="{1}">{2}</span></div>',[d[0],d[1].id, d[1].title]],
-	['<div data-ilpslogging-groupid="rank_{0}" class="doc_url" id="url_{1}">{2}</div>',[d[0],d[1].id, d[1].url]],
-	['<div data-ilpslogging-groupid="rank_{0}" class="list-group-item-text">{1}</div></div></div>',[d[0],d[1].summary]]];
+	['<span data-ilpslogging-groupid="rank_{0}" data-ilpslogging-groupid="id_{1}" class="doc_title" id="{2}">{3}</span></div>',[i,d[1].id,d[1].id, d[1].title]],
+	['<div data-ilpslogging-groupid="rank_{0}" data-ilpslogging-groupid="id_{1}" class="doc_url" id="url_{2}">{3}</div>',[i, d[1].id,d[1].id, d[1].url]],
+	['<div data-ilpslogging-groupid="rank_{0}" data-ilpslogging-groupid="id_{1}" class="list-group-item-text">{2}</div></div></div>',[i,d[1].id,d[1].summary]]];
 	
 		// format the result snippet
 		var lines = [];
@@ -323,7 +321,7 @@ function doc_bookmark(ele_id){
 			rankid = $('#result-item_'+doc_id).parent().attr('id');
 			//console.log(rankid);
 			rankindex = parseInt(rankid.replace('rank_',''));
-			item = '<div data-ilpslogging-groupid="'+rankid+'" id="'+rankid+'" class="list-group-item" name="doc-item">';
+			item = '<div  data-ilpslogging-groupid="rank_'+rankid+'" data-ilpslogging-groupid="id_'+doc_id+'" id="'+rankid+'" class="list-group-item" name="doc-item">';
 			item += $('#'+rankid).html();
 			item += '</div>';
 			RESULTLIST[rankindex]=item;
