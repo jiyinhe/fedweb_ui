@@ -54,20 +54,20 @@
 			<div data-ilpslogging-groupid='taskpanel' class="panel-heading">
 				<div data-ilpslogging-groupid='taskpanel' class="topic-info">
 				Please find 
-				<span class="emph"> {{num_docs}} </span> 
+				<span data-ilpslogging-groupid='taskpanel' class="emph"> {{num_docs}} </span> 
 				pages that are relevant to: 
 				</div>
 			</div>	
 			<div data-ilpslogging-groupid='taskpanel' class="panel-body">
 				<div data-ilpslogging-groupid='taskpanel' class="topic-text">{{topic_text}}</div>
 			</div>	
-			<div class="list-group">
-				<div id="desc_example" class="list-group-item example_desc">Example relevant and irrelevant results: 
-					<span id="hide_examples" class="btn btn-xs btn-success pull-right" data-toggle="collapse" data-target="#example">
+			<div data-ilpslogging-groupid='examplepanel' class="list-group">
+				<div data-ilpslogging-groupid='examplepanel' id="desc_example" class="list-group-item example_desc">Example relevant and irrelevant results: 
+					<span data-ilpslogging-groupid='examplepanel' id="hide_examples" class="btn btn-xs btn-success pull-right" data-toggle="collapse" data-target="#example">
 						Hide examples
 					</span>
 				</div>
-				<div id="examples" class="collapse in">
+				<div data-ilpslogging-groupid='examplepanel' id="examples" class="collapse in">
 				</div>
 			</div>
 
@@ -121,10 +121,10 @@
   				</div>
 	
   			</a>
-			<a id='give_up_area' class="list-group-item {{give_up_hidden}}">
-			<span id="give_up" class="btn btn-danger btn-block" 
+			<a data-ilpslogging-groupid='giveuparea' id='give_up_area' class="list-group-item {{give_up_hidden}}">
+			<span data-ilpslogging-groupid='giveuparea' id="give_up" class="btn btn-danger btn-block" 
 				data-original-title="Warning: if given up, the remaining clicks in this round will be lost!">
-				<b>I give up!</b>
+				<b data-ilpslogging-groupid='giveuparea'>I give up!</b>
 			</span>
 
 			</a>
