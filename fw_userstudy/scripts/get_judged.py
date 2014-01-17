@@ -1,6 +1,8 @@
 """
-The purpose of this script is to produce a table with examples of relevant and
-irrelevant documents to be shown to the user.
+The purpose of this script is to produce a table with examples of
+relevant and irrelevant documents to be shown to the user. It also
+includes a description and a narrative that provides additional
+information about the topic.
 
 We pick our examples in 2 ways:
 - an irrelevant document is picked based on the number of times it has been
@@ -17,6 +19,7 @@ if a topic has no selected documents then we use the qrels to pick a document
 import sys
 import os
 import db_util as db
+from lxml import etree
 # To import the database setting
 sys.path.append(os.path.abspath('../fw_userstudy/').rsplit('/', 1)[0])
 from fw_userstudy import settings
@@ -29,21 +32,59 @@ database = DB['NAME']
 host = DB['HOST']
 conn = db.db_connect(host, user, passwd, database)
 QRELSFILE = "../../data/FW13-QRELS-RM.txt"
+NARRATIVESFILE = "../../data/fedweb13_50topics.xml"
+DESCRIPTIONSFILE = "../../data/fedweb13_50topics.xml"
 
 
 # main function
 def produce_judgement_list():
-    judgements = get_judgements()
-    snippets = get_snippets()
-#    qrels = get_qrels()        
-    qrels = get_qrels_from_file(QRELSFILE)        
-# combine snippets, relevance, and click frequency
-    judgement_list = combine(judgements,snippets,qrels)
-#    output(judgement_list)
-#    output_csv(judgement_list)
-    examples = click_based_examples(judgement_list)
-    qrel_based_examples(examples, qrels)
-    create_table(examples)
+	judgements = get_judgements()
+	snippets = get_snippets()
+	#   qrels = get_qrels()        
+	qrels = get_qrels_from_file(QRELSFILE)        
+	#   read descriptions from file
+	descriptions = get_descriptions_from_file(DESCRIPTIONSFILE)
+	#   read narratives from file
+	narratives = get_narratives_from_file(NARRATIVESFILE)
+	# combine snippets, relevance, and click frequency
+	judgement_list = combine(judgements,snippets,qrels)
+	#    output(judgement_list)
+	#    output_csv(judgement_list)
+	examples = click_based_examples(judgement_list)
+	qrel_based_examples(examples, qrels)
+	create_table(examples)
+
+
+def get_descriptions_from_file(f):
+	fh = open(f)
+	tree = etree.parse(fh)
+	fh.close()
+	root = tree.getroot()
+	descriptions = []
+	for topic in root.iter("topic"):
+		topic_id = topic.get('id')
+		if topic[0].tag == "description":
+			description = topic[0].text 
+		else:
+			print "error, wrong order in xml file"
+		descriptions.append(int(topic_id), description)
+	return descritions
+
+
+def get_narratives_from_file(f):
+	fh = open(f)
+	tree = etree.parse(fh)
+	fh.close()
+	root = tree.getroot()
+	narratives = []
+	for topic in root.iter("topic"):
+		topic_id = topic.get('id')
+		if topic[0].tag == "narrative":
+			narrative = topic[0].text 
+		else:
+			print "error, wrong order in xml file"
+		narratives.append(int(topic_id), narrative)
+	return narratives 
 
 
 def create_table(examples):
