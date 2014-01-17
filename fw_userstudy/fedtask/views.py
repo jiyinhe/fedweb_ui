@@ -146,6 +146,8 @@ def get_parameters(request):
 	
 	# Get a positive and a negative example for the current topic
 	examples = Example.objects.get_examples(topic_id, run_id, session_id)
+	description = 'This is a description'
+	narrative = 'This is a narrative'
 
 	# The give up threhs set in settings.py is when users have at least 
 	# clicked X times. Here we convert it to the left clicks allowed
@@ -173,6 +175,8 @@ def get_parameters(request):
 		'maxclicks': maxclicks,
 		'clicks_perc': float(clicksleft)/float(maxclicks)*100,
 		'examples': simplejson.dumps(examples),
+		'topic_description': description,
+		'topic_narrative': narrative,
 		'give_up_thresh': give_up_thresh,
 		'give_up_hidden': '' if clicksleft < give_up_thresh else 'hidden',
 	}

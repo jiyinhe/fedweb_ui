@@ -61,7 +61,7 @@ $('#give_up').tooltip();
 
 function create_example(){
 	var html_eg = create_examplelist(examples);
-	$('#examples').html(html_eg.join('\n'));	
+	$('#examples').append(html_eg.join('\n'));	
 }
 
 function bind_resultlist_listeners(){
