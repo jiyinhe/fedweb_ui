@@ -19,8 +19,8 @@
     to the query in as <span class="emph">few</span> clicks as possible.
 </p>
 <p>
-    We know the majority of relevant documents - your job is to find them as
-    quickly as possible.
+    The persons who have posted these queries have already marked the documents
+    they found relevant - your job is to locate these documents as quickly as possible. 
 </p>
 <p>
     Select a document by <span class="emph">clicking</span> on it.  If it is
@@ -40,9 +40,25 @@
     selecting 10 relevant documents, the higher your score!  You can check your
     score at <a href="{% url fedtask.views.highscores %}">Highscores</a>.
 </p>
+
+<p>
+    In case you feel a query is especially difficult for you, you can decide to 
+    given up after 25 clicks. 
+    A <span class="btn btn-danger">I give up!</span> button will show up then. 
+</p>
+    <p>
+    <span class="emph">Note: if you give up, you will not receive any points for that query! </span>
+    </p>
+
 <p>
     What makes a document <span class="emph">relevant</span>? Well, you have to
-    find out. A tip. You may see duplicates and these should be judged
+    find out. 
+
+    on the top part of the page, you can see two example documents, one is relevant,
+    and the other is irrelevant.
+
+
+    A tip: You may see duplicates and these should be judged
     independently.
     <!--Only documents in <span class="emph">English</span> are
     relevant.Also --> 
@@ -66,7 +82,7 @@ click "next topic" to select a new topic.
 	<div class="col-md-6 space50">
 	<div class="thumbnail">
 	 <h4>Here you can see how the task will look like</h4>
-	<img src="{% static "img/interface-categories-blurred.jpg" %}" width="100%"/>
+	<img src="{% static "img/screenshot_ui2.jpg" %}" width="100%"/>
 	</div>
 <!--
     <div class="thumbnail">
