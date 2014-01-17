@@ -58,7 +58,7 @@ DATABASES = {
         'NAME': 'fw_user_game',                      # Or path to database file if using sqlite3.
         'USER': 'jhe',                      # Not used with sqlite3.
         'PASSWORD': 'jhe',                  # Not used with sqlite3.
-        'HOST': 'ec2.ins.cwi.nl',                      # Set to empty string for localhost. Not used with sqlite3.
+        'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
 	'OPTIONS': {"init_command":"SET foreign_key_checks = 0;"},
     }
