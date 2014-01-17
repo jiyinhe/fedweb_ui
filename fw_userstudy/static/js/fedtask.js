@@ -60,7 +60,7 @@ $('#give_up').tooltip();
 
 
 function create_example(){
-	var html_eg = create_resultlist(examples);
+	var html_eg = create_examplelist(examples);
 	$('#examples').html(html_eg.join('\n'));	
 }
 
@@ -133,6 +133,53 @@ function load_results(){
 			//window go back to top
 			$('html, body').animate({scrollTop: 0}, 0);
         });
+}
+
+// hack, to give examples different (log)ids
+function create_examplelist(response){
+	var reslist=[];
+	for (var i=0; i<response.length; i++){
+		var d = response[i];
+		var bookmark ='';
+		var t = '';
+		var feedback_alert = '';
+		var feedback_icon = '';
+		var feedback_result_item =''
+		if (d[1].bookmarked === 1){
+			t='<span data-ilpslogging-groupid="example_rank_{0}" class="glyphicon glyphicon-star bookmark bookmark-selected" id="example_{1}_bookmark"></span>';
+			feedback_alert = ' alert alert-success';
+			feedback_icon = '<span data-ilpslogging-groupid="example_rank_{0}" class="bookcorrect glyphicon glyphicon-ok pull-right"></span>';
+			 feedback_result_item ='result-item-correct'
+		}else if (d[1].bookmarked === -1){
+			t='<span data-ilpslogging-groupid="example_rank_{0}" class="glyphicon glyphicon-star bookmark bookmark-selected" id="example_{1}_bookmark"></span>';
+			feedback_alert = ' alert alert-danger';
+			feedback_icon = '<span data-ilpslogging-groupid="example_rank_{0}" class="bookerror glyphicon glyphicon-remove pull-right"></span>';
+			 feedback_result_item ='result-item-error'
+		}else{
+			t='<span data-ilpslogging-groupid="example_rank_{0}" class="glyphicon glyphicon-star-empty bookmark" id="example_{1}_bookmark"></span>'
+		}
+		bookmark = $.validator.format(t,[d[0],d[1].id]);
+        feedback_icon = $.validator.format(feedback_icon,d[0]);
+		var doc= [
+	['<div data-ilpslogging-groupid="example_rank_{0}" id="example_rank_{1}" class="list-group-item" name="doc-item">',[d[0],d[0]]],
+	['<div data-ilpslogging-groupid="example_rank_{0}" id="example_feedback_{1}">{2}</div>', [d[0],d[1].id, feedback_icon]],
+	['<div data-ilpslogging-groupid="example_rank_{0}" id="example_result-item_{1}" class="result-item {2}">',[d[0],d[1].id, feedback_result_item]],
+	['<div data-ilpslogging-groupid="example_rank_{0}" id="example_{1}_title" name="{2}" class="list-group-item-heading{3}">',
+		[d[0],d[1].id, d[1].title, feedback_alert]],
+	['{0}',bookmark],
+	['<span data-ilpslogging-groupid="example_rank_{0}" class="doc_title" id="example_{1}">{2}</span></div>',[d[0],d[1].id, d[1].title]],
+	['<div data-ilpslogging-groupid="example_rank_{0}" class="doc_url" id="example_url_{1}">{2}</div>',[d[0],d[1].id, d[1].url]],
+	['<div data-ilpslogging-groupid="example_rank_{0}" class="list-group-item-text">{1}</div></div></div>',[d[0],d[1].summary]]];
+	
+		// format the result snippet
+		var lines = [];
+		for (var j=0; j<doc.length; j++){
+			lines.push($.validator.format(doc[j][0],doc[j][1]));
+		}
+		// push snippet on result list stack
+		reslist.push(lines.join('\n'));	
+	}
+	return reslist
 }
 
 function create_resultlist(response){

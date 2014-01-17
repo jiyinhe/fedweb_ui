@@ -458,7 +458,7 @@ class ExampleManager(models.Manager):
 
 		pd = Document.objects.get(doc_id=pos_id)
 		nd = Document.objects.get(doc_id=neg_id)
-		pd =[1,{'id':'example_'+pd.doc_id, 
+		pd =[0,{'id':'example_'+pd.doc_id, 
 				'title': '.' if pd.title=='' else pd.title, 
 				'url': pd.url if len(pd.url)<=80 else pd.url[0:80]+'...', 
 				'summary':get_highlighted_summary(pd.summary,query,analyzer,frag,format),
