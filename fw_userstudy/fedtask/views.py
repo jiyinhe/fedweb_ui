@@ -145,9 +145,9 @@ def get_parameters(request):
 	category = process_category_info(docs)
 	
 	# Get a positive and a negative example for the current topic
-	examples = Example.objects.get_examples(topic_id, run_id, session_id)
-	description = 'This is a description'
-	narrative = 'This is a narrative'
+	# together with the description and narrative
+	examples,description,narrative = Example.objects.get_examples(topic_id, run_id, session_id)
+	
 
 	# The give up threhs set in settings.py is when users have at least 
 	# clicked X times. Here we convert it to the left clicks allowed

@@ -445,8 +445,17 @@ class UserScore(models.Model):
 class ExampleManager(models.Manager):
 
 	def get_examples(self,topic_id,run_id,session_id): 
-		pos_id = self.filter(topic_id=topic_id,judgement=1)[0].doc_id;
-		neg_id = self.filter(topic_id=topic_id,judgement=-1)[0].doc_id;
+		pos_obj = self.filter(topic_id=topic_id,judgement=1)[0]
+		neg_obj = self.filter(topic_id=topic_id,judgement=-1)[0]
+		pos_id = pos_obj.doc_id;
+		neg_id = neg_obj.doc_id;
+	
+		print topic_id
+		# get a description and narrative, can be taken from either
+		# positive or negative example
+		field_names = [f.name for f in Example._meta.fields]
+		desc = pos_obj.description;
+		nar = pos_obj.narrative;
 		#docs = Ranklist.objects.get_ranklist(topic_id, run_id, session_id)
 
 		# setup highlighting
@@ -474,7 +483,7 @@ class ExampleManager(models.Manager):
 				'category': nd.site.category.split(","),
 				'bookmarked': -1,
 			}]
-		return [pd,nd]
+		return [pd,nd],desc,nar
 
 class Example(models.Model):
     topic = models.ForeignKey(Topic)
@@ -483,4 +492,6 @@ class Example(models.Model):
     judgement = models.IntegerField()
 # one of {0,1,3,7} indicating relevance level 0 lowest and 7 highest
     relevance = models.IntegerField()
+    description = models.CharField(max_length=500)
+    narrative = models.CharField(max_length=500)
     objects = ExampleManager()		
