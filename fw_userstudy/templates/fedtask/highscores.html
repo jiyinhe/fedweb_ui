@@ -9,10 +9,10 @@
 		{% if completed %}
 			{% if fail %}
 				<div class="alert alert-warning">
-  		                <h3>Hmmm ... it was a tough one. Want to try again? </h3>
+  		                <h3>Hmmm ... it was a tough one. Want to try another? </h3>
 		                </div>
 		                <a class="btn btn-success btn-block" 
-				href="{% url fedtask.views.index %}">Try again! <span 
+				href="{% url fedtask.views.read_topic_details %}">Try again! <span 
 				class="glyphicon glyphicon-share-alt"></span></a>
 
 			{% else %}
@@ -26,7 +26,7 @@
 				</p>
 				</div>
 				<a class="btn btn-success btn-block" 
-				href="{% url fedtask.views.index %}">Play another round <span 
+				href="{% url fedtask.views.read_topic_details %}">Play another round <span 
 				class="glyphicon glyphicon-share-alt"></span></a>
 				</div>
 

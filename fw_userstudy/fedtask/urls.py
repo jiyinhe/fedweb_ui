@@ -11,4 +11,5 @@ urlpatterns = patterns('fedtask.views',
     (r'^add_click/', 'add_click'),
     (r'^instructions/', 'instructions'),
     (r'^highscores/', 'highscores'),
+    (r'^read_topic_details/$', 'read_topic_details'),
 )

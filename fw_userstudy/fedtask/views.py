@@ -81,6 +81,19 @@ def index(request):
 	#
 	return redirect('%sstudy/task/'%settings.HOME_ROOT)
 
+def read_topic_details(request):
+	user = request.user
+	# If not authenticated, redirect to login
+	if not user.is_authenticated():
+		return redirect('%saccounts/login/'%settings.HOME_ROOT)	
+	# prepare contexts 
+	c = {'user': user}	
+	context = get_parameters(request)
+	c.update(context)
+	c.update(csrf(request))
+	template = 'fedtask/topic_details.html'
+	return render_to_response(template, c)
+
 def play(request):
 	user = request.user
 	# If not authenticated, redirect to login
