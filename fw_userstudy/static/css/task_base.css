@@ -9,6 +9,10 @@ span.emph {
 	font-size:20px;
 }
 
+span.emph_c{
+	color: blue;
+	font-weight:bold;
+}
 .example_desc{
 	font-size:15px;
 	color: green;	
