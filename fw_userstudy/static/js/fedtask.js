@@ -41,11 +41,11 @@ create_example();
 $('#hide_examples').click(function(){
 	if ($("#examples").hasClass('in')){
 		$('#examples').collapse('hide');
-		$(this).html('<b>Show explanations and examples of relevant/irrelevant results</b>');
+		$(this).html('<b>Show explanations and examples of relevant/irrelevant results </b><span class="glyphicon glyphicon-share-alt"></span>');
 	}
 	else{
 		$('#examples').collapse('show');
-		$(this).html('<b>Hide explanations and examples of relevant/irrelevant results</b>');
+		$(this).html('<b>Hide explanations and examples of relevant/irrelevant results </b><span class="glyphicon glyphicon-share-alt"></span>');
 	}	
 });
 
