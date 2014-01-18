@@ -26,9 +26,11 @@
 <p>
     What makes a document <span class="emph_c">relevant</span>? Well, you have to
     find out. To help you, before each round, we provide two example
-    documents, one is relevant, the other is irrelevant, and a description of
-    why. You got it, just hide them with this button: <span class="btn
-    btn-success">Hide examples</span>.
+    documents, one relevant and one irrelevant, and a description of
+    why. If you are ready to go press <span class="btn
+    btn-success">Let's get started</span>. During the game the description is
+    available through this button:  <span class="btn
+    btn-success">Show explanations and examples of relevant/irrelevant results</span>.
 </br>
     A tip: You may see duplicated results and these should be judged
     independently.
@@ -59,9 +61,28 @@ click "next topic" to select a new topic.
 	</p-->
 
 	<div class="space10">
-	<a class="btn btn-success" 
-		href="{% url fedtask.views.index %}"> Let's start now! <span 
-		class="glyphicon glyphicon-share-alt"></span></a>
+{% if has_score %}
+		{% if completed %}
+			{% if fail %}
+                <a class="btn btn-success" 
+                href="{% url fedtask.views.read_topic_details %}"> Let's start now! <span 
+                class="glyphicon glyphicon-share-alt"></span></a>
+			{% else %}
+                <a class="btn btn-success" 
+                href="{% url fedtask.views.read_topic_details %}"> Let's start now! <span 
+                class="glyphicon glyphicon-share-alt"></span></a>
+			{% endif %}
+		{% else %}
+                <a class="btn btn-success" 
+                href="{% url fedtask.views.index %}"> Back to game <span 
+                class="glyphicon glyphicon-share-alt"></span></a>
+		{% endif %}
+        	{% else %}
+        		<a class="btn btn-success btn-block" 
+                href="{% url fedtask.views.read_topic_details %}"> Let's start now! <span 
+                class="glyphicon glyphicon-share-alt"></span></a>
+	{% endif %}
+
 
 	</div>
 	</div>

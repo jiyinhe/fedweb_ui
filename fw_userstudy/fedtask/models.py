@@ -397,6 +397,7 @@ class UserScoreManager(models.Manager):
 		fail = False
  
 		# If he hasn't click anything, nothing is done
+		print total_clicks            
 		if total_clicks  == 0:
 			has_score = False
 
@@ -412,7 +413,12 @@ class UserScoreManager(models.Manager):
 			elif last_round_clicks == settings.MaxClicks or giveup == 1: 
 					fail = True
 					completed = True	
-			
+			# user has not done any clicking in this round yet
+			# treat case as if user just completed a task 
+			elif last_round.clickcount == 0:
+				completed = True                    
+				has_score = True
+				fail = True                   
 			# otherwise, it's an uncompleted job	
 			# fail = False, completed = False
 		return last_round_score, total_score, highscores, has_score, completed, fail
