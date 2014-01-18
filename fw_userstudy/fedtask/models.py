@@ -1,13 +1,24 @@
 from django.db import models, connection
 from django.contrib.auth.models import User
-from django.db.models import Max, Count
+from django.db.models import Max, Count,Sum,Q
 from django.http import HttpRequest, QueryDict
 from whoosh.highlight import highlight, Highlighter, WholeFragmenter, HtmlFormatter
 from whoosh.analysis import FancyAnalyzer
 import simplejson as js
 import operator
 from fw_userstudy import settings 
-from django.db.models import Sum
+
+# util function to highlight queries in a snippet
+def get_highlighted_summary(summary,query, analyzer,frag,format):
+	summary = unicode(summary.replace('\n', ' '))
+	if len(summary) > 350:
+		summary = unicode(summary.replace('\n', ' '))[0:350]+'...'
+	hl = highlight(summary,query,analyzer,frag,format)
+	if hl:
+		return hl
+	else:
+		return summary
+
 # Create your models here.
 class ExperimentManager(models.Manager):
 	def find_experiment(self, expmnt_id):
@@ -72,7 +83,7 @@ class RanklistManager(models.Manager):
 				'id':d.doc_id, 
 				'title': '.' if d.title=='' else d.title, 
 				'url': d.url if len(d.url)<=80 else d.url[0:80]+'...', 
-				'summary':self.get_highlighted_summary(d.summary,query,analyzer,frag,format),
+				'summary':get_highlighted_summary(d.summary,query,analyzer,frag,format),
 				'site': d.site.site_name,
 				'category': d.site.category.split(","),
 				'bookmarked': bookmarks[d.doc_id] if d.doc_id in bookmarks else 0,
@@ -81,15 +92,6 @@ class RanklistManager(models.Manager):
 		
 		return docs 
 
-	def get_highlighted_summary(self,summary,query, analyzer,frag,format):
-		summary = unicode(summary.replace('\n', ' '))
-		if len(summary) > 350:
-			summary = unicode(summary.replace('\n', ' '))[0:350]+'...'
-		hl = highlight(summary,query,analyzer,frag,format)
-		if hl:
-			return hl
-		else:
-			return summary
 
 class Ranklist(models.Model):
 	run = models.ForeignKey(Run)
@@ -134,8 +136,6 @@ class TaskManager(models.Manager):
 		expmnt = Experiment.objects.get(experiment_id=sess.experiment_id)
 		tasks = js.loads(expmnt.exp_tasks)
 		# we get the task_id using the task list and index
-		print len(tasks)
-		print task_index
 		task_id = tasks[task_index]
 		task = Task.objects.get(task_id=task_id)
 		return task
@@ -178,7 +178,7 @@ class SessionManager(models.Manager):
 			return 0
 		
 	def get_session(self, request):
-		user_id = User.objects.get(username=request.user).id
+		user_id = request.user.id #User.objects.get(username=request.user).id
 		sess = self.get(session_id=user_id)
 		return sess
 
@@ -252,24 +252,20 @@ class BookmarkManager(models.Manager):
 		return 0
 
 	def update_bookmark(self, request, feedback):
-		print 'update bookmark'
 		d_id = request.POST['doc_id']
 		s_id = request.POST['session_id']
 		t_id = request.POST['topic_id']
 		state = request.POST['selected_state']
 #		   insert bookmark activity
 		if state == "0": # unregister bookmark
-			print 'state',0
 #		   first find the bookmarked document
 			try:
-				print 'try','state',0
 				b = Bookmark.objects.get(\
 							doc_id=d_id,\
 							session_id=s_id,\
 							topic_id=t_id,\
 							selected_state=feedback)
 				b.delete()
-				print 'try','finish','state',0
 			except Exception,e: #Bookmark.MultipleObjectsReturned:
 				print e
 				print "removing all entries of the bookmarks"
@@ -352,25 +348,19 @@ class UserScoreManager(models.Manager):
 		us.score = us.task.maxclicks - us.clickcount
 		us.save()
 
-	# The users do not have changes to switch topics
-	# so either they find 10 documents, or the score 0
-	def get_highscores_restrict(self, user):
-		# Get user score. 
-		us = self.filter(user=user).order_by('task')
-		print [(u.score, u.numrel, u.clickcount) for u in us]
-		if len(us) == 0:
-			last_rel_found = 0	
-			last_score = 0
-			total_score = 0
-		else:
-			last_rel_found = us[len(us)-1].numrel
-			last_score = us[len(us)-1].score
-			last_click_counts = us[len(us)-1].clickcount
-			total_score = sum([s.score for s in us])
 
+	# Scoring rule:
+	# - only count completed tasks
+	# - a task is completed if the user has found requested number of relevant docs
+	#   or has used up his clicks
+	# - a task is incomplete if the user gives up 
+	# In both cases: give up or use up clicks, it's 0 score
+
+	def get_highscores_restrict(self, user):
 		# Get every one's score, only counts completed job
 		# failed job would get 0 points.
-		all_scores = self.filter(numrel=10).values('user').annotate(total_score=Sum('score'), num_tasks=Count('score'))	
+		all_scores = self.filter(Q(clickcount=settings.MaxClicks)|Q(numrel=settings.NumDocs)).values('user').annotate(total_score=Sum('score'), num_tasks=Count('score'))	
+
 		if len(all_scores) == 0:
 			all_scores = []
 		else:
@@ -378,27 +368,62 @@ class UserScoreManager(models.Manager):
 			all_scores.sort(key=lambda x: x[1], reverse=True)
 			# Get top 10
 			all_scores = all_scores[0:10]	
+
 		row = ["even", "odd"]
 		highscores = [(row[i%2], i+1, all_scores[i][0], all_scores[i][1], all_scores[i][2]) for i in range(len(all_scores))]
-		#print highscores
 
+
+		# Get current user's scores after the last round
+		us = self.filter(user=user).order_by('id')
+		# Check if the user has done anything
+		total_clicks = sum([u.clickcount for u in us])
+		# also get the total score, only include finished runs
+		total_score = sum([s.score for s in self.filter(Q(clickcount=settings.MaxClicks)|Q(numrel=settings.NumDocs)).filter(user=user)])	
+		
+		if len(us) == 0:
+			last_round_clicks = 0
+			last_round_relfound = 0
+			last_round_score = 0
+			giveup = 0
+		else:
+			last_round = us[len(us)-1]
+			last_round_clicks = last_round.clickcount
+			last_round_relfound = last_round.numrel
+			last_round_score = last_round.score
+			giveup = last_round.giveup
 		# Check user status
-		# if user has done anything
 		has_score = True
 		completed = False
-		fail = False 
-		if total_score == 0:
+		fail = False
+ 
+		# If he hasn't click anything, nothing is done
+		if total_clicks  == 0:
 			has_score = False
-		else:
-			# if it's a fail or success or need to be finished 
-			if last_rel_found == settings.NumDocs:
-				#success
-				completed = True
-			else:
-				if last_score == 0 and last_click_counts>0:
-					fail = True
 
-		return last_score, total_score, highscores, has_score, completed, fail
+		# If something has been done, check how far it is
+		else:
+			# check if a task is finished (get 10 rel/no clicks left)
+			if last_round_relfound == settings.NumDocs:
+			#success
+				completed = True
+				fail = False
+
+			# fail: used up clicks or given up 
+			elif last_round_clicks == settings.MaxClicks or giveup == 1: 
+					fail = True
+					completed = True	
+			
+			# otherwise, it's an uncompleted job	
+			# fail = False, completed = False
+		return last_round_score, total_score, highscores, has_score, completed, fail
+
+	def register_giveup(self, user):
+		sess_id = user.id
+		sess = Session.objects.get(session_id=sess_id)
+		task = Task.objects.get_session_task(sess)		 
+		us = self.get(user=user, task=task)
+		us.giveup = 1
+		us.save()
 
 class UserScore(models.Model):
 	user = models.ForeignKey(User)
@@ -411,6 +436,62 @@ class UserScore(models.Model):
 	numrel = models.IntegerField()
 	# relevant documents found, stored as json object
 	reldocs = models.TextField()	
+	# whether user has given up
+	giveup = models.IntegerField(default=0)
 	objects = UserScoreManager()		
+		
 
 
+class ExampleManager(models.Manager):
+
+	def get_examples(self,topic_id,run_id,session_id): 
+		pos_obj = self.filter(topic_id=topic_id,judgement=1)[0]
+		neg_obj = self.filter(topic_id=topic_id,judgement=-1)[0]
+		pos_id = pos_obj.doc_id;
+		neg_id = neg_obj.doc_id;
+	
+		print topic_id
+		# get a description and narrative, can be taken from either
+		# positive or negative example
+		field_names = [f.name for f in Example._meta.fields]
+		desc = pos_obj.description;
+		nar = pos_obj.narrative;
+		#docs = Ranklist.objects.get_ranklist(topic_id, run_id, session_id)
+
+		# setup highlighting
+		frag = WholeFragmenter()
+		analyzer = FancyAnalyzer()
+		format = HtmlFormatter(tagname="b")
+		# get the query for highlighting
+		query = [q.text for q in analyzer(Topic.objects.get(topic_id=topic_id).topic_text)]
+
+		pd = Document.objects.get(doc_id=pos_id)
+		nd = Document.objects.get(doc_id=neg_id)
+		pd =[0,{'id':'example_'+pd.doc_id, 
+				'title': '.' if pd.title=='' else pd.title, 
+				'url': pd.url if len(pd.url)<=80 else pd.url[0:80]+'...', 
+				'summary':get_highlighted_summary(pd.summary,query,analyzer,frag,format),
+				'site': pd.site.site_name,
+				'category': pd.site.category.split(","),
+				'bookmarked': 1,
+			}]
+		nd =[1,{'id':'example_'+nd.doc_id, 
+				'title': '.' if nd.title=='' else nd.title, 
+				'url': nd.url if len(nd.url)<=80 else nd.url[0:80]+'...', 
+				'summary':get_highlighted_summary(nd.summary,query,analyzer,frag,format),
+				'site': nd.site.site_name,
+				'category': nd.site.category.split(","),
+				'bookmarked': -1,
+			}]
+		return [pd,nd],desc,nar
+
+class Example(models.Model):
+    topic = models.ForeignKey(Topic)
+    doc = models.ForeignKey(Document)
+# one of {-1,1} indicating relevant non relevant
+    judgement = models.IntegerField()
+# one of {0,1,3,7} indicating relevance level 0 lowest and 7 highest
+    relevance = models.IntegerField()
+    description = models.CharField(max_length=500)
+    narrative = models.CharField(max_length=500)
+    objects = ExampleManager()		

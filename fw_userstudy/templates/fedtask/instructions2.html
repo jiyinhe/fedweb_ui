@@ -1,0 +1,85 @@
+{% extends "fedtask/task_base.html" %}
+{% load i18n %}
+{% load staticfiles %}
+
+{% block content %}
+<div class="row">
+	<div class="col-md-1">
+	</div>
+	<div class="col-md-10">
+
+	<div class="col-md-6">
+	<h3>Instructions</h3>
+
+
+
+<p>
+    In this game you collect documents about the <span class="emph">keyword
+    query</span> at the <span class="emph">top</span> of the page.</p>
+<p>
+    Your task is to click on <span class="emph">10</span> documents relevant to
+    the query in as <span class="emph">few clicks</span> as possible.
+</p>
+<p>
+    If it is relevant it a <span class="glyphicon glyphicon-ok emph"
+    style="color:green"></span> will appear.  If it is not relevant a <span
+    class="glyphicon glyphicon-remove emph" style="color:red"></span> will
+    appear.
+</p>
+<p>
+    What makes a document <span class="emph">relevant</span>? Well, you have to
+    find out. To help you, at the top of the page, we provide two example
+    documents, one is relevant, the other is irrelevant, and a description of
+    why. You got it, just hide them with this button: <span class="btn
+    btn-success">Hide examples</span>.
+</br>
+    A tip: You may see duplicated results and these should be judged
+    independently.
+</p>
+<p>
+    On the left of the page, you can <span class="emph">filter</span> the
+    documents based on the <span class="emph">categories</span> they belong to.
+</p>
+<p>
+    On the right of the page, you can see how many clicks you have left
+    (starting with <span class="emph">50</span> clicks) and how many relevant
+    documents you still need to select. The more clicks you have left after
+    selecting 10 relevant documents, the higher your score!  You can check your
+    score at <a href="{% url fedtask.views.highscores %}">Highscores</a>.
+</p>
+<p>
+    In case you feel a query is especially difficult for you, you can decide to 
+    given up after 25 clicks. 
+    A <span class="btn btn-danger">I give up!</span> button will show up then. 
+</p>
+<p>
+    <span class="emph">Note: if you give up, you will not receive any points for that query! </span>
+</p>
+
+
+	<div class="space10">
+	<a class="btn btn-success" 
+		href="{% url fedtask.views.index %}"> Let's start now! <span 
+		class="glyphicon glyphicon-share-alt"></span></a>
+
+	</div>
+	</div>
+
+	<div class="col-md-6 space50">
+	<div class="thumbnail">
+	 <h4>Here you can see what the game will look like</h4>
+	<img src="{% static "img/category.pdf" %}" width="100%"/>
+	</div>
+<!--
+    <div class="thumbnail">
+	 <h4>The highscores.</h4>
+	<img src="{% static "img/highscore.jpg" %}" width="100%"/>
+	</div>
+-->
+	</div>
+
+	</div>
+	<div class="col-md-1"></div>
+</div>
+{% endblock %}
+

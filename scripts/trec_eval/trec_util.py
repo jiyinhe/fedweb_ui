@@ -50,6 +50,26 @@ def load_qrels(qrelfile):
 	return dict(per_qry) 
 
 
+def load_qrels_all(qrelfile):
+	f = open(qrelfile)
+	q = []
+	for c in f:
+		strs = c.strip().split(' ')
+		if len(strs) == 4:
+			q.append((strs[0], strs[2], int(strs[3])))
+		else:
+			print 'ERROR in qrels file'
+			print strs
+	f.close()
+	per_qry = []
+	# Sort by query
+	q.sort(key=operator.itemgetter(0))
+	for k, g in itertools.groupby(q, lambda x: x[0]):
+		docs = [(d[1], d[2]) for d in g]
+		per_qry.append((k, dict(docs)))
+	return dict(per_qry) 
+
+
 def judged_ranklist(run, qrels):
 	res = []
 	for q in run:

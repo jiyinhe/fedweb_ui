@@ -24,32 +24,31 @@
     <script  src="{% static "js/utils/form_validation.js" %}" /></script>
     <script  src="{% static "jquery/jquery.validate.js" %}" /></script>
 
-	<script>
-		// Including this enables logging
-		(function() {
-			var script = document.createElement('script');
-			script.async = true;
-			script.src ="{% static "js/ilpslogging-0.2.min.js" %}";
-			var entry = document.getElementsByTagName('script')[0];
-			entry.parentNode.insertBefore(script, entry);
-		})();
+    <script>
+        (function() {
+            var script = document.createElement('script');
+            script.async = true;
+            script.src = "{% static "js/ilpslogging-0.2.min.js" %}";
+            var entry = document.getElementsByTagName('script')[0];
+            entry.parentNode.insertBefore(script, entry);
+        })();
 
-		var ILPSLogging_ready = ILPSLogging_ready || [];
-		ILPSLogging_ready.push(function(){
-			var config = {
-				api_url: 'http://ilpslogging.staging.dispectu.com',
-				project_key:'UCZHpwQzCG5TQd2hNWbiPhwCHsjJndBpG8FLnsKTklk',
-				log_mouse_movements: false,
-				log_mouse_clicks: true,
-				post_events_queue_on_browser_close: true,
-				log_browser_close: true,
-				debug: false,
-			};
-			ILPSLogging.init(config, function(){
-				console.log('ready for action');
-			});
-		});
-	</script>
+        var ILPSLogging_ready = ILPSLogging_ready || [];
+        ILPSLogging_ready.push(function(){
+            var config = {
+                api_url: 'http://zookst9.science.uva.nl:8005',
+                project_key: 'rURySwsSnwMM2zh1XJAxFrgHSGkKO2xaVALNE8EGzc8',
+                log_mouse_movements: true,
+                log_mouse_clicks: true,
+                post_events_queue_on_browser_close: true,
+                log_browser_close: true,
+                debug: false,
+            };
+            ILPSLogging.init(config, function(){
+                console.log('ready for action');
+            });
+        });
+    </script>
     <script  src="{% static "js/utils/logging.js" %}" /></script>
 
 

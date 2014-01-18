@@ -9,6 +9,6 @@ urlpatterns = patterns('fedtask.views',
     (r'^submit_complete_task/', 'submit_complete_task'),
     (r'^submit_uncomplete_task/', 'submit_uncomplete_task'),
     (r'^add_click/', 'add_click'),
-    (r'^instructions', 'instructions'),
-    (r'^highscores', 'highscores'),
+    (r'^instructions/', 'instructions'),
+    (r'^highscores/', 'highscores'),
 )

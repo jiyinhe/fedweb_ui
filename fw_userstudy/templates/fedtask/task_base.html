@@ -19,7 +19,10 @@
 	var total_num_docs = {{total_num_docs}};
 	var task_id = {{task_id}};
 	var highscore_url = '{% url fedtask.views.highscores %}';
-	//var docs = eval('('+"{{docs_json|escapejs}}"+')');	
+	var examples = eval('('+"{{examples|escapejs}}"+')');	
+	var description = "{{topic_description}}";
+	var narrative = "{{topic_narrative}}";	
+	var give_up_thresh = {{give_up_thresh}};
     </script>
    {% block globalvar %}
    {% endblock %}
@@ -28,12 +31,12 @@
 
 {% block navbar %}
 	<div class="navbar-text pull-right instruction ">
-	<a href="{% url fedtask.views.instructions %}" >
+	<a data-ilpslogging-groupid='instructions' href="{% url fedtask.views.instructions %}" >
 		Instructions
 	</a>
 	</div>	
 	<div class="navbar-text pull-right">
-	<a href="{% url fedtask.views.highscores %}" >
+	<a data-ilpslogging-groupid='highscore' href="{% url fedtask.views.highscores %}" >
 		Highscores
 		<span class="glyphicon glyphicon-certificate highscore"></span>
 	</a>
@@ -48,42 +51,55 @@
 		{% block leftblock %}
 		{% endblock %}
 	</div>
-	<div class="col-md-7">
-		<div  id="topic-panel" class="panel panel-primary">
-			<div class="panel-heading">
-				<div class="topic-info">
+	<div data-ilpslogging-groupid='taskpanel' class="col-md-7">
+		<div data-ilpslogging-groupid='taskpanel'  id="topic-panel" class="panel panel-primary">
+			<div data-ilpslogging-groupid='taskpanel' class="panel-heading">
+				<div data-ilpslogging-groupid='taskpanel' class="topic-info">
 				Please find 
-				<span class="emph"> {{num_docs}} </span> 
+				<span data-ilpslogging-groupid='taskpanel' class="emph"> {{num_docs}} </span> 
 				pages that are relevant to: 
 				</div>
 			</div>	
-			<div class="panel-body">
-				<div class="topic-text">{{topic_text}}</div>
+			<div data-ilpslogging-groupid='taskpanel' class="panel-body">
+				<div data-ilpslogging-groupid='taskpanel' class="topic-text">{{topic_text}}</div> 
+        		<div data-ilpslogging-groupid='taskpanel' class="space5">{{topic_description}}</div> 
 			</div>	
+			<div data-ilpslogging-groupid='examplepanel' class="list-group">
+				<div data-ilpslogging-groupid='examplepanel' id="desc_example" class="list-group-item example_desc">Explanations and example relevant/irrelevant results: 
+					<span data-ilpslogging-groupid='examplepanel' id="hide_examples" class="btn btn-xs btn-success pull-right" data-toggle="collapse" data-target="#example">
+						Hide examples
+					</span>
+				</div>
+				<div data-ilpslogging-groupid='examplepanel' id="examples" class="collapse in">
+{#    			<div data-ilpslogging-groupid='examplepanel' class="list-group-item topic-narrative">{{topic_description}}</div> #}
+                    <div class="list-group-item topic-narrative">{{topic_narrative}}</div> 
+				</div>
+			</div>
+
 		</div>
 
-		<div class="topic-info">Number of results found:
+		<div data-ilpslogging-groupid='resultscounter' class="topic-info">Number of results found:
 			<span class="emph" id="n_query_results">#{{total_num_docs}}</span>
 		</div>
 
-		<div class="panel panel-primary" id="results">
+		<div  data-ilpslogging-groupid='resultslist' class="panel panel-primary" id="results">
 		</div>
 
-		<div class="pagination_area" id="pagination">
+		<div  data-ilpslogging-groupid='pagination' class="pagination_area" id="pagination">
 		</div>
 	</div>
-	<div class="col-md-2">
-		<div class="list-group affix-right" data-spy="affix" data-offset-top="200">
+	<div data-ilpslogging-groupid='scoreboard' class="col-md-2">
+		<div data-ilpslogging-groupid='scoreboard' class="list-group affix-right" data-spy="affix" data-offset-top="200">
 
-			<a class="list-group-item selected_documents active">
+			<a data-ilpslogging-groupid='scoreboard' class="list-group-item selected_documents active">
 			<strong>Current topic:</strong> {{topic_text}}
 			</a>
 
-                        <a class="list-group-item">
-                        <span id="clicks_left" class="badge pull-right">{{clicksleft}}</span>
+                        <a data-ilpslogging-groupid='scoreboard' class="list-group-item">
+                        <span data-ilpslogging-groupid='scoreboard' id="clicks_left" class="badge pull-right">{{clicksleft}}</span>
                                	Clicks left:
-                                <div class="progress">
-                                <div class="progress-bar progress-bar-danger" 
+                                <div data-ilpslogging-groupid='scoreboard' class="progress">
+                                <div data-ilpslogging-groupid='scoreboard' class="progress-bar progress-bar-danger" 
                                         id="pgbar_c"
                                         role="progressbar" 
                                         aria-valuenow="{{clicksleft}}" 
@@ -95,11 +111,11 @@
 
                         </a>
 	
-  			<a class="list-group-item">
-            		<span id="rel_found" class="badge pull-right">{{num_docs}}</span>
+  			<a data-ilpslogging-groupid='scoreboard' class="list-group-item">
+            		<span id="rel_found" class="badge pull-right">{{rel_to_reach}}</span>
 				Target to reach
-				<div class="progress">
-  				<div class="progress-bar progress-bar-success" 
+				<div data-ilpslogging-groupid='scoreboard' class="progress">
+  				<div data-ilpslogging-groupid='scoreboard' class="progress-bar progress-bar-success" 
 					id="pgbar_t"
 					role="progressbar" 
 					aria-valuenow="{{relnum}}" 
@@ -110,13 +126,13 @@
   				</div>
 	
   			</a>
+			<a data-ilpslogging-groupid='giveuparea' id='give_up_area' class="list-group-item {{give_up_hidden}}">
+			<span data-ilpslogging-groupid='giveuparea' id="give_up" class="btn btn-danger btn-block" 
+				data-original-title="Warning: if given up, the remaining clicks in this round will be lost!">
+				<b data-ilpslogging-groupid='giveuparea'>I give up!</b>
+			</span>
 
-			<!--a class="list-group-item selected_documents">
-			<button type="button" id="done" class="btn btn-success btn-block">
-				<strong>Next topic </strong>
-				<span class="glyphicon glyphicon-share-alt"></span>
-			</button>
-			</a-->
+			</a>
 		</div>
 		{% block rightblock %}
 		{% endblock %}

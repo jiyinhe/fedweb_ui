@@ -9,6 +9,9 @@ there are 4 experiments
 
 """
 
+
+TotalNumExperiments = 1000
+
 # Filling the type of UIs to be tested
 UI = {
  1: 'basic UI, 10 blue links',
@@ -52,6 +55,7 @@ import os
 sys.path.append(os.path.abspath('../fw_userstudy/').rsplit('/', 1)[0])
 from fw_userstudy import settings
 import db_util as db
+import random
 
 DB = settings.DATABASES['default']
 user = DB['USER']
@@ -97,9 +101,13 @@ qry = 'delete from fedtask_task'
 db.run_qry(qry, conn)
 qry = 'select run_id from fedtask_run'
 runs = db.run_qry_with_results(qry, conn)
-qry = 'select topic_id from fedtask_topic'
+
+# Only use judged topics
+qry = 'select distinct(topic_id) from fedtask_qrels'
 topics = db.run_qry_with_results(qry, conn)
 
+
+# create tasks, add them to the task table, and also add them to an experiment
 # A task consists of: topic, run, ui
 task_id = 1
 expmnt_indx = 0
@@ -115,6 +123,12 @@ for r in RUNS:
 			task_id += 1
 		expmnt_indx+=1
 
+
+# We now have the number of experiments as in the experiment description
+# Each experiment contains a list of tasks in order
+# We now create the experiment table
+# for each experiment, we randomize the order of the task list
+
 print 'clearing experiment table'
 qry = 'delete from fedtask_experiment'
 db.run_qry(qry, conn)
@@ -122,16 +136,23 @@ db.run_qry(qry, conn)
 print 'Storing experiments'
 qry = 'delete from fedtask_experiment'
 db.run_qry(qry, conn)
-for e in Experiment_description:
-	qry = 'insert into fedtask_experiment (experiment_id,\
+
+experiment_id = 0
+while experiment_id < TotalNumExperiments:
+	# Alternating between experiment descriptions
+	for e in Experiment_description:
+		task = e['TASKS']
+		random.shuffle(task)
+		qry = 'insert into fedtask_experiment (experiment_id,\
 			exp_description, exp_tasks, exp_type, pre_qst,\
 			post_qst, tutorial)\
-			values (%s, "%s", "%s", "%s", %s, %s, %s) '%(e['ID'], 
-				e['DESC'], simplejson.dumps(e['TASKS']), e['TYPE'], e['PREQ'], 
+			values (%s, "%s", "%s", "%s", %s, %s, %s) '%(experiment_id, 
+				e['DESC'], simplejson.dumps(task), e['TYPE'], e['PREQ'], 
 				e['POST'], e['TUT'])
-	db.run_qry(qry, conn)
+		db.run_qry(qry, conn)
+		experiment_id += 1	
 
-qry='set foreign_key_checks=1'
+#qry='set foreign_key_checks=1'
 
 
 

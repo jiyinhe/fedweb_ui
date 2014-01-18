@@ -2,7 +2,7 @@
 from django.shortcuts import render_to_response, get_object_or_404, redirect 
 from django.contrib.auth.models import User
 from questionnaire.models import UserProfile
-from fedtask.models import Session, Ranklist, Document, Bookmark, Experiment, Task, UserScore
+from fedtask.models import Session, Ranklist, Document, Bookmark, Experiment, Task, UserScore, Example
 from django.http import HttpResponseRedirect, HttpResponse, HttpRequest
 from django.core.context_processors import csrf
 from django.core.paginator import Paginator
@@ -12,7 +12,7 @@ import mimetypes
 from django.core.servers.basehttp import FileWrapper
 import os
 from fw_userstudy import settings
-import re
+import re,sys
 import itertools
 import operator
 import simplejson
@@ -75,14 +75,17 @@ def index(request):
 	# once consent is finished we set the session flag 
 	if not sess.consent_progress:
 		return redirect('%squestion/pre/'%settings.HOME_ROOT)	
+
 	
-	# 
 	# redirect user to play the game 
 	#
 	return redirect('%sstudy/task/'%settings.HOME_ROOT)
 
 def play(request):
 	user = request.user
+	# If not authenticated, redirect to login
+	if not user.is_authenticated():
+		return redirect('%saccounts/login/'%settings.HOME_ROOT)	
 	# prepare contexts 
 	c = {'user': user}	
 	context = get_parameters(request)
@@ -93,15 +96,22 @@ def play(request):
 
 def instructions(request):
 	user = request.user
+	# If not authenticated, redirect to login
+	if not user.is_authenticated():
+		return redirect('%saccounts/login/'%settings.HOME_ROOT)	
 	c = {'user': user}
 	context = get_parameters(request)
 	c.update(context)
 	c.update(csrf(request))
-	template = 'fedtask/instructions-facet.html'
+	ui = c['ui_id']
+	template = 'fedtask/instructions%s.html'%ui
 	return render_to_response(template, c)
 
 def highscores(request):
 	user = request.user
+	# If not authenticated, redirect to login
+	if not user.is_authenticated():
+		return redirect('%saccounts/login/'%settings.HOME_ROOT)	
 	last_score, total_score, highscores, has_score, completed, fail = UserScore.objects.get_highscores_restrict(user)
 	c = {'user': user, 
 		'highscores': highscores, 
@@ -133,8 +143,19 @@ def get_parameters(request):
 	bookmarks = Bookmark.objects.get_bookmark_count_wrap(session_id, topic_id, task.task_id, request.user)
 	# Group docs by category
 	category = process_category_info(docs)
+	
+	# Get a positive and a negative example for the current topic
+	# together with the description and narrative
+	examples,description,narrative = Example.objects.get_examples(topic_id, run_id, session_id)
+	
+
+	# The give up threhs set in settings.py is when users have at least 
+	# clicked X times. Here we convert it to the left clicks allowed
+	give_up_thresh = settings.MaxClicks-settings.GiveUpThresh
+
 	c = {	
 		'num_docs': settings.NumDocs,
+		'task_progress': current_session.task_progress,
 		'task_id': task.task_id,	
 		'session_id': session_id,
 		'topic_id': topic_id,
@@ -153,9 +174,15 @@ def get_parameters(request):
 		'rel_perc': float(relnum)/float(settings.NumDocs)*100,
 		'maxclicks': maxclicks,
 		'clicks_perc': float(clicksleft)/float(maxclicks)*100,
+		'examples': simplejson.dumps(examples),
+		'topic_description': description,
+		'topic_narrative': narrative,
+		'give_up_thresh': give_up_thresh,
+		'give_up_hidden': '' if clicksleft < give_up_thresh else 'hidden',
 	}
 	return c
 
+# Is this function actually used?
 def fetch_results(request):
 	current_session = Session.objects.get_session(request)
 	session_id = current_session.session_id
@@ -231,11 +258,22 @@ def process_category_info(docs):
 		i += 1
 	return category 
 
+# Submitted from a give up click
 def submit_uncomplete_task(request):
+	user = request.user
+	# If not authenticated, redirect to login
+	if not user.is_authenticated():
+		return redirect('%saccounts/login/'%settings.HOME_ROOT)	
+	UserScore.objects.register_giveup(request.user)	
 	Task.objects.completed_task(request.user)
-	return redirect("/")
+	
+	return redirect("%sstudy/highscores"%settings.HOME_ROOT)
 
 def submit_complete_task(request):
+	user = request.user
+	# If not authenticated, redirect to login
+	if not user.is_authenticated():
+		return redirect('%saccounts/login/'%settings.HOME_ROOT)	
 	Task.objects.completed_task(request.user)
 	return redirect("%sstudy/highscores"%settings.HOME_ROOT)
 
@@ -300,12 +338,9 @@ def register_bookmark(request):
 		if request.POST['ajax_event'] == 'bookmark_document':
 			# give feedback on correct/incorrect bookmarked documents
 			data['feedback']=Bookmark.objects.get_feedback_bookmark(request)
-			print data['feedback']
 			Bookmark.objects.update_bookmark(request, data['feedback'])
-			print 'before'
 			# Get bookmark count, and user scores
 			data['count'], data['userscore'] = Bookmark.objects.get_bookmark_count(request, request.user)
-			print 'here'
 			if data['userscore']['relnum'] >= 10 or data['userscore']['clicksleft']<=0:
 				data['done'] = True
 		json_data = simplejson.dumps(data)		
@@ -329,12 +364,10 @@ def add_click(request):
 			'rel_perc': float(numrel)/float(settings.NumDocs)*100,
 			'rel_to_reach': settings.NumDocs-numrel,
 			}		
+		if data['userscore']['relnum'] >= 10 or data['userscore']['clicksleft']<=0:
+			data['done'] = True
 		json_data = simplejson.dumps(data)		
 		response = HttpResponse(json_data, mimetype="application/json")
 	else:
 		return render_to_response('errors/403.html')
 	return response
-
-
-
-

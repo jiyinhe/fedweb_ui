@@ -9,6 +9,16 @@ span.emph {
 	font-size:20px;
 }
 
+.example_desc{
+	font-size:15px;
+	color: green;	
+	font-weight: bold;
+}
+.topic-narrative{
+	.font-size:15px;
+	color: green;
+}
+
 .doc_title {
 	font-size:17px;
 	color: blue;
@@ -49,7 +59,7 @@ a.category {
 }
 
 .category-area {
-	overflow: scroll;
+	overflow: auto;
 }
 
 .list-group-item.category{
