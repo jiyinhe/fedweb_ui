@@ -1,10 +1,10 @@
 {% load i18n %}
+{% load staticfiles %}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
 <head>
-    {% load staticfiles %}
     <link rel="stylesheet" href="{% static "bootstrap/css/bootstrap.css" %}" />
     <link rel="stylesheet" href="{% static "css/fw_base.css" %}" />
     <link rel="stylesheet" href="{% static "bs-patch/bs-patch.css" %}" />	
@@ -64,7 +64,7 @@
    {% block header %}
     <nav class="navbar navbar-default navbar-fixed-top" role="navigation">
 	<a class="navbar-brand">FedSearch</a>
-
+	<img src="{% static "img/cwi_logo.png" %}" height="50"/>
 	{% if user.is_authenticated %}
 	<div class="navbar-right">
 	<p class="navbar-text">
@@ -76,6 +76,7 @@
 	<p class="navbar-text">
        	<a data-ilpslogging-groupid='logout' id="logout_link" href="{% url auth_logout %}" >{% trans "Log out" %}</a>
 	</p>
+	<p class="navbar-text"><a href="mailto:j.he@cwi.nl,m.m.bron@uva.nl">Contat us</a></p>
 	</div>
 	{% endif %}
 
