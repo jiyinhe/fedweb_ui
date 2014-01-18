@@ -1,0 +1,87 @@
+{% extends "fw_base.html" %}
+{% load i18n %}
+{% load staticfiles %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static "css/task_base.css" %}" />
+    <script  src="{% static "js/fedtask.js" %}" /></script>
+    <script>
+	var results_url = '{% url fedtask.views.fetch_results %}';
+	var document_url = '{% url fedtask.views.fetch_document %}';
+	var bookmark_url = '{% url fedtask.views.register_bookmark %}';
+	var submit_complete_task_url = '{% url fedtask.views.submit_complete_task %}';
+	var submit_uncomplete_task_url = '{% url fedtask.views.submit_uncomplete_task %}';
+	var add_click_url = '{% url fedtask.views.add_click %}';
+	var topic_id = {{topic_id}};
+	var run_id = {{run_id}};
+	var username = "{{user.username}}";
+	var session_id = {{session_id}};
+	var total_num_docs = {{total_num_docs}};
+	var task_id = {{task_id}};
+	var highscore_url = '{% url fedtask.views.highscores %}';
+	var examples = eval('('+"{{examples|escapejs}}"+')');	
+	var description = "{{topic_description}}";
+	var narrative = "{{topic_narrative}}";	
+	var give_up_thresh = {{give_up_thresh}};
+    </script>
+   {% block globalvar %}
+   {% endblock %}
+
+{% endblock %}
+
+{% block navbar %}
+	<div class="navbar-text pull-right instruction ">
+	<a data-ilpslogging-groupid='instructions' href="{% url fedtask.views.instructions %}" >
+		Instructions
+	</a>
+	</div>	
+	<div class="navbar-text pull-right">
+	<a data-ilpslogging-groupid='highscore' href="{% url fedtask.views.highscores %}" >
+		Highscores
+		<span class="glyphicon glyphicon-certificate highscore"></span>
+	</a>
+	</div>	
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+<div class="row">
+	<div class="col-md-3">
+		{% block leftblock %}
+		{% endblock %}
+	</div>
+	<div data-ilpslogging-groupid='taskpanel' class="col-md-7">
+		<div data-ilpslogging-groupid='taskpanel'  id="topic-panel" class="panel panel-primary">
+			<div data-ilpslogging-groupid='taskpanel' class="panel-heading">
+				<div data-ilpslogging-groupid='taskpanel' class="topic-info">
+				In the next round you are looking for pages that are relevant to: 
+				</div>
+			</div>	
+			<div data-ilpslogging-groupid='taskpanel' class="panel-body">
+				<div data-ilpslogging-groupid='taskpanel' class="topic-text">{{topic_text}}</div> 
+        		<div data-ilpslogging-groupid='taskpanel' class="space5">{{topic_description}}</div> 
+			</div>	
+			<div data-ilpslogging-groupid='examplepanel' class="list-group-item">
+				<a data-ilpslogging-groupid='examplepanel' id="desc_example" class="list-group-item example_desc"
+                    href="{% url fedtask.views.index %}" >
+				<button data-ilpslogging-groupid='examplepanel' id="finished_topic_details" class="btn btn-block btn-success">
+				<b>Let's get started</b>
+				</button>
+				</a>
+				<div data-ilpslogging-groupid='examplepanel' id="examples">
+                    <div class="list-group-item topic-narrative">{{topic_narrative}}</div> 
+				</div>
+			</div>
+
+		</div>
+
+	</div>
+	<div class="col-md-2">
+	</div>
+
+</div>
+</div>
+
+{% endblock %}
+
