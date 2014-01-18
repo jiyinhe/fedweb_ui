@@ -370,7 +370,7 @@ class UserScoreManager(models.Manager):
 			all_scores = [(User.objects.get(id=a['user']).username, a['total_score'], a['num_tasks']) for a in all_scores]
 			all_scores.sort(key=lambda x: x[1], reverse=True)
 			# Get top 10
-			all_scores = all_scores[0:10]	
+			all_scores = all_scores[0:25]	
 
 		row = ["even", "odd"]
 		highscores = [(row[i%2], i+1, all_scores[i][0], all_scores[i][1], all_scores[i][2]) for i in range(len(all_scores))]
