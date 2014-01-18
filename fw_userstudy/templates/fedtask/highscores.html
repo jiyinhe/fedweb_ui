@@ -5,6 +5,7 @@
 <div class="row">
     <div class="col-md-1"></div>
     <div class="col-md-5">
+{% if task_progress < 50 %}	
 	{% if has_score %}
 		{% if completed %}
 			{% if fail %}
@@ -48,6 +49,47 @@
         href="{% url fedtask.views.read_topic_details %}"> Let's start now! <span 
         class="glyphicon glyphicon-share-alt"></span></a>
 	{% endif %}	
+{% else %}
+		<div class="alert alert-warning">
+		<h3>We did not think anyone would get this far...<br /> You are amazing.....</h3>
+		</div>
+ 	<div class="row">
+	<div class="col-md-1"></div>
+	<div class="col-md-5 col-md-offset-0">
+		<object width="466" height="255"><param name="movie"
+			value="//www.youtube.com/v/04854XqcfCY?hl=en_US&amp;version=3&amp;rel=0&autoplay=1"></param><param
+			name="allowFullScreen" value="true"></param><param
+			name="allowscriptaccess" value="always"></param><embed
+			src="//www.youtube.com/v/04854XqcfCY?hl=en_US&amp;version=3&amp;rel=0&autoplay=1"
+			type="application/x-shockwave-flash" width="466" height="255"
+			allowscriptaccess="always" allowfullscreen="true"></embed>
+		</object>
+	</div>
+	</div>
+ 	<div class="row">
+	<div class="col-md-1"></div>
+	<div class="col-md-5 col-md-offset-0">
+		<div id="fb-root">
+		</div> 
+		<script>(function(d, s, id) { var js, fjs =
+			d.getElementsByTagName(s)[0]; if (d.getElementById(id)) return; js =
+			d.createElement(s); js.id = id; js.src =
+			"//connect.facebook.net/en_US/all.js#xfbml=1";
+			fjs.parentNode.insertBefore(js, fjs); }(document, 'script',
+			'facebook-jssdk'));
+		</script>
+		<div class="fb-post"
+			data-href="https://www.facebook.com/InteractiveInformationAccess/posts/10151948326211317"
+			data-width="466">
+			<div class="fb-xfbml-parse-ignore"><a
+				href="https://www.facebook.com/InteractiveInformationAccess/posts/10151948326211317">Post</a>
+				by <a href="https://www.facebook.com/arjenpdevries">Arjen P. De Vries</a>.
+			</div>
+		</div>
+	</div>
+	</div>
+
+{% endif %}
 
 
     </div>

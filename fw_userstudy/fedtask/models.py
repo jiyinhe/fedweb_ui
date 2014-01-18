@@ -135,6 +135,9 @@ class TaskManager(models.Manager):
 		task_index = sess.task_progress
 		expmnt = Experiment.objects.get(experiment_id=sess.experiment_id)
 		tasks = js.loads(expmnt.exp_tasks)
+		# check if the index is smaller than the task list
+		if task_index >= len(tasks):
+			task_index = len(tasks)-1
 		# we get the task_id using the task list and index
 		task_id = tasks[task_index]
 		task = Task.objects.get(task_id=task_id)

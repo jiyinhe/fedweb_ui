@@ -79,7 +79,12 @@ def index(request):
 	
 	# redirect user to play the game 
 	#
-	return redirect('%sstudy/task/'%settings.HOME_ROOT)
+	if sess.task_progress < 50:
+		return redirect('%sstudy/task/'%settings.HOME_ROOT)
+	
+	# otherwise someone has completed all 50 tasks.... 
+	# pay them their due reward
+	return redirect('%sstudy/highscores'%settings.HOME_ROOT)
 
 def read_topic_details(request):
 	user = request.user
