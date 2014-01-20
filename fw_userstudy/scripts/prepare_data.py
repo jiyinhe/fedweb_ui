@@ -61,7 +61,7 @@ def clear_tables():
 
 # django site table
 def fill_django_site():
-    qry = "insert into django_site (domain,name) VALUES ('example.com','example.com');"
+    qry = "insert into django_site (domain,name) VALUES ('zookst9.science.uva.nl:8002','theClickGames');"
     db.run_qry(qry,conn)       
 
 # Topic table
