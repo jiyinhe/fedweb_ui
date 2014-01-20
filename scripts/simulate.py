@@ -11,7 +11,8 @@ import os
 
 runfile = '../data/testruns/nodup/run13.ql.nodup'
 qrelsfile = '../data/FW13-QRELS-RM.txt'
-categoryfile ='../data/resources-FW13-categorization.tsv'
+#categoryfile ='../data/resources-FW13-categorization.tsv'
+categoryfile = '../data/official-resources-FW13-categorization.tsv'
 
 def generate_parameters():
 	if P.interface == 'basic':
