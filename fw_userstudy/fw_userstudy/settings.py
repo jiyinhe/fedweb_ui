@@ -24,6 +24,8 @@ ageooptions = {
 
 HOSTNAME = socket.gethostname()
 
+DEFAULT_FROM_EMAIL = 'theClickGames'
+
 # Check if it's local host of product server, and set debug
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
