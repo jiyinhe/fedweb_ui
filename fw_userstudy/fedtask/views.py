@@ -44,7 +44,7 @@ def index(request):
 	# e.g., within and between subject.
 	# between subject design, 4 conditions, assign based on
 	# user_id. So mod 4 gives us experiments 0,1,2,3
-	expmnt_id = user_id%2
+	expmnt_id = user_id
 	expmnt_mngr = Experiment.objects
 	expmnt = expmnt_mngr.find_experiment(expmnt_id)
 	# load the tasks for this experiment

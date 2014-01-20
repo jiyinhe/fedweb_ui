@@ -6,6 +6,7 @@ time_hit_pairs = [(h['_source']['created_at'],h) for h in hits]
 time_hit_pairs.sort()
 for h in time_hit_pairs:
 	try:
+		print h
 		data = h[1]['_source']
 		event = data['event_type']
 		if 'event_properties' in data:
