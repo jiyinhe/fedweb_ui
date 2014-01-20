@@ -6,7 +6,7 @@
 """
 import numpy as np
 import itertools
-import pylab as pl
+#import pylab as pl
 
 datadir = '../../data/simulation3'
 paramfile = '%s/%s'%(datadir, 'param.txt')
