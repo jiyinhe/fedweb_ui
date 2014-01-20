@@ -381,6 +381,7 @@ def add_click(request):
 		UserScore.objects.add_click(request)
 		task = Task.objects.get(task_id=request.POST['task_id'])
 		clicksleft, maxclicks, numrel = UserScore.objects.get_score(request.user.id, task)
+		print 'add_click', request.POST['task_id'], clicksleft,maxclicks,numrel
 		data = {}
 		data['userscore'] = {
 			'clicksleft': clicksleft,

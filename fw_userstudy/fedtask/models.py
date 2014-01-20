@@ -7,6 +7,7 @@ from whoosh.analysis import FancyAnalyzer
 import simplejson as js
 import operator
 from fw_userstudy import settings 
+import random
 
 # util function to highlight queries in a snippet
 def get_highlighted_summary(summary,query, analyzer,frag,format):
@@ -133,15 +134,38 @@ class TaskManager(models.Manager):
 	    # to get the task we first get the index of the task our
 		# experiment
 		task_index = sess.task_progress
+		# get the experiment and all associated tasks
 		expmnt = Experiment.objects.get(experiment_id=sess.experiment_id)
 		tasks = js.loads(expmnt.exp_tasks)
 		# check if the index is smaller than the task list
 		if task_index >= len(tasks):
 			task_index = len(tasks)-1
-		# we get the task_id using the task list and index
-		task_id = tasks[task_index]
-		task = Task.objects.get(task_id=task_id)
-		return task
+
+		# is the user working on a task?
+		currenttask = UserScore.objects.filter(user_id=sess.session_id,clickcount__lt=settings.MaxClicks,numrel__lt=settings.NumDocs,giveup=0).values("task","user")  
+		if currenttask:
+#			print 'currenttask remaining', currenttask
+			return Task.objects.get(task_id=currenttask[0]['task'])
+		else:
+			# which tasks have already been done
+			donetasks = UserScore.objects.filter(user_id=sess.session_id).filter(Q(clickcount=settings.MaxClicks)|Q(numrel=settings.NumDocs)|Q(giveup=1)).values_list("task")
+			donetasks = set([int(t) for (t,) in donetasks])	
+			todo = []
+			for t in tasks:
+				if not t in donetasks:
+					todo.append(t)
+
+			# fix a randomseed for this user, every user gets a different
+			# seed based on userid, but to give this user the same task
+			# everytime we need to fix the seed.
+			random.seed(sess.session_id)
+			random.shuffle(todo)
+
+			# we get the task_id using the task list and index
+			task_id = todo[0]
+#			print "picked new task", task_id
+			task = Task.objects.get(task_id=task_id)
+			return task
 
 	def completed_task(self, user):
 		sess_id = User.objects.get(username=user).id
