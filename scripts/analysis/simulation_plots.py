@@ -120,21 +120,23 @@ def query_impact(D, B):
 		key_b = ('task_length=%s'%task, )
 		data_B = B[key_b]
 		for n in params['f_prior']:
-			K = list(itertools.ifilter(lambda x: 'task_length=%s'%task in x and 'f_prior=%s'%n in x, keys))
-			data = []
-			for k in K:
-				diff = D[k]-data_B
-				data.extend(list(diff))
-			data = np.array(data).astype('float')
-			mean_diff = np.mean(data, 0)
-			sd_diff = np.std(data, 0)
-			p = []
-			# for each mean_diff, check if they are significant
-			for i in range(mean_diff.shape[0]):
-				print data[:, i]
-				norm, norm_p = stats.normaltest(data[:, i])
-				t, p = stats.ttest_1samp(data[:, i], 0)	
-				print i, mean_diff[i], sd_diff[i], p, norm_p
+			for d in params['f_model']:
+				for e in params['e_lambda']:
+					K = list(itertools.ifilter(lambda x: 'task_length=%s'%task in x and 'f_prior=%s'%n in x, keys))
+					data = []
+					for k in K:
+						diff = D[k]-data_B
+						data.extend(list(diff))
+					data = np.array(data).astype('float')
+					mean_diff = np.mean(data, 0)
+					sd_diff = np.std(data, 0)
+					p = []
+					# for each mean_diff, check if they are significant
+					for i in range(mean_diff.shape[0]):
+						print data[:, i]
+						norm, norm_p = stats.normaltest(data[:, i])
+						t, p = stats.ttest_1samp(data[:, i], 0)	
+						print i, mean_diff[i], sd_diff[i], p, norm_p
 
 
 
