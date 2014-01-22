@@ -27,7 +27,7 @@ HOSTNAME = socket.gethostname()
 DEFAULT_FROM_EMAIL = 'theClickGames'
 
 # Check if it's local host of product server, and set debug
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 SITE_ROOT = os.path.dirname(os.path.realpath(__file__)).rsplit('/', 1)[0]
@@ -35,7 +35,7 @@ SITE_ROOT = os.path.dirname(os.path.realpath(__file__)).rsplit('/', 1)[0]
 if DEBUG:
 	HOME_ROOT = '/'
 else:
-	HOME_ROOT = '/fwstudy/'
+	HOME_ROOT = '/'
 
 LOGIN_REDIRECT_URL = HOME_ROOT
 
