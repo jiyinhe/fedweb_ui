@@ -51,6 +51,7 @@ DATA_ROOT = '../../data/'
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
     ('Jiyin He', 'jiyinhe@gmail.com'),
+    ('Marc Bron', 'marcbron@gmail.com'),
 )
 
 MANAGERS = ADMINS
