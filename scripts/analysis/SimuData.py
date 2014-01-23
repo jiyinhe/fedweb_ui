@@ -45,7 +45,8 @@ class SimuData:
 	def get_data(self, paramvalues):
 		locs = self.run_locations
 		for p in paramvalues:
-			locs = itertools.ifilter(lambda x: p in x[1], locs)
+			locs = list(itertools.ifilter(lambda x: p in x[1], locs))
+
 		data = []
 		qids = []
 		for l in locs:
