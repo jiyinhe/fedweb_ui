@@ -61,7 +61,6 @@ def prior_per_query(e, fm, fp, t):
 	lower_qt = np.percentile(data, 25, axis=0)
 		
 	# A bar chart
-	pylab.figure()
 	ids = [(i, baseline.T[i]) for i in range(len(baseline.T))]
 	ids.sort(key=operator.itemgetter(1))
 	idx = [i[0] for i in ids]
@@ -71,15 +70,33 @@ def prior_per_query(e, fm, fp, t):
 	#pylab.bar(X, median, width, color='b', yerr=[median-lower_qt, upper_qt-median])
 	diff = diff[:, idx]
 
-	pylab.boxplot(diff)
+	box = pylab.boxplot(diff)
+	boxlines = box['boxes']
+	for line in boxlines:
+    		line.set_color('b')
+		line.set_linewidth(2)
+
+	medlines = box['medians']
+	for line in medlines:
+    		line.set_color('r')
+		line.set_linewidth(2)
+
+
 	pylab.axhline(0, color='black')
 
 	bl = baseline.T[idx]
-	pylab.plot(X, bl, 'r')
+	pylab.plot(X, bl, 'r', linewidth=2)
 
 	median = median[:, idx]
-	pylab.plot(X, median, 'g')
-	pylab.title(fm)
+	pylab.plot(X, median, 'g--', linewidth=2)
+
+	if t == -1:
+		pylab.title('Task length=all')
+	else:
+		pylab.title('Task length=%s'%t)
+
+	pylab.ylabel('Effort')	
+	pylab.xticks([])
 #	bp = pylab.boxplot(data)
 #	pylab.setp(bp['boxes'], color='green')
 #	pylab.setp(bp['whiskers'], color="green")
@@ -96,9 +113,16 @@ if __name__ == '__main__':
 	fm = sys.argv[2]
 	fp = sys.argv[3]
 #	t = sys.argv[4]	
-	for t in [1, 10, -1]:
-		for fm in ['dynamic', 'static']:
-			prior_per_query(e, fm, fp, t)
+	pylab.rc('font', **{'size': 16})
+	pylab.figure()
+
+	i = 1	
+	n = 2
+	for t in [1, 10]:
+#		for fm in ['dynamic', 'static']:
+		pylab.subplot(n, 1, i) 
+		prior_per_query(e, fm, fp, t)
+		i += 1
 	pylab.show()
 
 
