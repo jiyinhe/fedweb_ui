@@ -1,5 +1,21 @@
-import tmp2, sys
+import sys
+import json
 
+
+class LogData:
+
+	def __init__(self):
+		self.rawdata = ""
+		self.clicks = ""
+		self.hovers = ""
+		self.actions = "" 
+
+
+	def load_data(self,fname):
+		fh = open(fname)
+		self.rawdata = json.load(fh)
+		fh.close()
+	
 hits= tmp2.data['hits']['hits']
 
 time_hit_pairs = [(h['_source']['created_at'],h) for h in hits]
