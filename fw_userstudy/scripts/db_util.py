@@ -27,4 +27,3 @@ def run_qry_with_results(qry, conn):
         r = conn.store_result()
         res = r.fetch_row(0)
         return res
-
