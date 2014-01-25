@@ -1,0 +1,50 @@
+7001	{u'Academic': 7, u'Books': 3, u'Video': 1}
+7003	{u'Academic': 1, u'Health': 3}
+7004	{}
+7007	{u'Entertainment': 2, u'Blogs': 2, u'Academic': 1, u'Books': 1, u'Video': 1, u'Social': 1}
+7009	{u'Tech': 2, u'Jobs': 1, 'All categories': 1, u'Software': 1}
+7018	{u'Books': 1, u'Shopping': 1, 'All categories': 1, u'Audio': 1}
+7025	{}
+7030	{u'Audio': 1, 'All categories': 1, u'Entertainment': 1}
+7033	{u'Shopping': 1, u'Photo/Pictures': 1, u'Recipes': 1, 'All categories': 2, u'General': 1, u'Blogs': 1, u'Encyclopedia': 1, u'Social': 1, u'Travel': 3, u'Q&A': 2}
+7034	{u'Shopping': 4}
+7039	{u'Tech': 1, 'All categories': 1, u'Software': 1}
+7040	{u'Local': 1, u'Shopping': 1, 'All categories': 1}
+7042	{u'Photo/Pictures': 1}
+7046	{u'Shopping': 1, 'All categories': 1}
+7047	{u'Blogs': 1, 'All categories': 1, u'General': 2, u'Academic': 2, u'Encyclopedia': 2, u'Q&A': 1}
+7056	{u'Encyclopedia': 2, u'Tech': 2, u'Blogs': 1, u'Books': 1, u'Video': 1}
+7067	{u'Shopping': 1}
+7068	{u'Academic': 2, u'Books': 3, u'Shopping': 4, 'All categories': 2}
+7069	{}
+7075	{u'Audio': 1, u'Video': 1}
+7076	{u'Photo/Pictures': 3}
+7080	{u'Entertainment': 6, u'Video': 8, u'Blogs': 1, 'All categories': 2, u'General': 1, u'Encyclopedia': 1, u'Social': 1, u'Tech': 1, u'Audio': 3}
+7084	{}
+7087	{u'Audio': 1, u'Encyclopedia': 1, u'Q&A': 1, u'Entertainment': 1}
+7089	{u'Audio': 4, u'Video': 2}
+7090	{u'Entertainment': 4, u'Photo/Pictures': 2, u'Blogs': 1, 'All categories': 1, u'General': 2, u'Encyclopedia': 2, u'News': 4, u'Q&A': 2}
+7094	{'All categories': 2, u'General': 1, u'Academic': 2, u'Tech': 1, u'Social': 1, u'Encyclopedia': 2, u'Q&A': 3}
+7096	{u'Blogs': 2, 'All categories': 2, u'General': 1, u'Tech': 3, u'Q&A': 1, u'Software': 1}
+7097	{u'Kids': 1, u'Entertainment': 3, u'Blogs': 1, u'General': 1, u'Video': 1, u'Q&A': 1}
+7099	{u'Video': 2}
+7103	{u'Health': 1, u'Encyclopedia': 1, u'Academic': 1}
+7109	{u'Travel': 1}
+7115	{u'News': 1, 'All categories': 1, u'Sports': 2}
+7124	{u'Shopping': 1, 'All categories': 1}
+7127	{}
+7129	{u'Software': 1}
+7132	{u'Health': 1, u'Jobs': 3, 'All categories': 3}
+7145	{u'Kids': 1, u'Entertainment': 1, u'Blogs': 1, 'All categories': 1, u'Video': 1, u'Encyclopedia': 1, u'Q&A': 2}
+7209	{u'Recipes': 4}
+7258	{u'Recipes': 3, u'General': 1, u'Blogs': 1, u'Books': 1, u'Encyclopedia': 1, u'Video': 4, u'Travel': 1, u'Q&A': 2}
+7348	{u'Academic': 1, u'Encyclopedia': 1, 'All categories': 1}
+7404	{u'News': 5, u'Encyclopedia': 1, u'Local': 1, u'Entertainment': 1}
+7406	{u'Health': 2, u'Kids': 1, u'Encyclopedia': 1, u'Q&A': 1}
+7407	{u'Entertainment': 1}
+7415	{u'Tech': 3, u'Shopping': 1, u'Entertainment': 1, u'Blogs': 1, 'All categories': 1, u'Games': 1, u'News': 1, u'Software': 1}
+7465	{u'News': 2, u'Blogs': 2, u'Video': 1, u'Entertainment': 4}
+7485	{u'Entertainment': 2, u'Blogs': 3, 'All categories': 3, u'General': 2, u'Jokes': 2, u'Books': 2, u'Games': 2, u'Social': 2, u'Local': 1, u'Q&A': 3, u'Software': 1}
+7504	{u'News': 6, u'Local': 1, 'All categories': 1, u'General': 1}
+7505	{u'Entertainment': 1, u'Blogs': 1, 'All categories': 1, u'Books': 1, u'Encyclopedia': 1, u'News': 4}
+7506	{u'News': 1, 'All categories': 1}

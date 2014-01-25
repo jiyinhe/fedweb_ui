@@ -80,7 +80,7 @@ def box_plot(x1,x2,fname):
 #	pylab.show()
 	pylab.savefig("plots/box_"+fname+".pdf")
 
-if __name__ == '__main__':
+def gen_effort_per_topic_box_plots():
 	us = UserData.UserData()	
 	# number of success
 	q1 = ("basic","select task_id, clickcount from fedtask_userscore\
@@ -112,5 +112,57 @@ if __name__ == '__main__':
 		acc1.append(np.array(v1))
 		acc2.append(np.array(v2))
 	box_plot(np.array(acc1),np.array(acc2),"combined")
+
+def load_data(fname):
+	fh = open(fname)
+	text = fh.read()
+	fh.close()
+	lines = text.split("\n")
+	data = []
+	for line in lines:
+		if line:
+			row = [] 
+			for e in line.split():
+				row.append(int(e))
+			data.append(row)
+	return np.array(data)
+
+def get_cumulative_data(data):
+	# number of people that have seen a snippet at a certain rank is
+	# the sum of all people that saw that rank and furter, so reverse
+	# the data:
+	rev_data = data[::-1]
+	rev_cumdata = np.cumsum(rev_data[:,1])
+	# now reverse the cumulative data and x axis back
+	cumdata = rev_cumdata[::-1]
+	# normalize cumdata to probability
+	totcumdata = float(max(cumdata))
+	print sum(cumdata/totcumdata)
+	return data[:,0],cumdata/totcumdata
+
+def write_data(fname,data):
+	[x,y] = data
+	fh = open(fname,'w')
+	for i in range(len(x)):
+		fh.write("%d	%f\n"%(x[i],y[i]))
+	fh.close()
+
+def plot_search_depth():
+	data1 = load_data('data/basic_searchdepth.data')[:50]
+	data2 = load_data('data/facet_searchdepth.data')[:50]
+
+	x,y = get_cumulative_data(data1)
+	pylab.plot(x,y,'b')
+	write_data('data/basic_searchdepth_prob.data',[x,y])
+
+	x,y = get_cumulative_data(data2)
+	pylab.plot(x,y,'r')
+	write_data('data/facet_searchdepth_prob.data',[x,y])
+
+	pylab.savefig('plots/searchdepth.pdf')
+
+if __name__ == '__main__':
+	# gen_effort_per_topic_box_plots()
+	plot_search_depth()	
 		
 
