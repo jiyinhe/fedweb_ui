@@ -11,7 +11,8 @@ e_lambda = [1, 0.5, 0.1, 0.05, 0.01, 0.005, 0.001, 0.0005]
 # ===== Parameters for FilterModel ======
 uniform = lambda x: [1 for i in range(len(x))]
 ndcg = lambda x: x
-f_prior = [None, ndcg]
+user = lambda x: x
+f_prior = [None, ndcg, user]
 #f_prior = [None]
 
 f_model_type = ['static', 'dynamic']

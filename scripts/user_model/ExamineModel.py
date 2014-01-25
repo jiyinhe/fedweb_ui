@@ -16,10 +16,14 @@ class ExamineModel:
 	# Set the model parameters
 	# e_lambda: the decay parameter for within at time t
 	# N0: the initial value, default 1, i.e., always examine the first doc
-	def __init__(self, model_name, e_lambda=None, N0=1):
+	def __init__(self, model_name, e_lambda=None, N0=1, empirical_distribution=None):
 		self.model = model_name		
 		self.e_lambda = e_lambda
 		self.N_0 = N0
+		if model_name == 'User' and empirical_distribution==None:
+			print 'For model type "User", the empirical distribution should be supplied.'
+			sys.exit()
+		self.user_distribution = empirical_distribution
 
 	def decay(self, t):
 		return math.exp(-t*self.e_lambda)
@@ -27,9 +31,20 @@ class ExamineModel:
 	def examine_next(self, t):
 		if self.model == 'ExpRank':
 			return self.sampleExpRank(t)	
+		elif self.model == 'User':
+			s = self.sample_empirical(t) 
+			return s 
 		else:
 			print 'Sorry, model %s is not available'%self.model
 			sys.exit()
+
+	def sample_empirical(self, t):
+		p = self.user_distribution.get(t, 0)
+		n = random.random()
+		if n < p:
+			return 1
+		else:
+			return 0		
 
 	# Sample a user decision: whether or not to examine a doc
 	# With exponential decay  

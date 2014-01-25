@@ -35,9 +35,10 @@ class FilterModel:
 			self.alpha0 = [[a, i] for i in range(len(resultlist))]
 		else:
 			#print prior
-			sum_a = sum(prior)
-			self.prior = [[prior[i]/sum_a, i] for i in range(len(prior))]
-			self.alpha0 = [[prior[i]/sum_a, i] for i in range(len(prior))] 
+			sum_a = float(sum(prior))
+			self.prior = [[float(prior[i])/sum_a, i] for i in range(len(prior))]
+			self.alpha0 = [[float(prior[i])/sum_a, i] for i in range(len(prior))] 
+			#print self.prior 
 			if not len(prior) == len(resultlist):
 				print 'ERROR: prior should have the same length as resultlist'
 				sys.exit()
