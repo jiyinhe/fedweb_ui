@@ -23,7 +23,7 @@ def bar_plot(left,height, width=0.8, bottom=0):
 	# bottom: y coord of bottom of bar
 	pylab.figure()
 	pylab.bar(left,height,width,bottom)
-	pylab.savefig("plots/scatter_"+fname)
+	pylab.savefig("plots/bar_"+fname)
 
 def scatter_plot(x,y,fname,markersize=20,color='b',marker='o'):
 	# x,y: arrays of x and y coords to be plotted against each other
@@ -72,7 +72,7 @@ def box_plot(x1,x2,fname):
 	pylab.setp(bp['whiskers'], color='red')
 	pylab.setp(bp['medians'], color='red')
 
-	pylab.xticks(range(len(order)), order, size='small')
+	pylab.xticks(range(1,len(order)+1), order, size='small')
 
 	pylab.setp(plt.get_xticklabels(),rotation='vertical', fontsize=10)
 
@@ -83,11 +83,15 @@ def box_plot(x1,x2,fname):
 def gen_effort_per_topic_box_plots():
 	us = UserData.UserData()	
 	# number of success
-	q1 = ("basic","select task_id, clickcount from fedtask_userscore\
- where numrel = 10 and task_id < 51;")
+	q1 = ("basic","select task_id, clickcount, giveup from fedtask_userscore\
+ where (numrel = 10 || clickcount = 50 || giveup = 1)  and\
+ task_id < 51 and user_id >26 and user_id != 37 and user_id != 45\
+ order by task_id;")
 	# number of fail
-	q2 = ("facet", "select task_id, clickcount from fedtask_userscore\
-  where numrel = 10 and task_id > 50;")
+	q2 = ("facet", "select task_id, clickcount, giveup from fedtask_userscore\
+  where (numrel = 10 || clickcount = 50 || giveup = 1) and\
+ task_id > 50 and user_id >26 and user_id != 37 and user_id != 45\
+ order by task_id;")
 
 #	for q in [("basic.pdf",q1),("facet.pdf",q2)]:
 #		us.load_data(q[1])
@@ -99,8 +103,11 @@ def gen_effort_per_topic_box_plots():
 		d[i] = [[],[]]
 	index = 0
 	for q in [q1,q2]:			
-		us.load_data(q[1])
-		[x,y] = us.get_x_y_data()
+		data = us.load_data(q[1])
+		x = [e[0] for e in data]
+		# set giveup to 50 
+		y = [e[1] if e[2] == 0 else 50 for e in data]
+#		[x,y] = us.get_x_y_data()
 		for i in range(0,len(x)):
 			k = x[i]%50
 			v = int(y[i])
@@ -148,8 +155,8 @@ def write_data(fname,data):
 	fh.close()
 
 def plot_search_depth():
-	data1 = load_data('data/basic_searchdepth.data')[:50]
-	data2 = load_data('data/facet_searchdepth.data')[:50]
+	data1 = load_data('data/basic_searchdepth.data')
+	data2 = load_data('data/facet_searchdepth.data')
 
 	x,y = get_cumulative_data(data1)
 	pylab.plot(x,y,'b')
@@ -161,8 +168,70 @@ def plot_search_depth():
 
 	pylab.savefig('plots/searchdepth.pdf')
 
+def plot_correlation():
+	us = UserData.UserData()	
+	q = ("facet", "select task_id, clickcount, giveup from fedtask_userscore\
+  where (numrel = 10 || clickcount = 50 || giveup = 1) and\
+ task_id > 50 and user_id >26 and user_id != 37 and user_id != 45\
+ order by task_id;")
+
+#	for q in [("basic.pdf",q1),("facet.pdf",q2)]:
+#		us.load_data(q[1])
+#		x = us.get_matrix_data()
+#		box_plot(x,q[0])
+
+	# initialize the dict so we have empty lists for tasks that have
+	# not been done
+	d={}
+	for i in range(50):
+		d[i]=[]
+
+	data = us.load_data(q[1])
+	# get the task_ids
+	x = [e[0] for e in data]
+	# get the clickcounts and if user has given up, set clickcount to 50 
+	y = [e[1] if e[2] == 0 else 50 for e in data]
+	# load data, we have a long list with zero, 1, or  possibly multiple
+	# clickcounts for each task, so we aggregate them here
+	for i in range(len(x)):
+		k = x[i]%50
+		v = int(y[i])
+		d[k].append(v)
+
+	acc = []
+	pairs = d.items()
+	# sort on task_id, so lowest task_id is first
+	pairs.sort()
+	# create arrays from each list
+	for (k,v) in pairs: 
+		acc.append(np.array(v))
+	acc = np.array(acc)
+	# calculate the median for each array
+	data2 = load_data('data/facet_searchdepth.data')
+	print len(data2)
+	medians = [np.median(x) if x.any() else 0 for x in acc]
+
+	# load simulated data
+	fh = open('data/simulate_user.txt','r')
+	text = fh.read()
+	fh.close()
+	lines = text.split("\n")
+	header = lines[0]
+	data = lines[1:-1]
+	simdata_medians = np.median(np.array([np.array(l.split()).astype(np.int) for l in
+data]),axis =0)
+	simdata_medians = [x if x < 51 else 50 for x in simdata_medians]
+	
+	pylab.figure()
+	fig = pylab.scatter(simdata_medians,medians,color='b')
+	fig.axes.autoscale_view(True)
+	pylab.show()
+
+
+
 if __name__ == '__main__':
-	# gen_effort_per_topic_box_plots()
+	#gen_effort_per_topic_box_plots()
 	plot_search_depth()	
+	plot_correlation()
 		
 

@@ -56,8 +56,8 @@ def gen_task_effort_table():
 	q6=("giveup facet"," and giveup=1 and task_id > 50")
 	qrs=[("success",(q1,q2)),("fail",(q3,q4)),("giveup",(q5,q6))]
 
-	# a list of (task,user) tuples indicating the tasks completed by a
-	# particular user
+	# a list of (task,user) tuples indicating the number of users that
+	# completed a task
 	task_userqry = """select task_id,count(*)
 			from 	fedtask_userscore as us,
 					auth_user as au 
@@ -72,10 +72,10 @@ def gen_task_effort_table():
 	
 	# loop over queries and create table rows
 	# this is a bit complicated, becuase of the wanted table structure
-	# 		tasks completed				effort spend
+	# 		completed tasks				effort spend
 	#	basic			facet		basic			facet
 	# tot, md, IQR  tot, md, IQR  tot, md, IQR  tot, md, IQR
-	print table_header_row(["","tasks completed","effort spent"],
+	print table_header_row(["","completed tasks","effort spent"],
 							[(1,'c'),(6,'c'),(6,'c')])
 	print "\hline"
 	print table_header_row(["","basic","facet","basic","facet"],
@@ -141,15 +141,15 @@ def summarize_events(events):
 	return data
 
 # descriptive statistics data: for completed tasks
-# 				 		per user,					 per query
-#				basic			facet			basic			facet
-#			tot md IQR		tot md IQR		tot md IQR		tot md IQR
+#					basic			facet	
+#				tot md IQR		tot md IQR	
 # bookmark
 # category
 # paginate
 # search depth 
 # time spent
 # nr of hovers
+# effort
 def log_summary_table(td):
 	posbookmark = []
 	negbookmark = []
@@ -178,25 +178,31 @@ def log_summary_table(td):
 			#print d['category']
 			# determine last clicked document
 			last_click = find_last_click_depth(d['search_depth'],d['last_click'])
-			if last_click < 10:
-				print d['search_depth']
-				print d['last_click']
 			search_depth.append(last_click)
 	if not td: sys.exit()
-	print "posbookmark"
-	print sum(posbookmark),np.median(posbookmark),np.percentile(posbookmark,25),np.percentile(posbookmark,75)
-	print "negbookmark"
-	print sum(negbookmark),np.median(negbookmark),np.percentile(negbookmark,25),np.percentile(negbookmark,75)
-	print "category"
-	print sum(category),np.median(category),np.percentile(category,25),np.percentile(category,75)
-	print "paginate"
-	print sum(paginate),np.median(paginate),np.percentile(paginate,25),np.percentile(paginate,75)
-	print "hovers"
-	print sum(hovers),np.median(hovers),np.percentile(hovers,25),np.percentile(hovers,75)
-	print "search depth"
-	print sum(search_depth),np.median(search_depth),np.percentile(search_depth,25),np.percentile(search_depth,75)
-	print "time spent"
-	print sum(time_spent),np.median(time_spent),np.percentile(time_spent,25),np.percentile(time_spent,75)
+	rows = [
+	["posbookmark", 	sum(posbookmark),
+						np.median(posbookmark),
+						"(%.1f-%.1f)"%(np.percentile(posbookmark,25),np.percentile(posbookmark,75))],
+	["negbookmark", 	sum(negbookmark),
+						np.median(negbookmark),
+						"(%.1f-%.1f)"%(np.percentile(negbookmark,25),np.percentile(negbookmark,75))],
+	["category",		sum(category),
+						np.median(category),
+						"(%.1f-%.1f)"%(np.percentile(category,25),np.percentile(category,75))],
+	["paginate", 		sum(paginate),
+						np.median(paginate),
+						"(%.1f-%.1f)"%(np.percentile(paginate,25),np.percentile(paginate,75))],
+	["hovers", 			sum(hovers),
+						np.median(hovers),
+						"(%.1f-%.1f)"%(np.percentile(hovers,25),np.percentile(hovers,75))],
+	["search depth", 	sum(search_depth),
+						np.median(search_depth),
+						"(%.1f-%.1f)"%(np.percentile(search_depth,25),np.percentile(search_depth,75))],
+	["time spent", 	sum(time_spent),
+					np.median(time_spent),
+					"(%.1f-%.1f)"%(np.percentile(time_spent,25),np.percentile(time_spent,75))]]
+	return rows
 
 
 def find_last_click_depth(data,last_click_list):
@@ -307,16 +313,38 @@ def gen_logdata_table():
 	
 	print 'basic'
 	td = group_by_topic(data,0)
-	log_summary_table(td)
+	basic_rows = log_summary_table(td)
 	sddist = search_depth_distribution(td)
 	write_data('basic_searchdepth.data',sddist)
 	print 'facet'
 	td = group_by_topic(data,1)
-	log_summary_table(td)
+	facet_rows = log_summary_table(td)
 	catdist = category_distribution(td)
 	write_data('facet_catdist.data',catdist)
 	sddist = search_depth_distribution(td)
 	write_data('facet_searchdepth.data',sddist)
+
+	print "\hline"
+	print table_header_row(["","basic"], [(1,'c'),(3,'c')])
+	print "\hline"
+	print table_header_row(["","total","median","IQR"])
+	print "\hline"
+
+	for r in basic_rows:
+		type = r[0]
+		basic_row = r[1:]
+		print table_row([type] + basic_row)
+
+	print "\hline"
+	print table_header_row(["","facet"], [(1,'c'),(3,'c')])
+	print "\hline"
+	print table_header_row(["","total","median","IQR"])
+	print "\hline"
+
+	for r in facet_rows:
+		type = r[0]
+		facet_row = r[1:]
+		print table_row([type] + facet_row)
 
 def write_data(fname, data):
 	fh = open('data/'+fname,'w')
@@ -324,7 +352,38 @@ def write_data(fname, data):
 		fh.write("%s	%s\n"%(k,v))
 	fh.close()
 
+def output_sessions():
+	fh = open('table.tmp')
+	data = eval(fh.read())
+	fh.close()
+	for (k,v) in data.items():
+		print ", ".join([ el[2] for el in v if el[2] != 'mouse_click' and
+el[2] != 'mouse_movements'])
+
+def output_searchdepth():
+	fh = open('table.tmp')
+	data = eval(fh.read())
+	fh.close()
+	td = group_by_topic(data,1)
+
+	medians = []
+	for (k,lst) in td.items():
+		search_depth = []
+		for d in lst:
+			if not d['done']: continue
+			# determine last clicked document
+			last_click = find_last_click_depth(d['search_depth'],d['last_click'])
+			search_depth.append(last_click)
+		if search_depth:
+			m = np.median(np.array(search_depth))
+		else:
+			m = 0
+		medians.append(m)
+		print k,m
+	print medians
 
 if __name__ == '__main__':
 	#gen_task_effort_table()
-	gen_logdata_table()
+	#gen_logdata_table()
+	#output_sessions()
+	output_searchdepth()
