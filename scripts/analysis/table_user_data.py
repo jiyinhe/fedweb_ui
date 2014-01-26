@@ -400,8 +400,48 @@ def output_searchdepth(condition):
 	medians.sort()
 	return [m[1] for m in medians]
 
+# a row looks like this:
+# id  | user_id | IP              | gender | year_of_birth |
+# computer_exp | english_exp | search_exp | education | consent
+
+def gen_demographics():
+	qry = "select * from questionnaire_userprofile where user_id > 26\
+ and user_id != 37 and user_id != 45;"
+	us = UserData.UserData()
+	rows = us.load_data(qry)
+	gender = [r[3] for r in rows]
+	year_of_birth = [r[4] for r in rows]
+	computer_exp = [r[5] for r in rows]
+	english_exp = [r[6] for r in rows]
+	search_exp = [r[7] for r in rows]
+	education = [r[8] for r in rows]
+	
+	print "gender", count_elements(gender).items()
+	print "education", count_elements(education).items()
+	print "age", desc_stats(year_of_birth)
+	print "compexp", desc_stats(computer_exp)
+	print "searchexp", desc_stats(search_exp)
+	print "englishexp", desc_stats(english_exp)
+
+def desc_stats(lst):
+	arr = np.array(lst)
+	return np.median(arr),"(%.1f-%.1f)"%(np.percentile(arr,25),np.percentile(arr,75))
+	
+
+def count_elements(lst):
+	d = {}
+	for k in lst:
+		if k in d:
+			d[k]+=1
+		else:
+			d[k]=1
+	return d
+
+	
+
 if __name__ == '__main__':
 	#gen_task_effort_table()
-	gen_logdata_table()
+	#gen_logdata_table()
 	#output_sessions()
 	#output_searchdepth(1)
+	gen_demographics()	

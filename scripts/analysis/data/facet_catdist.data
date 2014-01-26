@@ -1,4 +1,4 @@
-7001	{u'category_0': 7, u'category_3': 3, u'category_18': 1}
+7001	{u'category_18': 1, u'category_3': 3, u'category_0': 7}
 7003	{u'category_9': 1, u'category_8': 4, u'category_4': 1, u'category_3': 1, u'category_0': 4, u'category_13': 1, u'category_12': 1, u'category_19': 2}
 7004	{u'category_all': 1, u'category_4': 1, u'category_0': 1}
 7007	{u'category_5': 2, u'category_3': 1, u'category_2': 2, u'category_0': 1, u'category_15': 1, u'category_19': 1}
@@ -24,7 +24,7 @@
 7087	{u'category_5': 1, u'category_4': 1, u'category_12': 1, u'category_1': 1}
 7089	{u'category_13': 2, u'category_1': 4}
 7090	{u'category_7': 2, u'category_5': 4, u'category_4': 2, u'category_2': 1, u'category_all': 1, u'category_13': 2, u'category_12': 2, u'category_11': 4}
-7094	{u'category_17': 1, u'category_7': 1, u'category_4': 2, u'category_0': 2, u'category_all': 2, u'category_15': 1, u'category_13': 3}
+7094	{u'category_all': 2, u'category_7': 1, u'category_4': 2, u'category_0': 2, u'category_17': 1, u'category_15': 1, u'category_13': 3}
 7096	{u'category_7': 1, u'category_2': 2, u'category_all': 2, u'category_16': 3, u'category_14': 1, u'category_12': 1}
 7097	{u'category_9': 1, u'category_7': 1, u'category_5': 3, u'category_2': 1, u'category_13': 1, u'category_18': 1}
 7099	{u'category_16': 2}
@@ -44,7 +44,7 @@
 7407	{u'category_5': 1}
 7415	{u'category_6': 1, u'category_5': 1, u'category_2': 1, u'category_all': 1, u'category_16': 1, u'category_14': 1, u'category_11': 1, u'category_18': 3}
 7465	{u'category_16': 1, u'category_5': 4, u'category_2': 2, u'category_11': 2}
-7485	{u'category_all': 3, u'category_7': 2, u'category_6': 2, u'category_5': 2, u'category_3': 2, u'category_2': 3, u'category_17': 2, u'category_15': 3, u'category_12': 1, u'category_10': 2, u'category_18': 1}
+7485	{u'category_17': 2, u'category_7': 2, u'category_6': 2, u'category_5': 2, u'category_3': 2, u'category_2': 3, u'category_all': 3, u'category_15': 3, u'category_12': 1, u'category_10': 2, u'category_18': 1}
 7504	{u'category_all': 1, u'category_7': 1, u'category_11': 6, u'category_10': 1}
 7505	{u'category_5': 1, u'category_4': 1, u'category_3': 1, u'category_2': 1, u'category_all': 1, u'category_11': 4}
 7506	{u'category_all': 1, u'category_11': 1}
