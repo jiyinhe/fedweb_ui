@@ -273,7 +273,8 @@ class LogData:
 		fh.close()
 
 def main():		
-	inputfile = "alldata_24-01-2014_13:13.log"
+	inputfile = "alldata_26-01-2014_11:00.log"
+	#inputfile = "alldata_24-01-2014_13:13.log"
 	#inputfile = "clicks_24-01-2014_13:00.log"
 	ld = LogData()
 	ld.load_data(inputfile)

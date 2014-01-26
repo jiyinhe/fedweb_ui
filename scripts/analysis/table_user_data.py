@@ -294,7 +294,8 @@ def search_depth_distribution(td):
 def gen_logdata_table():
 	# first get the data
 	if 0:
-		inputfile = "../../fw_userstudy/scripts/log_utils/alldata_24-01-2014_13:13.log"
+		#inputfile = "../../fw_userstudy/scripts/log_utils/alldata_24-01-2014_13:13.log"
+		inputfile = "../../fw_userstudy/scripts/log_utils/alldata_26-01-2014_11:00.log"
 		#inputfile = "clicks_24-01-2014_13:00.log"
 		ld = LogData.LogData()
 		ld.load_data(inputfile)
@@ -305,9 +306,9 @@ def gen_logdata_table():
 		page = 'http://zookst9.science.uva.nl:8002/study/task/'
 		data = ld.filter(data, {'location':page,
 								'order':0})# order on date
-		ld.cache2file("table.tmp",data)
+		ld.cache2file("table2.tmp",data)
 	else:
-		fh = open('table.tmp')
+		fh = open('table2.tmp')
 		data = eval(fh.read())
 		fh.close()
 	
@@ -401,6 +402,6 @@ def output_searchdepth(condition):
 
 if __name__ == '__main__':
 	#gen_task_effort_table()
-	#gen_logdata_table()
+	gen_logdata_table()
 	#output_sessions()
-	output_searchdepth(1)
+	#output_searchdepth(1)
