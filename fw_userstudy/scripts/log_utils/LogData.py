@@ -75,7 +75,7 @@ class LogData:
 			# add list of mouse clicks as (location, group_id) tuples
 			if event_type == "mouse_click":
 				event.append(self.handle_mouse_click(event_props))
-			# add number of mouse hovers 
+			# add list of mouse hover positions 
 			elif event_type == "mouse_movements":
 				event.append(self.handle_mouse_movements(event_props))
 			# add bookmark relevant/non-relevant value, i.e., {1,-1}
@@ -149,19 +149,32 @@ class LogData:
 
 # object consisting of multiple (buffered)  mouse movements
 # return number of movements
-#'event_properties': [	{'timestamp': '2014-01-17T09:11:23.855+01:00', 
-#						'mouse_position': 
-#							{'y': 464, 'x': 648}, 
-#						'viewport_dimensions': 
-#							{'width': 1423, 'height': 729}},
-#						{'timestamp': '2014-01-17T09:11:23.905+01:00', 
-#						'mouse_position': 
-#							{'y': 464, 'x': 647}, 
-#						'viewport_dimensions': 
-#							{'width': 1423, 'height': 729}},
-#					],
+# "event_properties": [ {
+#            "mouse_position": { "x": 539, "y": 1165 }, 
+#			"node_classes": [
+#                "list-group-item-text"
+#              ],
+#            "node_data_attrs": {
+#                "groupid": "id_FW13-e021-7103-06",
+#                "rankgroupid": "rank_2"
+#				},
+#            "node_name": "DIV",
+#            "timestamp": "2014-01-21T13:42:00.504+01:00",
+#            "viewport_dimensions": { "height": 844, "width": 1265 }
+#			},
+#	 		{ "mouse_position": { "x": 541, "y": 1140 }, 
+#			"node_classes": [
+#                "doc_url"
+#              ],
+#              "node_data_attrs": {
 	def handle_mouse_movements(self,data):
-		return len(data)
+		hover = []
+		for e_prop in data:
+			if 'node_data_attrs' in e_prop:
+				node_data_attrs = e_prop['node_data_attrs']
+				if 'rankgroupid' in node_data_attrs:
+					hover.append(node_data_attrs['rankgroupid'])
+		return hover
 
 # object consisting of multiple (buffered)  mouse clicks
 # return list of (location,group_id) tuples

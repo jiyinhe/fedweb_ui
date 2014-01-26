@@ -101,7 +101,7 @@ def summarize_events(events):
 			'negbookmark':0,
 			'category':{},
 			'paginate':0,
-			'hovers':0,
+			'hovers':[],
 			'search_depth':[],
 			'last_click':[],
 			'time_spent':[],
@@ -133,7 +133,7 @@ def summarize_events(events):
 			data['paginate']+=1
 			data['search_depth'].append(e[3])
 		elif e_type == 'mouse_movements':
-			data['hovers']+=e[4]
+			data['hovers'].append(e[4])
 		elif e_type == 'mouse_click':
 			data['last_click'].extend(e[4])
 		else:	
@@ -193,9 +193,9 @@ def log_summary_table(td):
 	["paginate", 		sum(paginate),
 						np.median(paginate),
 						"(%.1f-%.1f)"%(np.percentile(paginate,25),np.percentile(paginate,75))],
-	["hovers", 			sum(hovers),
-						np.median(hovers),
-						"(%.1f-%.1f)"%(np.percentile(hovers,25),np.percentile(hovers,75))],
+	["hovers", 			sum([len(h) for h in hovers]),
+						np.median([len(h) for h in hovers]),
+						"(%.1f-%.1f)"%(np.percentile([len(h) for h in hovers],25),np.percentile([len(h) for h in hovers],75))],
 	["search depth", 	sum(search_depth),
 						np.median(search_depth),
 						"(%.1f-%.1f)"%(np.percentile(search_depth,25),np.percentile(search_depth,75))],
@@ -306,9 +306,9 @@ def gen_logdata_table():
 		page = 'http://zookst9.science.uva.nl:8002/study/task/'
 		data = ld.filter(data, {'location':page,
 								'order':0})# order on date
-		ld.cache2file("table2.tmp",data)
+		ld.cache2file(CACHEFILE,data)
 	else:
-		fh = open('table2.tmp')
+		fh = open(CACHEFILE)
 		data = eval(fh.read())
 		fh.close()
 	
@@ -354,7 +354,7 @@ def write_data(fname, data):
 	fh.close()
 
 def output_sessions():
-	fh = open('table.tmp')
+	fh = open(CACHEFILE)
 	data = eval(fh.read())
 	fh.close()
 	for (k,v) in data.items():
@@ -362,7 +362,7 @@ def output_sessions():
 el[2] != 'mouse_movements'])
 
 def output_searchdepth(condition):
-	fh = open('table.tmp')
+	fh = open(CACHEFILE)
 	data = eval(fh.read())
 	fh.close()
 	td = group_by_topic(data,condition)
@@ -438,10 +438,10 @@ def count_elements(lst):
 	return d
 
 	
-
+CACHEFILE = 'table3_mouse_hovers.tmp'
 if __name__ == '__main__':
 	#gen_task_effort_table()
 	#gen_logdata_table()
 	#output_sessions()
-	#output_searchdepth(1)
-	gen_demographics()	
+	output_searchdepth(1)
+	#gen_demographics()	
