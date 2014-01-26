@@ -10,6 +10,7 @@ import sys
 import itertools
 import operator
 import UserData
+from table_user_data import output_searchdepth
 
 def load_baseline(t):
 	return []
@@ -169,47 +170,74 @@ def plot_search_depth():
 	pylab.savefig('plots/searchdepth.pdf')
 
 def plot_correlation():
-	us = UserData.UserData()	
-	q = ("facet", "select task_id, clickcount, giveup from fedtask_userscore\
-  where (numrel = 10 || clickcount = 50 || giveup = 1) and\
- task_id > 50 and user_id >26 and user_id != 37 and user_id != 45\
- order by task_id;")
+#	us = UserData.UserData()	
+#	q = ("facet", "select task_id, clickcount, giveup from fedtask_userscore\
+#  where (numrel = 10 || clickcount = 50 || giveup = 1) and\
+# task_id > 50 and user_id >26 and user_id != 37 and user_id != 45\
+# order by task_id;")
+#
+##	for q in [("basic.pdf",q1),("facet.pdf",q2)]:
+##		us.load_data(q[1])
+##		x = us.get_matrix_data()
+##		box_plot(x,q[0])
+#
+#	# initialize the dict so we have empty lists for tasks that have
+#	# not been done
+#	d={}
+#	for i in range(50):
+#		d[i]=[]
+#
+#	data = us.load_data(q[1])
+#	# get the task_ids
+#	x = [e[0] for e in data]
+#	# get the clickcounts and if user has given up, set clickcount to 50 
+#	y = [e[1] if e[2] == 0 else 50 for e in data]
+#	# load data, we have a long list with zero, 1, or  possibly multiple
+#	# clickcounts for each task, so we aggregate them here
+#	for i in range(len(x)):
+#		k = x[i]%50
+#		v = int(y[i])
+#		d[k].append(v)
+#
+#	acc = []
+#	pairs = d.items()
+#	# sort on task_id, so lowest task_id is first
+#	pairs.sort()
+#	# create arrays from each list
+#	for (k,v) in pairs: 
+#		acc.append(np.array(v))
+#	acc = np.array(acc)
+#	medians = [np.median(x) if x.any() else 0 for x in acc]
 
-#	for q in [("basic.pdf",q1),("facet.pdf",q2)]:
-#		us.load_data(q[1])
-#		x = us.get_matrix_data()
-#		box_plot(x,q[0])
+	# load NDCG data
+	fh = open('NDCG_originlist.txt','r')
+	text = fh.read()
+	fh.close()
+	lines = text.split("\n")
+	header = lines[0]
+	data = lines[1:-1]
+	data.sort()
+	NDCG_medians = np.array([np.array(l.split()[-1]).astype(np.float) for l in data])
+	facet_medians = output_searchdepth(1)
+	basic_medians = output_searchdepth(0)
 
-	# initialize the dict so we have empty lists for tasks that have
-	# not been done
-	d={}
-	for i in range(50):
-		d[i]=[]
+	pylab.figure()
+	fig = pylab.scatter(NDCG_medians,facet_medians,color='b')
+	fig.axes.autoscale_view(True)
+	print stats.pearsonr(NDCG_medians,facet_medians)
+	#pylab.show()
 
-	data = us.load_data(q[1])
-	# get the task_ids
-	x = [e[0] for e in data]
-	# get the clickcounts and if user has given up, set clickcount to 50 
-	y = [e[1] if e[2] == 0 else 50 for e in data]
-	# load data, we have a long list with zero, 1, or  possibly multiple
-	# clickcounts for each task, so we aggregate them here
-	for i in range(len(x)):
-		k = x[i]%50
-		v = int(y[i])
-		d[k].append(v)
+	pylab.figure()
+	fig = pylab.scatter(NDCG_medians,basic_medians,color='b')
+	fig.axes.autoscale_view(True)
+	print stats.pearsonr(NDCG_medians,basic_medians)
+	#pylab.show()
 
-	acc = []
-	pairs = d.items()
-	# sort on task_id, so lowest task_id is first
-	pairs.sort()
-	# create arrays from each list
-	for (k,v) in pairs: 
-		acc.append(np.array(v))
-	acc = np.array(acc)
-	# calculate the median for each array
-	data2 = load_data('data/facet_searchdepth.data')
-	print len(data2)
-	medians = [np.median(x) if x.any() else 0 for x in acc]
+	pylab.figure()
+	fig = pylab.scatter(facet_medians,basic_medians,color='b')
+	fig.axes.autoscale_view(True)
+	print stats.pearsonr(facet_medians,basic_medians)
+	#pylab.show()
 
 	# load simulated data
 	fh = open('data/simulate_user.txt','r')
@@ -218,15 +246,21 @@ def plot_correlation():
 	lines = text.split("\n")
 	header = lines[0]
 	data = lines[1:-1]
-	simdata_medians = np.median(np.array([np.array(l.split()).astype(np.int) for l in
+	facet_simdata_medians = np.median(np.array([np.array(l.split()).astype(np.int) for l in
 data]),axis =0)
-	simdata_medians = [x if x < 51 else 50 for x in simdata_medians]
+	#simdata_medians = [x if x < 51 else 50 for x in simdata_medians]
 	
 	pylab.figure()
-	fig = pylab.scatter(simdata_medians,medians,color='b')
+	fig = pylab.scatter(facet_simdata_medians,facet_medians,color='b')
 	fig.axes.autoscale_view(True)
+	print stats.pearsonr(facet_simdata_medians,facet_medians)
 	pylab.show()
 
+	pylab.figure()
+	fig = pylab.scatter(NDCG_medians,facet_simdata_medians,color='b')
+	fig.axes.autoscale_view(True)
+	print stats.pearsonr(NDCG_medians,facet_simdata_medians)
+	pylab.show()
 
 
 if __name__ == '__main__':
