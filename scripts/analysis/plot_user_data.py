@@ -190,14 +190,21 @@ def write_data(fname,data):
 def plot_search_depth():
 	data1 = load_data('data/basic_searchdepth.data')
 	data2 = load_data('data/facet_searchdepth.data')
-
+	fig = pylab.figure()
 	x,y = get_cumulative_data(data1)
-	pylab.plot(x,y,'b')
+	bufy= [y[0]]*9
+	bufx= range(9)
+	pylab.plot(np.hstack((bufx,x)),np.hstack((bufy,y)),'k')
 	write_data('data/basic_searchdepth_prob.data',[x,y])
 
 	x,y = get_cumulative_data(data2)
-	pylab.plot(x,y,'r')
+	bufy= [y[0]]*9
+	pylab.plot(np.hstack((bufx,x)),np.hstack((bufy,y)),'r',marker='+')
 	write_data('data/facet_searchdepth_prob.data',[x,y])
+	pylab.xlabel('rank')
+	pylab.ylabel('probability to visit rank')
+	sp = fig.add_subplot(111)
+	sp.axes.autoscale_view(True)
 
 	pylab.savefig('plots/searchdepth.pdf')
 
@@ -253,22 +260,25 @@ def plot_correlation():
 	facet_medians = output_searchdepth(1)
 	basic_medians = output_searchdepth(0)
 
-	pylab.figure()
-	fig = pylab.scatter(NDCG_medians,facet_medians,color='b')
-	fig.axes.autoscale_view(True)
-	print stats.pearsonr(NDCG_medians,facet_medians)
+# NDCG vs facet users
+#	pylab.figure()
+#	fig = pylab.scatter(NDCG_medians,facet_medians,color='b')
+#	fig.axes.autoscale_view(True)
+#	print stats.pearsonr(NDCG_medians,facet_medians)
 	#pylab.show()
 
-	pylab.figure()
-	fig = pylab.scatter(NDCG_medians,basic_medians,color='b')
-	fig.axes.autoscale_view(True)
-	print stats.pearsonr(NDCG_medians,basic_medians)
+# NDCG vs basic users
+#	pylab.figure()
+#	fig = pylab.scatter(NDCG_medians,basic_medians,color='b')
+#	fig.axes.autoscale_view(True)
+#	print stats.pearsonr(NDCG_medians,basic_medians)
 	#pylab.show()
 
-	pylab.figure()
-	fig = pylab.scatter(facet_medians,basic_medians,color='b')
-	fig.axes.autoscale_view(True)
-	print stats.pearsonr(facet_medians,basic_medians)
+# facet users vs basic users
+#	pylab.figure()
+#	fig = pylab.scatter(facet_medians,basic_medians,color='b')
+#	fig.axes.autoscale_view(True)
+#	print stats.pearsonr(facet_medians,basic_medians)
 	#pylab.show()
 
 	# load simulated data
@@ -282,6 +292,7 @@ def plot_correlation():
 data]),axis =0)
 	#simdata_medians = [x if x < 51 else 50 for x in simdata_medians]
 	
+# facet sim vs facet users
 	pylab.figure()
 	fig = pylab.scatter(facet_simdata_medians,facet_medians,color='b')
 	fig.axes.autoscale_view(True)
@@ -290,17 +301,18 @@ data]),axis =0)
 	pylab.ylabel('user effort')
 	pylab.savefig('plots/facet_simdata_medians-facet_medians.pdf')
 
-	pylab.figure()
-	fig = pylab.scatter(NDCG_medians,facet_simdata_medians,color='b')
-	fig.axes.autoscale_view(True)
-	print stats.pearsonr(NDCG_medians,facet_simdata_medians)
-	pylab.show()
+# NDCG vs facet sim
+#	pylab.figure()
+#	fig = pylab.scatter(NDCG_medians,facet_simdata_medians,color='b')
+#	fig.axes.autoscale_view(True)
+#	print stats.pearsonr(NDCG_medians,facet_simdata_medians)
+#	pylab.show()
 
 
 if __name__ == '__main__':
 	#gen_effort_per_topic_box_plots()
 	#plot_search_depth()	
-	#plot_correlation()
-	plot_hovers()
+	plot_correlation()
+	#plot_hovers()
 		
 
