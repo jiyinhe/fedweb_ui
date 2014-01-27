@@ -11,7 +11,7 @@ import sys
 import itertools
 import operator
 import UserData
-from table_user_data import output_searchdepth
+from table_user_data import output_searchdepth, output_searchdepth_matrix
 
 def load_baseline(t):
 	return []
@@ -40,10 +40,10 @@ def plot_hovers():
 	fig = pylab.figure()
 	pylab.bar(basic_pos,basic, width=0.2, color='k')
 	pylab.bar(facet_pos,facet, width=0.2, color='r',hatch='/')
-	pylab.xticks(range(1,11), range(1,11), size='small')
-	pylab.yticks(pylab.yticks()[0], pylab.yticks()[0]*100, size='small')
-	pylab.xlabel('rank')
-	pylab.ylabel('% of total hovers')
+	pylab.xticks(range(1,11), range(1,11), size='x-large')
+	pylab.yticks(pylab.yticks()[0], pylab.yticks()[0]*100, size='x-large')
+	pylab.xlabel('rank',size='x-large')
+	pylab.ylabel('% of total hovers',size='x-large')
 	subp = fig.add_subplot(111)
 	subp.axes.autoscale_view(True)
 	pylab.savefig('plots/hoverdistribution.pdf')
@@ -201,8 +201,10 @@ def plot_search_depth():
 	bufy= [y[0]]*9
 	pylab.plot(np.hstack((bufx,x)),np.hstack((bufy,y)),'r',marker='+')
 	write_data('data/facet_searchdepth_prob.data',[x,y])
-	pylab.xlabel('rank')
-	pylab.ylabel('probability to visit rank')
+	pylab.xlabel('rank',size='x-large')
+	pylab.ylabel('probability to visit rank',size='x-large')
+	pylab.xticks(size='x-large')
+	pylab.yticks(size='x-large')
 	sp = fig.add_subplot(111)
 	sp.axes.autoscale_view(True)
 
@@ -256,9 +258,104 @@ def plot_correlation():
 	header = lines[0]
 	data = lines[1:-1]
 	data.sort()
-	NDCG_medians = np.array([np.array(l.split()[-1]).astype(np.float) for l in data])
-	facet_medians = output_searchdepth(1)
-	basic_medians = output_searchdepth(0)
+	BNDCG1_medians = np.array([np.array(l.split()[1]).astype(np.float) for l in data])
+	BNDCG10_medians = np.array([np.array(l.split()[2]).astype(np.float) for l in data])
+	BNDCG20_medians = np.array([np.array(l.split()[3]).astype(np.float) for l in data])
+	BNDCGall_medians = np.array([np.array(l.split()[4]).astype(np.float) for l in data])
+	NDCG1_medians = np.array([np.array(l.split()[5]).astype(np.float) for l in data])
+	NDCG10_medians = np.array([np.array(l.split()[6]).astype(np.float) for l in data])
+	NDCG20_medians = np.array([np.array(l.split()[7]).astype(np.float) for l in data])
+	NDCGall_medians = np.array([np.array(l.split()[8]).astype(np.float) for l in data])
+	#facet_medians = output_searchdepth(1)
+	#basic_medians = output_searchdepth(0)
+	basic_medians = [np.median(f) for f in
+np.array(open_searchdepth_matrix("basic_searchdepth_matrix.data"))]
+	facet_medians = [np.median(f) for f in
+np.array(open_searchdepth_matrix("facet_searchdepth_matrix.data"))]
+
+	# load simulated data
+	fh = open('data/simulate_user.txt','r')
+	text = fh.read()
+	fh.close()
+	lines = text.split("\n")
+	header = lines[0]
+	data = lines[1:-1]
+	facet_simdata_medians = np.median(np.array([
+		np.array(l.split()).astype(np.int) for l in data]),axis =0)
+
+	print "BNDCG1 vs user facet", "%.2f & %.4f"%stats.pearsonr(BNDCG1_medians,facet_medians)
+	print "BNDCG10 vs user facet", "%.2f & %.4f"%stats.pearsonr(BNDCG10_medians,facet_medians)
+	print "BNDCG20 vs user facet", "%.2f & %.4f"%stats.pearsonr(BNDCG20_medians,facet_medians)
+	print "BNDCGall vs user facet", "%.2f & %.4f"%stats.pearsonr(BNDCGall_medians,facet_medians)
+	print "NDCG1 vs user facet", "%.2f & %.4f"%stats.pearsonr(NDCG1_medians,facet_medians)
+	print "NDCG10 vs user facet", "%.2f & %.4f"%stats.pearsonr(NDCG10_medians,facet_medians)
+	print "NDCG20 vs user facet", "%.2f & %.4f"%stats.pearsonr(NDCG20_medians,facet_medians)
+	print "NDCGall vs user facet", "%.2f & %.4f"%stats.pearsonr(NDCGall_medians,facet_medians)
+
+	print "BNDCG1 vs user basic", "%.2f & %.4f"%stats.pearsonr(BNDCG1_medians,basic_medians)
+	print "BNDCG10 vs user basic", "%.2f & %.4f"%stats.pearsonr(BNDCG10_medians,basic_medians)
+	print "BNDCG20 vs user basic", "%.2f & %.4f"%stats.pearsonr(BNDCG20_medians,basic_medians)
+	print "BNDCGall vs user basic", "%.2f & %.4f"%stats.pearsonr(BNDCGall_medians,basic_medians)
+	print "NDCG1 vs user basic", "%.2f & %.4f"%stats.pearsonr(NDCG1_medians,basic_medians)
+	print "NDCG10 vs user basic", "%.2f & %.4f"%stats.pearsonr(NDCG10_medians,basic_medians)
+	print "NDCG20 vs user basic", "%.2f & %.4f"%stats.pearsonr(NDCG20_medians,basic_medians)
+	print "NDCGall vs user basic", "%.2f & %.4f"%stats.pearsonr(NDCGall_medians,basic_medians)
+
+	print "BNDCG1 vs sim facet", "%.2f & %.4f"%stats.pearsonr(BNDCG1_medians,facet_simdata_medians)
+	print "BNDCG10 vs sim facet", "%.2f & %.4f"%stats.pearsonr(BNDCG10_medians,facet_simdata_medians)
+	print "BNDCG20 vs sim facet", "%.2f & %.4f"%stats.pearsonr(BNDCG20_medians,facet_simdata_medians)
+	print "BNDCGall vs sim facet", "%.2f & %.4f"%stats.pearsonr(BNDCGall_medians,facet_simdata_medians)
+	print "NDCG1 vs sim facet", "%.2f & %.4f"%stats.pearsonr(NDCG1_medians,facet_simdata_medians)
+	print "NDCG10 vs sim facet", "%.2f & %.4f"%stats.pearsonr(NDCG10_medians,facet_simdata_medians)
+	print "NDCG20 vs sim facet", "%.2f & %.4f"%stats.pearsonr(NDCG20_medians,facet_simdata_medians)
+	print "NDCGall vs sim facet", "%.2f & %.4f"%stats.pearsonr(NDCGall_medians,facet_simdata_medians)
+
+	print "BnDCG@all vs sim facet", stats.pearsonr(BNDCGall_medians,facet_simdata_medians)
+	print "user basic vs user facet", stats.pearsonr(basic_medians,facet_medians)
+	print "user basic vs sim facet", stats.pearsonr(basic_medians,facet_simdata_medians)
+
+	BNDCGall_ranking = [x[0] for x in sorted(zip(range(1,51),BNDCGall_medians),key=lambda x:x[1]) ]
+	facet_ranking = [x[0] for x in sorted(zip(range(1,51),facet_medians),key=lambda x:x[1]) ]
+	facet_simdata_ranking = [x[0] for x in sorted(zip(range(1,51),facet_simdata_medians),key=lambda x:x[1]) ]
+
+	diff_ranking = [x[0] for x in
+sorted(zip(range(1,51),np.subtract(np.array(facet_medians),
+np.array( basic_medians))),key=lambda x:x[1])] 
+	basic_ranking = [x[0] for x in sorted(zip(range(1,51),
+basic_medians),key=lambda x:x[1]) ]
+
+	fh = open('data/facet_catdist.data','r')
+	text = fh.read()
+	fh.close()
+	lines = text.split("\n")
+	catuse = []
+	for l in lines:
+		if not l: continue
+		t,d = l.split("\t",1)
+		d = eval(d)
+		if d.values():
+			catuse.append(sum(d.values()))
+		else:
+			catuse.append(0)
+	catuse = np.array(catuse)/float(max(catuse))
+	sel_medians = []
+	for i in range(50):
+		c = catuse[i]
+		if c > .29:
+			v = facet_simdata_medians[i]
+		else:
+			v = basic_medians[i]
+		sel_medians.append(v)
+
+	sel_ranking = [x[0] for x in sorted(zip(range(1,51),sel_medians),key=lambda x:x[1]) ]
+	
+		
+
+	print "NDCG f",stats.kendalltau(BNDCGall_ranking,facet_ranking)
+	print "sim f",stats.kendalltau(facet_simdata_ranking,facet_ranking)
+	print "sel f",stats.kendalltau(sel_ranking,facet_ranking)
+	print "NDCG b",stats.kendalltau(BNDCGall_ranking,basic_ranking)
+	print "sim b",stats.kendalltau(facet_simdata_ranking,basic_ranking)
 
 # NDCG vs facet users
 #	pylab.figure()
@@ -281,15 +378,6 @@ def plot_correlation():
 #	print stats.pearsonr(facet_medians,basic_medians)
 	#pylab.show()
 
-	# load simulated data
-	fh = open('data/simulate_user.txt','r')
-	text = fh.read()
-	fh.close()
-	lines = text.split("\n")
-	header = lines[0]
-	data = lines[1:-1]
-	facet_simdata_medians = np.median(np.array([np.array(l.split()).astype(np.int) for l in
-data]),axis =0)
 	#simdata_medians = [x if x < 51 else 50 for x in simdata_medians]
 	
 # facet sim vs facet users
@@ -297,8 +385,11 @@ data]),axis =0)
 	fig = pylab.scatter(facet_simdata_medians,facet_medians,color='b')
 	fig.axes.autoscale_view(True)
 	print stats.pearsonr(facet_simdata_medians,facet_medians)
-	pylab.xlabel('simulated effort')
-	pylab.ylabel('user effort')
+	print stats.spearmanr(facet_simdata_medians,facet_medians)
+	pylab.xlabel('simulated effort',size='x-large')
+	pylab.ylabel('user effort',size='x-large')
+	pylab.xticks(size='x-large')
+	pylab.yticks(size='x-large')
 	pylab.savefig('plots/facet_simdata_medians-facet_medians.pdf')
 
 # NDCG vs facet sim
@@ -308,11 +399,178 @@ data]),axis =0)
 #	print stats.pearsonr(NDCG_medians,facet_simdata_medians)
 #	pylab.show()
 
+def save_searchdepth_matrix():
+	fname = "basic_searchdepth_matrix.data"
+	fh = open(fname,'w')
+	data =output_searchdepth_matrix(0)
+	fh.write(str(data))
+	fh.close()
+
+	fname = "facet_searchdepth_matrix.data"
+	fh = open(fname,'w')
+	data =output_searchdepth_matrix(1)
+	fh.write(str(data))
+	fh.close()
+
+def open_searchdepth_matrix(fname):
+	fh = open(fname,'r')
+	lst = eval(fh.read())
+	fh.close()
+	acc = []
+	for l in lst:
+		acc.append(np.array(l))
+	return acc
+
+def line_plots():
+	#box_plot(BNDCGall_medians,facet_simdata_medians,"ndcg_simdata.pdf")
+	
+	fig, ax1 = pylab.subplots()
+	indices = range(50)
+	t = range(1,51)
+	s1 = [np.median(f) for f in facet]
+	order = [x[0] for x in sorted(zip(indices,s1),key=lambda k:k[1])]
+	s1 = sorted(s1)
+
+	ax1.plot(t, s1, 'b-')
+	ax1.set_xlabel('topic')
+#	# Make the y-axis label and tick labels match the line color.
+	ax1.set_ylabel('facet  simulated effort', color='b')
+#	for tl in ax1.get_yticklabels():
+#		tl.set_color('b')
+
+
+	ax2 = ax1.twinx()
+	s2 = facet_simdata_medians
+	s2 =  [np.median(f) for f in basic]
+#	s2 = 1 - BNDCGall_medians
+	s2 = [s2[i] for i in order]
+	ax2.plot(t, s2, 'r-')
+#	ax2.set_ylabel('BNDCGall', color='r')
+##	for tl in ax2.get_yticklabels():
+##		tl.set_color('r')
+
+	pylab.savefig('facet_user_vs_basic_user.pdf')
+	#pylab.savefig('facet_user_vs_basic_user.pdf')
+	#pylab.savefig('facet_sim_vs_facet_user.pdf')
+	#pylab.savefig('BNDCGall_vs_facet_user.pdf')
+	#pylab.savefig('BNDCGall_vs_basic_user.pdf')
+
+
+def select_neg(lst):
+	return [e for e in lst if e < 0]
+
+def select_neg_eq(lst):
+	return [e for e in lst if e <= 0]
+
+def select_pos(lst):
+	return [e for e in lst if e > 0]
+
+def agree(l1,l2):
+	return len(set(l1).intersection(set(l2)))
+		
+def get_neg_eq_indices(lst):
+	indices = []
+	i = 0
+	for e in lst:
+		if e < 0:
+			indices.append(i)
+		i+=1
+	return indices
+
+def get_pos_indices(lst):
+	indices = []
+	i = 0
+	for e in lst:
+		if e > 0:
+			indices.append(i)
+		i+=1
+	return indices
+
 
 if __name__ == '__main__':
 	#gen_effort_per_topic_box_plots()
 	#plot_search_depth()	
 	plot_correlation()
 	#plot_hovers()
+	#save_searchdepth_matrix()
+	basic = np.array(open_searchdepth_matrix("basic_searchdepth_matrix.data"))
+	facet = np.array(open_searchdepth_matrix("facet_searchdepth_matrix.data"))
+
+	box_plot(basic,facet, "searchdepth.pdf")
+	basic_medians = [np.median(b) for b in basic]
+	facet_medians = [np.median(b) for b in facet]
+
+	fh = open('data/simulate_user.txt','r')
+	text = fh.read()
+	fh.close()
+	lines = text.split("\n")
+	header = lines[0]
+	data = lines[1:-1]
+	facet_simdata_medians = np.median(np.array([np.array(l.split()).astype(np.int) for l in data]),axis=0)
+	
+
+	fh = open('NDCG_originlist.txt','r')
+	text = fh.read()
+	fh.close()
+	lines = text.split("\n")
+	header = lines[0]
+	data = lines[1:-1]
+	data.sort()
+	BNDCGall_medians = np.array([np.array(l.split()[4]).astype(np.float) for l in 
+data])
+
+	fh = open('data/facet_catdist.data','r')
+	text = fh.read()
+	fh.close()
+	lines = text.split("\n")
+	catuse = []
+	for l in lines:
+		if not l: continue
+		t,d = l.split("\t",1)
+		d = eval(d)
+		#catuse.append(sum(d.values())/float(len(d)))
+	#plot_correlation()
 		
+	pylab.figure()
+	# real users
+	diff = np.subtract(basic_medians,facet_medians)
+	diff = [100 if e > 100 else e for e in diff]
+	diff = [-100 if e < -100 else e for e in diff]
+	neg=select_neg_eq(diff)
+	pos =select_pos(diff)
+	print "neg", len(neg), "pos", len(pos)
+
+	# simulated
+	diff2 = np.subtract(basic_medians,facet_simdata_medians)
+	diff2 = [100 if e > 100 else e for e in diff2]
+	diff2 = [-100 if e < -100 else e for e in diff2]
+
+	print "predicted"
+	neg2=select_neg_eq(diff2)
+	pos2 =select_pos(diff2)
+	print "neg", len(neg2), "pos", len(pos2)
+
+	agree_neg= agree(get_neg_eq_indices(diff),get_neg_eq_indices(diff2))
+	agree_pos= agree(get_pos_indices(diff),get_pos_indices(diff2))
+	agree_all= [1 for (e1,e2) in zip(diff,diff2) if e1*e2 > 0 ]
+	print "agree_neg", agree_neg, "agree_pos", agree_pos, "agree_all", len(agree_all)
+
+
+	order = [x[0] for x in sorted(zip(range(50),diff),key=lambda x:
+x[1])]
+
+	positions = np.array(range(1,51))
+	user_pos= positions - 0.4
+	fig = pylab.figure()
+	pylab.bar(user_pos,sorted(diff),width=0.3,color='k')
+	pylab.bar(positions,[diff2[i] for i in
+order],width=0.4,color='r',hatch='/')
+	pylab.plot([BNDCGall_medians[i] for i in order])
+	subp = fig.add_subplot(111)
+	subp.axes.autoscale_view(True)
+	pylab.xlabel('topic',size='x-large')
+	pylab.ylabel('effort difference',size='x-large')
+	pylab.xticks(size='x-large')
+	pylab.yticks(size='x-large')
+	pylab.savefig("basic_facet_diff.pdf")
 

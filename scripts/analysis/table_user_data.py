@@ -400,6 +400,46 @@ def output_searchdepth(condition):
 	medians.sort()
 	return [m[1] for m in medians]
 
+def output_searchdepth_matrix(condition):
+	fh = open(CACHEFILE)
+	data = eval(fh.read())
+	fh.close()
+	td = group_by_topic(data,condition)
+
+	topics = ['7040', '7042', '7046', '7047', '7084', '7056', '7129',
+	'7067', '7068', '7069', '7075',
+	'7076', '7080', '7209', '7132', '7087', '7089', '7090', '7407',
+	'7348', '7094', '7096',
+	'7097', '7099', '7465', '7103', '7109', '7115', '7504', '7505',
+	'7506', '7124', '7127',
+	'7001', '7258', '7003', '7004', '7007', '7009', '7145', '7018',
+	'7404', '7406', '7485',
+	'7025', '7030', '7415', '7033', '7034', '7039']
+	topics.sort()
+
+	medians = []
+	for k in topics:
+		if int(k) in td:
+			lst = td[int(k)]
+		else:
+			lst = []
+		search_depth = []
+		for d in lst:
+			if not d['done']: continue
+			# determine last clicked document
+			last_click = find_last_click_depth(d['search_depth'],d['last_click'])
+			last_click +=sum(d['category'].values()) + d['paginate']
+			print last_click
+			search_depth.append(last_click)
+		if search_depth:
+			m = search_depth
+		else:
+			m = [0]
+		medians.append((k,m))
+	medians.sort()
+	print medians
+	return [m[1] for m in medians]
+
 
 def output_hoverdist(condition):
 	fh = open(CACHEFILE)
