@@ -6,6 +6,7 @@ script to plot and analyse the results of the clickgame
 import numpy as np
 from scipy import stats
 import pylab
+import matplotlib.pyplot as plt
 import sys
 import itertools
 import operator
@@ -17,6 +18,37 @@ def load_baseline(t):
 
 """
 """
+
+def plot_hovers():
+	basic_hovers = sorted([(9, 6789), (5, 7042), (6, 7105), (8, 7320), (4, 7324), (3, 7327), (7,
+		7393), (2, 7558), (1, 8369), (0, 9535)])
+	facet_hovers = sorted([(9, 8584), (8, 8589), (7, 9269), (6, 9338), (5, 10007), (4, 10681),
+		(3, 10980), (2, 12739), (1, 15587), (0, 16111)])
+
+	basic = [x[1] for x in sorted(basic_hovers,key=lambda x:x[0])]
+	mx = sum(basic)
+	basic = np.array(basic)/float(mx)
+
+	facet = [x[1] for x in sorted(facet_hovers,key=lambda x:x[0])]
+	mx = sum(facet)
+	facet = np.array(facet)/float(mx)
+
+	positions = np.array(range(1,11))
+	basic_pos = positions-0.3
+	facet_pos = positions
+
+	fig = pylab.figure()
+	pylab.bar(basic_pos,basic, width=0.2, color='k')
+	pylab.bar(facet_pos,facet, width=0.2, color='r',hatch='/')
+	pylab.xticks(range(1,11), range(1,11), size='small')
+	pylab.yticks(pylab.yticks()[0], pylab.yticks()[0]*100, size='small')
+	pylab.xlabel('rank')
+	pylab.ylabel('% of total hovers')
+	subp = fig.add_subplot(111)
+	subp.axes.autoscale_view(True)
+	pylab.savefig('plots/hoverdistribution.pdf')
+
+
 def bar_plot(left,height, width=0.8, bottom=0):
 	# left:  x coord of left side of bar
 	# height: y coord of top of bar
@@ -267,7 +299,8 @@ data]),axis =0)
 
 if __name__ == '__main__':
 	#gen_effort_per_topic_box_plots()
-	plot_search_depth()	
-	plot_correlation()
+	#plot_search_depth()	
+	#plot_correlation()
+	plot_hovers()
 		
 

@@ -400,6 +400,68 @@ def output_searchdepth(condition):
 	medians.sort()
 	return [m[1] for m in medians]
 
+
+def output_hoverdist(condition):
+	fh = open(CACHEFILE)
+	data = eval(fh.read())
+	fh.close()
+	td = group_by_topic(data,condition)
+
+	topics = ['7040', '7042', '7046', '7047', '7084', '7056', '7129',
+	'7067', '7068', '7069', '7075',
+	'7076', '7080', '7209', '7132', '7087', '7089', '7090', '7407',
+	'7348', '7094', '7096',
+	'7097', '7099', '7465', '7103', '7109', '7115', '7504', '7505',
+	'7506', '7124', '7127',
+	'7001', '7258', '7003', '7004', '7007', '7009', '7145', '7018',
+	'7404', '7406', '7485',
+	'7025', '7030', '7415', '7033', '7034', '7039']
+	topics.sort()
+
+	hoverdist = {}
+	medians = []
+	for k in topics:
+		if int(k) in td:
+			lst = td[int(k)]
+		else:
+			lst = []
+		for d in lst:
+			if not d['done']: continue
+			# determine last clicked document
+			list_of_hovers_pertopic = d['hovers']
+			search_depth_list = d['search_depth']
+			tmp = {}
+			for list_of_hovers_peruser in list_of_hovers_pertopic:
+				for hover in list_of_hovers_peruser:
+					if not type(hover) == int:
+						if hover.startswith('rank_'):
+							hover = int(hover.replace("rank_",""))
+							if hover in tmp:
+								tmp[hover] +=1
+							else:
+								tmp[hover]=1
+					else:
+						if hover in tmp:
+							tmp[hover] +=1
+						else:
+							tmp[hover]=1
+				
+			for (k,v) in sorted(tmp.items(), key=lambda x: x[1]):
+				index = -1
+				indices = []
+				for l in search_depth_list:
+					if k in l:
+						indices.append(l.index(k))
+					if indices:
+						index = min(indices)
+				if index != -1:
+					if index in hoverdist:
+						hoverdist[index]+=v
+					else:
+						hoverdist[index]=v
+	print sorted(hoverdist.items(),key=lambda x:x[1])
+	return hoverdist
+
 # a row looks like this:
 # id  | user_id | IP              | gender | year_of_birth |
 # computer_exp | english_exp | search_exp | education | consent
@@ -443,5 +505,7 @@ if __name__ == '__main__':
 	#gen_task_effort_table()
 	#gen_logdata_table()
 	#output_sessions()
-	output_searchdepth(1)
+	#output_searchdepth(1)
 	#gen_demographics()	
+	output_hoverdist(0)
+	output_hoverdist(1)
