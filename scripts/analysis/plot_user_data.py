@@ -39,7 +39,7 @@ def plot_hovers():
 
 	fig = pylab.figure()
 	pylab.bar(basic_pos,basic, width=0.2, color='k')
-	pylab.bar(facet_pos,facet, width=0.2, color='r',hatch='/')
+	pylab.bar(facet_pos,facet, width=0.2, color='w',hatch='/')
 	pylab.xticks(range(1,11), range(1,11), size='x-large')
 	pylab.yticks(pylab.yticks()[0], pylab.yticks()[0]*100, size='x-large')
 	pylab.xlabel('rank',size='x-large')
@@ -350,7 +350,9 @@ basic_medians),key=lambda x:x[1]) ]
 	sel_ranking = [x[0] for x in sorted(zip(range(1,51),sel_medians),key=lambda x:x[1]) ]
 	
 		
-
+	diff = np.subtract(np.array(basic_medians), np.array(facet_medians) )
+	print stats.pearsonr(BNDCGall_medians,diff)
+	print stats.pearsonr(facet_simdata_medians,diff)
 	print "NDCG f",stats.kendalltau(BNDCGall_ranking,facet_ranking)
 	print "sim f",stats.kendalltau(facet_simdata_ranking,facet_ranking)
 	print "sel f",stats.kendalltau(sel_ranking,facet_ranking)
@@ -491,7 +493,7 @@ if __name__ == '__main__':
 	#gen_effort_per_topic_box_plots()
 	#plot_search_depth()	
 	plot_correlation()
-	#plot_hovers()
+	plot_hovers()
 	#save_searchdepth_matrix()
 	basic = np.array(open_searchdepth_matrix("basic_searchdepth_matrix.data"))
 	facet = np.array(open_searchdepth_matrix("facet_searchdepth_matrix.data"))
@@ -564,13 +566,16 @@ x[1])]
 	fig = pylab.figure()
 	pylab.bar(user_pos,sorted(diff),width=0.3,color='k')
 	pylab.bar(positions,[diff2[i] for i in
-order],width=0.4,color='r',hatch='/')
+order],width=0.4,color='w',hatch='/')
 	pylab.plot([BNDCGall_medians[i] for i in order])
 	subp = fig.add_subplot(111)
 	subp.axes.autoscale_view(True)
 	pylab.xlabel('topic',size='x-large')
 	pylab.ylabel('effort difference',size='x-large')
+	#ax2 = subp.twinx()
+	#pylab.plot([BNDCGall_medians[i] for i in order])
 	pylab.xticks(size='x-large')
 	pylab.yticks(size='x-large')
 	pylab.savefig("basic_facet_diff.pdf")
+#	pylab.show()
 
