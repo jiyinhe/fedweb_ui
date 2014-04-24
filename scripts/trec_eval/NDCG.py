@@ -29,6 +29,9 @@ class NDCG:
 	def ndcg(self, K):
 		X = self.judged_rank
 		# Sort the whole judgement list
+		# Note: we should sort all judged documents, instead of the retrieved judgemed docs
+		# However, in this project as all documents were judged, it wouldn't make a difference
+		# It needs to be changed for other usage.
 		iX = sorted(self.judged_rank, reverse=True) 
 		iDCG, score1 = self.DCG(iX, K)
 		DCG, score2 = self.DCG(X, K)
