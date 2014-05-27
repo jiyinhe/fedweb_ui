@@ -1,0 +1,7 @@
+load_data.py:
+	process the simulation data and their parameters
+
+query_analysis.py:
+	1. For which queries, faceted interface is better, if users can choose good facets?
+	2. For which queries, faceted interface is better, even if users cannot choose?
+	3. What is the relation between the utility of a faceted interface and the original ranking?

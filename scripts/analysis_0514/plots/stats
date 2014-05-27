@@ -1,0 +1,6 @@
+task type: 1, user type: None, r:[ 0.24529364], p-value:[ 0.08598686]
+task type: 10, user type: None, r:[ 0.71391888], p-value:[  5.87372237e-09]
+task type: -1, user type: None, r:[ 0.53256928], p-value:[  6.85833210e-05]
+task type: 1, user type: NDCG, r:[-0.98675949], p-value:[  1.39897279e-39]
+task type: 10, user type: NDCG, r:[-0.80564237], p-value:[  1.71369786e-12]
+task type: -1, user type: NDCG, r:[-0.22586009], p-value:[ 0.11476486]
