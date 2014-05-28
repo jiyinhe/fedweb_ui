@@ -44,7 +44,7 @@ def perquery_compare(pa_facet, data_facet, pa_basic, data_basic, user_type):
         b_data = data_basic[basic_index] 
 
 	# Compute the difference between the median and the basic effort
-	diff_median = [(np.median(f_data[q])-b_data[q], q) for q in f_data]
+	diff_median = [(b_data[q]-np.median(f_data[q]), q) for q in f_data]
 	diff_median.sort(key=operator.itemgetter(0))
         Y1 = [y[0] for y in diff_median]
 	Y2 = [b_data[q[1]] for q in diff_median]	
