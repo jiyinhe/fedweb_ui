@@ -18,8 +18,8 @@ uniform = lambda x: [1 for i in range(len(x))]
 ndcg = lambda x: x
 user = lambda x: x
 # Option user is used when user data is used to compute the parameters.
-#f_prior = [None, ndcg, user]
-f_prior = [None, ndcg]
+f_prior = [None, ndcg, user]
+#f_prior = [None, ndcg]
 
 # We decided to leave out option dynamic for all experiments.
 #f_model_type = ['static', 'dynamic']
@@ -50,14 +50,14 @@ task_length = [-1]
 # This is a parameter specific to gain based experiments
 # Set the maximum number of moves a user will make
 # -1 means the user will go through all documents.
-moves = [1, 10, 50]
+moves = [10, 20, 50]
 
 
 # Our user experiment was using task_length=10
 #task_length = [10]
 
 interface = 'category' 
-
+#interface = 'basic'
 
 
 

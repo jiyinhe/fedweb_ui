@@ -17,6 +17,7 @@ qrelsfile = '../data/FW13-QRELS-RM.txt'
 categoryfile = '../data/official-resources-FW13-categorization.tsv'
 
 def generate_parameters():
+	# Task length is redundent here
 	if P.interface == 'basic':
 		params = ['index', 'page_size', 'gain_type', 'e_model', 'task_length', 'moves']
 		p = itertools.product(P.page_size, P.gain_model_type, P.e_model_type, P.task_length, P.moves)
@@ -89,7 +90,7 @@ def create_sublists(docs, judge):
 """
 simulate interaction with basic interface
 In fact, for basic interface, the gain based measure is equivelent to P@K, 
-we don't really need to run it.
+apart from that it has pagination included. 
 """	
 def simulate_basic(judged_list, page_size, moves):
 	action_list = []
@@ -105,8 +106,10 @@ def simulate_basic(judged_list, page_size, moves):
 			break;
 
 		if not doc_count == 0 and doc_count%page_size == 0:
-			action_list.append('pagination')
-		action_list.append(('examine', 'dummy'))
+			action_list.append(('pagination', ('dummy', [0])))
+			if moves > 0 and len(action_list)>=moves:
+				break
+		action_list.append(('examine', ('dummy', [judged_list[doc_count]])))
 		rel_count += judged_list[doc_count]
 		doc_count += 1
 	return action_list
@@ -135,11 +138,9 @@ def simulate(run, judged_list, param):
 		# We don't really need to run basic interface simulation for gain based measure
 		# as it is equivelent as P@K.
 		if P.interface == 'basic':
-			task_length = param[3]
-			if task_length == -1:
-				task_length = sum(judge)
+			moves = param[-1]
 			page_size = param[0]
-			actionlist = simulate_basic(judge, page_size, task_length)
+			actionlist = simulate_basic(judge, page_size, moves)
 			action_lists.append((qid, actionlist))
 		else:
 			# task_length is now a dummy parameter

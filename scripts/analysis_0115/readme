@@ -1,0 +1,19 @@
+01.2015
+
+This directory contains the analysis scripts for the gain-based simulation results.
+These scripts can be used to generate the same plots/stats for previous experiments on effort.
+
+1. Influence of parameter on user gain: anaParam.py
+
+depedent variable: gain@10, gain@20, gain@50
+independent variables: lambda, prior_type(random vs. prior)
+
+
+2. comparing systems: anaPerQuery.py
+
+per-query: score@basic vs. score@facet - score@basic
+Relation between difficulty of a query with a basic interface and its benefit from using a faceted interface.
+
+3. analysis of the user data -- Marc should have those scripts.
+
+
