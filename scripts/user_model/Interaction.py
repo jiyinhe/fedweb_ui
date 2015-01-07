@@ -47,7 +47,7 @@ class Interaction:
 		# the current list the user is at
 		self.current_visit = start 
 
-	# Start a simulation
+	# Start a simulation that is effort based
 	def run(self):
 		# Only stop when all documents being examined, or K document has been found   
 		while not sum([x+1 for x in self.last_visit]) >= self.doc_count:	
@@ -157,6 +157,88 @@ class Interaction:
 		else:	
 			return False
 
+	# Start a simulation that is gain based instead of effort based
+	# Note: here the user stops when the maximum number of moves is reached. 
+	# We assume after the maximum number of moves users do not feel like spending any energy
+	# anymore. It may not be reasonable, as after filtering/pagination, usually users would at
+	# least have a glance of the results. We could assume this effort is counted together with 
+	# the filter/pagination action.
+	#
+	# Parameters:
+	# moves: the total number of moves that the user would do
+	def run_gain(self, moves):
+		# Only stop when all documents being examined, or total moves have been reached  
+		while not sum([x+1 for x in self.last_visit]) >= self.doc_count:
+			# Check if move limit is reached
+			# If the user will go through all docs (moves = -1), then this condition
+			# will never be triggered.
+			if moves > 0 and len(self.action_list) >= moves:
+				break
+
+			# Now we are at a new doc, decide if examine another document
+			if not self.examine_next():
+				# If not, first do filtering
+				listid = self.choose_list()
+				# If no list is selected, then 
+				if listid == -1:
+					#print sum([s[2] for s in self.resultlist[0]])
+					#print 'task_length', self.K, 'found:', self.rel_count, 
+					#print 'Error: Something wrong, debug:', #self.doc_seen 
+					continue
+				# then set the current visit to the next doc in the list
+				# Note: if a list is exhausted, it won't be selected 
+				self.current_visit = [listid, self.last_visit[listid]+1]
+				# After filtering, we now decide to visit this doc
+				#print self.current_visit
+				#print [len(r) for r in self.resultlist]
+				doc = self.resultlist[self.current_visit[0]][self.current_visit[1]]
+				# Add the current action and visited document	
+				self.action_list.append(('filter', (self.current_visit[0], self.current_visit[1], doc)))
+				# Now check again if the maximum move has reached
+				if moves > 0 and len(self.action_list) >= moves:
+					break
+
+			# Now we have to examine next doc, but first check if it's seen already, if so, skip it
+			if self.doc_is_seen():			
+				# set the last current_visit to last visited 
+				self.last_visit[self.current_visit[0]] = self.current_visit[1]
+				# move current_visit to next doc, prepare next iteration 
+				self.current_visit[1] = self.current_visit[1] + 1
+			#	print 'doc seen'
+				continue
+			
+			#print self.current_visit
+			# Now whether it's coming from a filter or that we've decided to 
+			# examine the next doc, we will examine it		 
+			#print 'examine next', self.current_visit
+			# If the doc is in a next page, first add pagination
+			if self.current_visit[1]>0 and self.current_visit[1]%self.page_size == 0:
+				doc = self.resultlist[self.current_visit[0]][self.current_visit[1]]
+				self.action_list.append(('pagination', (self.current_visit[0], self.current_visit[1], doc)))
+				# Now check again if the maximum move has reached
+				if moves > 0 and len(self.action_list) >= moves:
+					break
+
+			# Then examine doc 
+			self.examine_doc()
+			doc = self.resultlist[self.current_visit[0]][self.current_visit[1]]
+			self.action_list.append(('examine', (self.current_visit[0], self.current_visit[1], doc)))
+			# Now check again if the maximum move has reached
+			if moves > 0 and len(self.action_list) >= moves:
+				break
+
+			# If FilterModel is dynamic, then update the model after examine
+			#print self.F.model_type
+			if self.F.model_type == 'dynamic':
+				self.F.update_prior(self.current_visit)
+
+			# After examine
+			# add this position to last visit
+			self.last_visit[self.current_visit[0]] = self.current_visit[1]
+
+			# move current_visit to the next doc in the current list
+			self.current_visit[1] = self.current_visit[1] + 1 	
+
 
 
 
@@ -172,8 +254,9 @@ if __name__ == '__main__':
 	task_length=2
 	print resultlist
 	inter = Interaction(e, f, task_length=task_length)	
-	inter.run()
+	inter.run_gain(5)
 	print inter.action_list
+	print len(inter.action_list)
 
 
 

@@ -20,6 +20,7 @@ outputdir = 'plots/'
 
 #rc('font',**{'family':'sans-serif','sans-serif':['Helvetica']})
 #rc('text', usetex=True)
+rc('font', **{'size': 22})
 
 # load data
 def load_data(facet_dir, basic_dir):
@@ -52,10 +53,15 @@ def perquery_compare(pa_facet, data_facet, pa_basic, data_basic, user_type):
 
 	pylab.figure()
 	# make bar plot
-	pylab.bar(X, Y1, alpha=0.6, color='b', label='Diff effort')		
+	pylab.bar(X, Y1, alpha=0.6, color='b', label='Difference')		
 	# plot basic effort on top
-        pylab.plot(X, Y2, color='r', label='Basic effort')      
-	pylab.legend() 
+        pylab.plot(X, Y2, color='r', label='Basic')
+
+        if abs(Y1[0]) < max(Y1[-1], max(Y2)):
+	    pylab.legend(loc=2) 
+        else:
+            pylab.legend(loc=4)
+
 	# Save plot
         outfile = '%s/%s_%s.png'%(outputdir, task, user_type)
         pylab.savefig(outfile)
@@ -63,6 +69,8 @@ def perquery_compare(pa_facet, data_facet, pa_basic, data_basic, user_type):
 	# Correlation analysis
         r, p = stats.pearsonr(Y1, Y2)
         print 'task type: %s, user type: %s, r:%s, p-value:%s'%(task, user_type, r, p)
+
+    pylab.show()
 
 if __name__ == '__main__':
     pa_facet, data_facet, pa_basic, data_basic = load_data(facet_dir, basic_dir)
