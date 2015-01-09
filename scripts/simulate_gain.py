@@ -199,7 +199,6 @@ if __name__ == '__main__':
 	qrels = trec_util.load_qrels(qrelsfile)
 	judged_list = trec_util.judged_ranklist(run, qrels)
 	params, paramnames = generate_parameters()
-
 	# Write the parameters
 	outp = open(output_param_file, 'w')
 	# write the header
@@ -242,4 +241,3 @@ if __name__ == '__main__':
 			line = ' '.join(['%s'%s for s in scores])
 			out.write(line+'\n')
 		out.close()		
-
