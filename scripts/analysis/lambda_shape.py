@@ -5,7 +5,7 @@ Plot the probability that a depth is reached in a list for a given lambda
 import pylab
 import numpy as np
 
-steps = np.array(range(30))
+steps = np.array(range(200))
 styles = ['-b', '.-r', '--g', 'x-m']
 legends = ['$\lambda=1$', '$\lambda=0.1$', '$\lambda=0.01$', '$\lambda=0.001$']
 

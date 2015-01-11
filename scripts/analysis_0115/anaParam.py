@@ -25,12 +25,14 @@ outputdir = conf_g.output_dir
 #rc('text', usetex=True)
 rc('font', **{'size': 20})
 
+def data_gain(data, params):
+"""
 # preprare data for gain based plots
 # gain experiment parameters:
 #['index', 'page_size', 'gain_type', 'ndcg_k',
 # 'e_model','task_length', 'f_model', 'f_prior',
 # 'e_lambda', 'moves', ]
-def data_gain(data, params):
+"""
 	# Main group: by moves
 	# The index of the parameter for the main groups
 	idx = 9
@@ -72,12 +74,14 @@ def data_gain(data, params):
 		main_group[main_name] = legend_group
 	return main_group
 
+def data_effort(data, params):
+"""
 # preprare data for effort based plots
 # effort experiment parameters:
 #['index', 'page_size', 'gain_type', 'ndcg_k',
 # 'e_model','task_length', 'f_model', 'f_prior',
 # 'e_lambda',]
-def data_effort(data, params):
+"""
 	# Main group: by moves
 	# The index of the parameter for the main groups
 	idx = 5
