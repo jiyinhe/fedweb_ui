@@ -1,0 +1,12 @@
+moves_10_Random, r:-0.919890488186, p-value:3.80898526364e-21
+moves_20_Random, r:-0.898762712791, p-value:8.21934577929e-19
+moves_50_Random, r:-0.888308163018, p-value:7.69953752593e-18
+moves_50_Prior, r:-0.862443036375, p-value:8.4325147167e-16
+moves_20_Prior, r:-0.892019189203, p-value:3.5728179242e-18
+moves_10_Prior, r:-0.908992830881, p-value:7.17474604814e-20
+tasklength_10_Random, r:0.796272738222, p-value:4.73399884069e-12
+tasklength_-1_Random, r:0.819037513827, p-value:3.63004690631e-13
+tasklength_1_Prior, r:-0.980184519621, p-value:2.07225003799e-35
+tasklength_-1_Prior, r:0.243122103846, p-value:0.0888899856063
+tasklength_10_Prior, r:-0.498362976171, p-value:0.000230363119461
+tasklength_1_Random, r:0.323271910405, p-value:0.0220255085668
