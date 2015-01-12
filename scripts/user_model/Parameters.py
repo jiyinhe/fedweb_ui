@@ -48,8 +48,8 @@ task_length = [-1]
 # Our user experiment was using task_length=10
 #task_length = [10]
 
-interface = 'category' 
-#interface = 'basic'
+#interface = 'category' 
+interface = 'basic'
 
 # ========== Gain parameter =======
 # This is a parameter specific to gain based experiments
