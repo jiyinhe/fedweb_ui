@@ -19,7 +19,8 @@ ndcg = lambda x: x
 user = lambda x: x
 # Option user is used when user data is used to compute the parameters.
 #f_prior = [None, ndcg, user]
-f_prior = [None, ndcg]
+#f_prior = [None, ndcg]
+f_prior = [user]
 
 # We decided to leave out option dynamic for all experiments.
 #f_model_type = ['static', 'dynamic']
@@ -48,8 +49,8 @@ task_length = [-1]
 # Our user experiment was using task_length=10
 #task_length = [10]
 
-#interface = 'category' 
-interface = 'basic'
+interface = 'category' 
+#interface = 'basic'
 
 # ========== Gain parameter =======
 # This is a parameter specific to gain based experiments

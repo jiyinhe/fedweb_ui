@@ -27,7 +27,7 @@ def generate_parameters():
 
 	# Change from simulation_user.py, here we will change user moves
 	#p = [[10, 'binary', '-1', 'User', 10, 'static', P.f_prior[2], P.moves]]	
-	p = itertools.product([10], ['binary'], [-1], ['User'], [10], ['static'], [P.f_prior[2]], P.moves)
+	p = itertools.product([10], ['binary'], [-1], ['User'], [10], ['static'], P.f_prior, P.moves)
 	p = list(p)
 
 	pa = [[i, list(p[i])] for i in range(len(p))]
@@ -201,7 +201,7 @@ if __name__ == '__main__':
 		pid = p[0]
 		line = ['%s'%x for x in p[1]]
 		if not (P.interface == 'basic') and not (line[6] == 'None'):
-			line[6] = 'NDCG'
+			line[6] = 'User'
 		#print line
 		outp.write('%s %s\n'%(pid, ' '.join(line)))
 	outp.close()

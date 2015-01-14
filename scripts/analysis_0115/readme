@@ -14,6 +14,20 @@ independent variables: lambda, prior_type(random vs. prior)
 per-query: score@basic vs. score@facet - score@basic
 Relation between difficulty of a query with a basic interface and its benefit from using a faceted interface.
 
-3. analysis of the user data -- Marc should have those scripts.
+3. anaPerQuery_v2.py
+This version doesn't make plots, only compute number of queries that benefit from faceted UI in each case, and correlation analysis:
+ -  delta effort/gain vs. effort/gain of basic UI
+ -  delta effort/gain vs. entropy of facets performance
+
+4. Explanation of why it's better to go deep in a list when trying to find all relevant docs in terms of effort, but better to go limited depth when measured in terms of gain. Hypotehsis is that:
+- the effort for finding all or many relevant docs depends on where the last relevant doc is. At begining, relevant docs probably distributed like exponential decay, but later, the distribution of relevant doc is more like random.  
+
+When given limited amounts of effort, switching between facets at begining of the search is beneficial. Switching later is more like random exploration. It would be more beneficial to go deep down a list, saving the effort of switching between lists.
+
+To validate this:
+- look at the density of relevant docs along each facet list - probability of seeing a relevant doc at position X  
+
+
+5. analysis of the user data -- Marc should have those scripts.
 
 
