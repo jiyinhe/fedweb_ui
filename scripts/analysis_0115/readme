@@ -22,6 +22,8 @@ This version doesn't make plots, only compute number of queries that benefit fro
 4. Explanation of why it's better to go deep in a list when trying to find all relevant docs in terms of effort, but better to go limited depth when measured in terms of gain. Hypotehsis is that:
 - the effort for finding all or many relevant docs depends on where the last relevant doc is. At begining, relevant docs probably distributed like exponential decay, but later, the distribution of relevant doc is more like random.  
 
+==> This is not true. The relevant docs are not distributed exponential decay. 
+
 When given limited amounts of effort, switching between facets at begining of the search is beneficial. Switching later is more like random exploration. It would be more beneficial to go deep down a list, saving the effort of switching between lists.
 
 To validate this:
