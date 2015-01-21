@@ -6,11 +6,12 @@ sys.path.append('../trec_eval')
 import trec_util, NDCG
 import operator
 import itertools
+import simplejson as js
 
 # parameter effect analysis based on effort
 class paramEffectEffort(object):
    simulation_dir = '../../data/simulation/'
-   # simulation_dir = '../../data/simulation_user/'
+   simulation_user_dir = '../../data/simulation_user/'
    output_dir = 'plots/param_effect'
 
 
@@ -18,7 +19,7 @@ class paramEffectEffort(object):
 class paramEffectGain(object): 
     simulation_dir = '../../data/gain_experiments_jan2015/simulation'
     # for user parameter
-    #simulation_dir = '../../data/gain_experiments_jan2015/simulation_user'
+    simulation_user_dir = '../../data/gain_experiments_jan2015/simulation_user'
     output_dir = 'plots/param_effect/'
 
 # per query analysis based on effort
@@ -26,17 +27,16 @@ class perQueryEffort(object):
     simulation_dir = '../../data/simulation'
     simulation_basic_dir = '../../data/simulation_basic'
     # for user parameter
-    #simulation_dir = '../../data/simulation_user'
-    #simulation_basic_dir = '../../data/simulation_basic'
+    simulation_user_dir = '../../data/simulation_user'
     output_dir = 'plots/per_query_effort/'
     
 
 # per query analysis based on gain
 class perQueryGain(object): 
-    simulation_dir = '../../data/gain_experiments_jan2015/simulation'
-    #simulation_dir = '../../data/gain_experiments_jan2015/simulation_user'
-    simulation_basic_dir = '../../data/gain_experiments_jan2015/simulation_basic'
-    #simulation_basic_dir = '../../data/gain_experiments_jan2015/simulation_user_basic'
+    simulation_dir = '../../data/gain_experiments_jan2015/simulation2'
+    simulation_user_dir = '../../data/gain_experiments_jan2015/simulation2_user'
+    simulation_basic_dir = '../../data/gain_experiments_jan2015/simulation2_basic'
+    simulation_user_basic_dir = '../../data/gain_experiments_jan2015/simulation2_user_basic'
  
     output_dir = 'plots/per_query_gain/'
  
@@ -46,6 +46,10 @@ class generalDir(object):
     qrelsfile = '../../data/FW13-QRELS-RM.txt'
     #categoryfile ='../data/resources-FW13-categorization.tsv'
     categoryfile = '../../data/official-resources-FW13-categorization.tsv'
+    raw_userdata = '../../data/table3_mouse_hovers.tmp'
+    processed_userdata = 'data/userdata.json'
+    
+
 
 class util(object):
     def load_categories(self, catefile):
@@ -102,3 +106,5 @@ class util(object):
             B.append(ndcg_b)
             G.append(ndcg_g)
         return sublists, B, G
+
+

@@ -29,7 +29,9 @@ When given limited amounts of effort, switching between facets at begining of th
 To validate this:
 - look at the density of relevant docs along each facet list - probability of seeing a relevant doc at position X  
 
+We didn't get any sensible results here.
 
-5. analysis of the user data -- Marc should have those scripts.
+5. analysis of the user generated data
+Correlation between the predicted and the actual user effort/gain 
 
 

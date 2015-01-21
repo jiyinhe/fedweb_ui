@@ -101,7 +101,7 @@ def makeplot(plotdata_facet, plotdata_basic):
         pylab.bar(X, Y1, alpha=0.6, color='b', label='Difference')        
         pylab.plot(X, Y2, color='r', label='Basic')
         pylab.plot(X, Y3, color='g', label="RLR")
-
+        
         if abs(Y1[0]) < max(Y1[-1], max(Y2)):
             pylab.legend(loc=2) 
         else:
@@ -114,8 +114,9 @@ def makeplot(plotdata_facet, plotdata_basic):
     
         # Correlation analysis
         r, p = stats.pearsonr(Y1, Y2)
-        print '%s, r:%s, p-value:%s'%(plotname, r, p)
-
+        print '%s, basic vs. diff r:%s, p-value:%s'%(plotname, r, p)
+        r, p = stats.pearsonr(Y1, Y3)
+        print '%s, RLR vs. diff r:%s, p-value:%s'%(plotname, r, p)
 
 
 

@@ -7,13 +7,13 @@ import numpy as np
 
 steps = np.array(range(200))
 styles = ['-b', '.-r', '--g', 'x-m']
-legends = ['$\lambda=1$', '$\lambda=0.1$', '$\lambda=0.01$', '$\lambda=0.001$']
+legends = ['$\lambda=1$', '$\lambda=0.1$', '$\lambda=0.05$', '$\lambda=0.01$']
 
 X = steps+1
 pylab.figure()
 
 i = 0
-for l in [1, 0.1, 0.01, 0.001]:
+for l in [1, 0.1, 0.05, 0.01]:
 	p_continue = np.exp(-X*l)
 	s = 1
 	p_reach = [s]
