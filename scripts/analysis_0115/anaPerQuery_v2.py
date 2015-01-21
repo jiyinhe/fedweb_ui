@@ -2,9 +2,14 @@
 
 #per-query: score@basic vs. score@facet - score@basic
 #3Relation between difficulty of a query with a basic interface and its benefit from using a faceted interface.
+
+# Differ from anaPerQuery.py:
+# plot relation between entropy, basic performance, and diff
+
+
 import sys
 sys.path.append('../trec_eval')
-import trec_util, NDCG
+import trec_util, ndcg
 
 import load_data as ld
 import itertools

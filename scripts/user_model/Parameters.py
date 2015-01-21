@@ -8,10 +8,10 @@ e_model_type = ['ExpRank']
 
 # WE use the following e_lambdas for RQ1 (influence of user patience and accuracy)
 # figure 4: Influence of user patience and their accuracy in choosing result lists.
-e_lambda = [1, 0.5, 0.1, 0.05, 0.01, 0.005, 0.001, 0.0005]
+#e_lambda = [1, 0.5, 0.1, 0.05, 0.01, 0.005, 0.001, 0.0005]
 
 # We use 0.01 for RQ2 (comparing systems), figure 5: When does RLR interface help?
-# e_lambda = [0.01]
+e_lambda = [0.01]
 
 # ===== Parameters for FilterModel ======
 uniform = lambda x: [1 for i in range(len(x))]
@@ -20,7 +20,11 @@ user = lambda x: x
 # Option user is used when user data is used to compute the parameters.
 #f_prior = [None, ndcg, user]
 #f_prior = [None, ndcg]
-f_prior = [user]
+#f_prior = [user]
+
+# Parameter for smooth experiments
+f_prior = [ndcg]
+smooth = [0, 0.1, 0.5, 1, 5, 10]
 
 # We decided to leave out option dynamic for all experiments.
 #f_model_type = ['static', 'dynamic']
@@ -56,8 +60,9 @@ interface = 'category'
 # This is a parameter specific to gain based experiments
 # Set the maximum number of moves a user will make
 # -1 means the user will go through all documents.
-moves = [10, 20, 50]
-
+#moves = [10, 20, 50]
+# For a second batch of simulation with larger number of moves
+moves = [100, 200, 500]
 
 
 

@@ -21,7 +21,7 @@ def generate_parameters():
 	params = ['index', 'page_size', 'gain_type', 'ndcg_k','e_model',
 		'task_length', 'f_model', 'f_prior',
 		]
-	p = [[10, 'binary', '-1', 'User', 10, 'static', P.f_prior[2],]]	
+	p = [[10, 'binary', '-1', 'User', 10, 'static', P.f_prior]]	
 	pa = [[i, list(p[i])] for i in range(len(p))]
 	return pa, params
  

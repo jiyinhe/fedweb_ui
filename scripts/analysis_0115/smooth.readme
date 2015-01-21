@@ -1,0 +1,8 @@
+Simulate user quality by smoothing the filter selection parameter alpha. 
+The larger the smooth, the closer the filter selection prior distribution is close to uniform.
+
+- analyze the magnitude of the smoothing parameter to add
+- generate results of simulation with simulation_smooth.py
+- analyze the results --> how good the users should be? 
+
+
