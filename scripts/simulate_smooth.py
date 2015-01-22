@@ -164,7 +164,10 @@ def simulate(run, judged_list, param):
                 # get smooth value
                 smooth = param[8]
                 # we only use binary_NDCG
-                prior = [b[param[2]]+smooth for b in B]
+                #print smooth
+                prior = [b[param[2]] for b in B]
+                #print prior
+                prior = [x+smooth for x in prior]
                 #print prior
                 p = param[6](prior) 
             f = FilterModel.FilterModel(sublists, p, model_type=param[5])

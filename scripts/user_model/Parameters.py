@@ -45,10 +45,10 @@ page_size = [10]
 
 # ===== Task parameters =====
 # Number of relevant documents to be found: -1: all
-# task_length = [1, 10, -1] 
+task_length = [1, 10, -1] 
 
 # For gain based experiment, this parameter does not make a difference.
-task_length = [-1]
+#task_length = [-1]
 
 # Our user experiment was using task_length=10
 #task_length = [10]

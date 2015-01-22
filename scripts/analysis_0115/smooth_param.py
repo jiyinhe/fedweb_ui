@@ -10,6 +10,11 @@ sys.path.append('../trec_eval')
 import trec_util
 import numpy as np
 from numpy import log
+import pylab
+from matplotlib import rc
+
+rc('font', **{'size': 20})
+
 
 runfile = '../../data/testruns/nodup/run13.ql.nodup'
 qrelsfile = '../../data/FW13-QRELS-RM.txt'
@@ -40,7 +45,10 @@ def ndcg_distribution(data):
     print
 
     # look at KL div from uniform of each query 
-    for smooth in [0, 0.1, 0.5, 1, 2, 5, 10]:
+    smooth = 0
+    X = []
+    Y = []
+    while smooth < 2:
         kl = []
         for d in data:
             d_smooth = [dd+smooth for dd in d]
@@ -48,8 +56,13 @@ def ndcg_distribution(data):
         print 'smooth = %s'%smooth
         print 'KL median:', np.median(kl), ',25q:', np.percentile(kl, 25), np.percentile(kl, 75)
         print
-
-
+        Y.append(np.median(kl))
+        X.append(smooth)
+        smooth += 0.05
+        
+    pylab.plot(X, Y, linewidth=2)
+    pylab.grid()
+    pylab.savefig('plots/smooth_shape.png')
 
 if __name__ == '__main__':
     u = util()
@@ -69,6 +82,14 @@ if __name__ == '__main__':
 
         # The ndcg scores to be used
         score = [b[-1] for b in B]
+
+        # Normalize the score between 0 and 1
+        max_b = max(score)
+        min_b = min(score)
+        score = [b/(max_b-min_b) for b in score]
         S.append(score)
 
     ndcg_distribution(S)
+
+    pylab.show()
+
