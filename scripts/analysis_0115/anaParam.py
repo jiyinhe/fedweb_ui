@@ -57,7 +57,8 @@ def data_gain(data, params):
                 # Now aggregate data in this group
                 # We take all data regardless queries
                 all_data = []
-                                    all_data += group_data[d]
+                for d in group_data: 
+                    all_data += group_data[d]
                 
                 # Try an extra normalisation step
                 # Average effort/gain per doc/move
