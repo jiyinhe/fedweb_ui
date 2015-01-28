@@ -41,7 +41,11 @@ def generate_parameters():
             ]
         p = itertools.product(P.page_size, P.gain_model_type, P.ndcg_k, P.e_model_type, P.task_length, P.f_model_type, P.f_prior, P.e_lambda, P.smooth)
         p = list(p)
+        p = list(itertools.ifilter(lambda x: not(x[6]==None and x[8]>0), p))
     pa = [[i, list(p[i])] for i in range(len(p))]
+    for p in pa:
+        print p
+    print
     return pa, params
  
 def load_categories(catefile):

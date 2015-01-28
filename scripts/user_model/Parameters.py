@@ -9,9 +9,10 @@ e_model_type = ['ExpRank']
 # WE use the following e_lambdas for RQ1 (influence of user patience and accuracy)
 # figure 4: Influence of user patience and their accuracy in choosing result lists.
 #e_lambda = [1, 0.5, 0.1, 0.05, 0.01, 0.005, 0.001, 0.0005]
+e_lambda = [1, 0.5, 0.1, 0.05, 0.01, 0.005, 0.001]
 
 # We use 0.01 for RQ2 (comparing systems), figure 5: When does RLR interface help?
-e_lambda = [0.01]
+#e_lambda = [0.01]
 
 # ===== Parameters for FilterModel ======
 uniform = lambda x: [1 for i in range(len(x))]
@@ -19,12 +20,14 @@ ndcg = lambda x: x
 user = lambda x: x
 # Option user is used when user data is used to compute the parameters.
 #f_prior = [None, ndcg, user]
-#f_prior = [None, ndcg]
+f_prior = [None, ndcg]
 #f_prior = [user]
 
 # Parameter for smooth experiments
-f_prior = [ndcg]
-smooth = [0, 0.1, 0.5, 1, 5, 10]
+#f_prior = [ndcg]
+#smooth = [0, 0.05, 0.1, 0.2, 0.5, 1, 2]
+# the parameters selected for different levels of accuracy
+smooth = [0, 0.1, 0.5, 1]
 
 # We decided to leave out option dynamic for all experiments.
 #f_model_type = ['static', 'dynamic']
@@ -45,10 +48,10 @@ page_size = [10]
 
 # ===== Task parameters =====
 # Number of relevant documents to be found: -1: all
-# task_length = [1, 10, -1] 
+task_length = [1, 10, -1] 
 
 # For gain based experiment, this parameter does not make a difference.
-task_length = [-1]
+#task_length = [-1]
 
 # Our user experiment was using task_length=10
 #task_length = [10]

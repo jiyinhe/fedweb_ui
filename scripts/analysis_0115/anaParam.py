@@ -26,13 +26,11 @@ outputdir = conf_g.output_dir
 rc('font', **{'size': 20})
 
 def data_gain(data, params):
-"""
 # preprare data for gain based plots
 # gain experiment parameters:
 #['index', 'page_size', 'gain_type', 'ndcg_k',
 # 'e_model','task_length', 'f_model', 'f_prior',
 # 'e_lambda', 'moves', ]
-"""
 	# Main group: by moves
 	# The index of the parameter for the main groups
 	idx = 9
@@ -48,7 +46,7 @@ def data_gain(data, params):
 		g = sorted(list(g), key=operator.itemgetter(idx_f))
 		legend_group = {}	
 		for key, group in itertools.groupby(g, lambda x: x[idx_f]):
-			legend_name = 'Prior' if key == 'NDCG' else 'Random'
+			legend_name = 'NDCG' if key == 'NDCG' else 'Uniform'
 			group = sorted(list(group), key=operator.itemgetter(idx_e), reverse=True)
 			data_group = []
 			e_group = []
@@ -75,13 +73,11 @@ def data_gain(data, params):
 	return main_group
 
 def data_effort(data, params):
-"""
 # preprare data for effort based plots
 # effort experiment parameters:
 #['index', 'page_size', 'gain_type', 'ndcg_k',
 # 'e_model','task_length', 'f_model', 'f_prior',
 # 'e_lambda',]
-"""
 	# Main group: by moves
 	# The index of the parameter for the main groups
 	idx = 5
@@ -97,7 +93,7 @@ def data_effort(data, params):
 		g = sorted(list(g), key=operator.itemgetter(idx_f), reverse=True)
 		legend_group = {}	
 		for key, group in itertools.groupby(g, lambda x: x[idx_f]):
-			legend_name = 'Prior' if key == 'NDCG' else 'Random'
+			legend_name = 'NDCG' if key == 'NDCG' else 'Uniform'
 			group = sorted(list(group), key=operator.itemgetter(idx_e), reverse=True)
 			data_group = []
 			e_group = []
