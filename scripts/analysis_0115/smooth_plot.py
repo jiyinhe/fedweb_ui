@@ -24,16 +24,23 @@ rc('font', **{'size': 16})
 # data/lr_10_4factors.txt data/lr_1_qxfe.txt      data/lr_all_fexfr.txt
 # data/lr_10_qxfr.txt     data/lr_1_qxu.txt       data/lr_all_qxfr.txt
 configure = {
-    '1': ['qxu', 'qxfe'],
-    '10': ['qxfr', '4factors'],
-    'all': ['qxfr', 'fexfr']
+    '1': ['qxu', 'qxfe_high', 'qxfe_low'],
+    '10': ['qxfr_high', 'qxfr_low', 
+            'qxfrxfe_hxh', 'qxfrxfe_lxh',
+            'qxfrxfe_hxl', 'qxfrxfe_lxl',
+            ],
+    'all': ['qxfr_high', 'qxfr_low', 
+            'frxfe_high', 'frxfe_low',
+            'frxq_high', 'frxq_low',
+            ]
 }
 
 datafile = lambda x, y: 'data/lr_%s_%s.txt'%(x, y)
 outputdir = 'plots/lr/'
 outputfile = lambda x, y: '%s/task%s_%s'%(outputdir, x, y)
 
-tasks = ['1', '10', 'all']
+tasks = ['10']
+#tasks = ['1', '10', 'all']
 u_levels = [(1, 0), (2, 0.1), (3, 0.5), (4, 1)] 
 
 lines = ['-', '--', '-.', ':']
@@ -56,7 +63,7 @@ def load_data(datafile):
         data.append([float(dd) for dd in d[1:]])
     return data
 
-def plot_qxfe_gradient(data, task):
+def plot_qxfe_gradient(data, task, name):
     # each user level is a plot
     i = 0
     for u_level in u_levels:
@@ -93,7 +100,7 @@ def plot_qxfe_gradient(data, task):
         pylab.ylabel('Sublists entropy')
         pylab.colorbar()
 
-        outfile = outputfile(task, 'qdifficulty_x_fentropy')
+        outfile = outputfile(task, name)
         pylab.savefig('%s.png'%outfile)
 
 
@@ -109,7 +116,7 @@ def plot_qxu(data, task):
         LL = [d[-2] for d in filtered]
         UL = [d[-3] for d in filtered]
         pylab.plot(q_difficulty, y, color = colors[i], linestyle=lines[i], linewidth=2, label=legends[i])
-        pylab.fill_between(q_difficulty, y, LL, UL, color = colors[i], alpha = 0.1)
+        pylab.fill_between(q_difficulty,LL, UL, color = colors[i], alpha = 0.1)
         i += 1
 #    pylab.legend(legends)
     pylab.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
@@ -121,47 +128,150 @@ def plot_qxu(data, task):
     outfile = outputfile(task, 'qdifficulty_x_ulevel')
     pylab.savefig('%s.png'%(outfile))
 
-def plot_qxfe(D, task):
-    # bin the query difficulty into 3 levels
-    q = [d[0] for d in D]
-    p25 = np.percentile(q, 25)
-    p75 = np.percentile(q, 75)
-    data_low = list(itertools.ifilter(lambda x: x[0]<=p25, D))
-    data_mid = list(itertools.ifilter(lambda x: x[0]>p25 and x[0]<p75, D))
-    data_high = list(itertools.ifilter(lambda x: x[0]>=p75, D))
-
-    data_q = [('qlow', data_low), 
-            ('qmid', data_mid), 
-            ('qhigh', data_high)]
-    
-    for dq in data_q:
-        name, data = dq
-        fig = pylab.figure()
-        i = 0
-        for u_level in u_levels:
-            # Get data for each level
-            filtered = list(itertools.ifilter(lambda x: x[1] == u_level[1], data))
-            print len(filtered)
-            # x is entropy
-            X = [d[2] for d in filtered]
-            y = [d[-1] for d in filtered]
-            LL = [d[-2] for d in filtered]
-            UL = [d[-3] for d in filtered]
-            for f in filtered:
-                print f
-            pylab.plot(X, y, color = colors[i], linestyle=lines[i], linewidth=2, label=legends[i])
-            pylab.fill_between(X, y, LL, UL, color = colors[i], alpha = 0.1)
-            i += 1
-        pylab.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
-               ncol=4, mode="expand", borderaxespad=0.) 
+def plot_qxfe(data, task, name):
+    fig = pylab.figure()
+    i = 0
+    for u_level in u_levels:
+        # Get data for each level
+        filtered = list(itertools.ifilter(lambda x: x[1] == u_level[1], data))
+        # x is entropy
+        X = [d[2] for d in filtered]
+        y = [d[-1] for d in filtered]
+        LL = [d[-2] for d in filtered]
+        UL = [d[-3] for d in filtered]
+        pylab.plot(X, y, color = colors[i], linestyle=lines[i], linewidth=2, label=legends[i])
+        pylab.fill_between(X, LL, UL, color = colors[i], alpha = 0.1)
+        i += 1
+    pylab.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
+           ncol=4, mode="expand", borderaxespad=0.) 
  
-        pylab.xlabel('Sublist entropy')
-        pylab.xlim((min(X), max(X)))
-        pylab.ylabel('Probability that RLR helps')
-        outfile = outputfile(task, '%s_x_fentropy'%name)
-        pylab.savefig('%s.png'%(outfile))
+    pylab.xlabel('Sublist entropy')
+    pylab.xlim((min(X), max(X)))
+    #pylab.ylim((0, 1))
+    pylab.ylabel('Probability that RLR helps')
+    outfile = outputfile(task, name)
+    pylab.savefig('%s.png'%(outfile))
 
-  
+
+def plot_qxfr(data, task, name):
+    fig = pylab.figure()
+    i = 0
+    for u_level in u_levels:
+        # Get data for each level
+        filtered = list(itertools.ifilter(lambda x: x[1] == u_level[1], data))
+        # x is sublist relevance
+        X = [d[3] for d in filtered]
+        y = [d[-1] for d in filtered]
+        LL = [d[-2] for d in filtered]
+        UL = [d[-3] for d in filtered]
+        pylab.plot(X, y, color = colors[i], linestyle=lines[i], linewidth=2, label=legends[i])
+        pylab.fill_between(X, LL, UL, color = colors[i], alpha = 0.1)
+        i += 1
+    pylab.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
+           ncol=4, mode="expand", borderaxespad=0.) 
+ 
+    pylab.xlabel('Sublist relevance')
+    pylab.xlim((min(X), max(X)))
+    #pylab.ylim((0, 1))
+    pylab.ylabel('Probability that RLR helps')
+    outfile = outputfile(task, name)
+    pylab.savefig('%s.png'%(outfile))
+
+def plot_frxq(data, task, name):
+    fig = pylab.figure()
+    i = 0
+    for u_level in u_levels:
+        # Get data for each level
+        filtered = list(itertools.ifilter(lambda x: x[1] == u_level[1], data))
+        # x is q_difficulty 
+        X = [d[0] for d in filtered]
+        y = [d[-1] for d in filtered]
+        LL = [d[-2] for d in filtered]
+        UL = [d[-3] for d in filtered]
+        pylab.plot(X, y, color = colors[i], linestyle=lines[i], linewidth=2, label=legends[i])
+        pylab.fill_between(X, LL, UL, color = colors[i], alpha = 0.1)
+        i += 1
+    pylab.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
+           ncol=4, mode="expand", borderaxespad=0.) 
+ 
+    pylab.xlabel('Query difficulty')
+    pylab.xlim((min(X), max(X)))
+    #pylab.ylim((0, 1))
+    pylab.ylabel('Probability that RLR helps')
+    outfile = outputfile(task, name)
+    pylab.savefig('%s.png'%(outfile))
+
+
+def plot_qxfexfr(data, task, name):
+    fig = pylab.figure()
+    i = 0
+    for u_level in u_levels:
+        # Get data for each level
+        filtered = list(itertools.ifilter(lambda x: x[1] == u_level[1], data))
+        # x is relevance
+        X = [d[3] for d in filtered]
+        y = [d[-1] for d in filtered]
+        LL = [d[-2] for d in filtered]
+        UL = [d[-3] for d in filtered]
+        pylab.plot(X, y, color = colors[i], linestyle=lines[i], linewidth=2, label=legends[i])
+        pylab.fill_between(X, LL, UL, color = colors[i], alpha = 0.1)
+        i += 1
+#    pylab.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
+#           ncol=4, mode="expand", borderaxespad=0.) 
+    pylab.legend()
+    pylab.xlabel('Sublist relevance')
+    pylab.xlim((min(X), max(X)))
+   # pylab.ylim((0, 0.2))
+    pylab.ylabel('Probability that RLR helps')
+    outfile = outputfile(task, name)
+    pylab.savefig('%s.png'%(outfile))
+
+def plot_qxfrxfe(data, task, name):
+    fig = pylab.figure()
+    i = 0
+    for u_level in u_levels:
+        # Get data for each level
+        filtered = list(itertools.ifilter(lambda x: x[1] == u_level[1], data))
+        # x is entropy 
+        X = [d[2] for d in filtered]
+        y = [d[-1] for d in filtered]
+        LL = [d[-2] for d in filtered]
+        UL = [d[-3] for d in filtered]
+        pylab.plot(X, y, color = colors[i], linestyle=lines[i], linewidth=2, label=legends[i])
+        pylab.fill_between(X, LL, UL, color = colors[i], alpha = 0.1)
+        i += 1
+    pylab.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
+           ncol=4, mode="expand", borderaxespad=0.) 
+#    pylab.legend()
+    pylab.xlabel('Sublist entropy')
+    pylab.xlim((min(X), max(X)))
+    pylab.ylim((0, 1.05))
+    pylab.ylabel('Probability that RLR helps')
+    outfile = outputfile(task, name)
+    pylab.savefig('%s.png'%(outfile))
+
+def plot_frxfe(data, task, name):
+    fig = pylab.figure()
+    i = 0
+    for u_level in u_levels:
+        # Get data for each level
+        filtered = list(itertools.ifilter(lambda x: x[1] == u_level[1], data))
+        # x is entropy 
+        X = [d[2] for d in filtered]
+        y = [d[-1] for d in filtered]
+        LL = [d[-2] for d in filtered]
+        UL = [d[-3] for d in filtered]
+        pylab.plot(X, y, color = colors[i], linestyle=lines[i], linewidth=2, label=legends[i])
+        pylab.fill_between(X, LL, UL, color = colors[i], alpha = 0.1)
+        i += 1
+    pylab.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=4, mode="expand", borderaxespad=0.) 
+#    pylab.legend()
+    pylab.xlabel('Sublist entropy')
+    pylab.xlim((min(X), max(X)))
+    pylab.ylim((0, 1.05))
+    pylab.ylabel('Probability that RLR helps')
+    outfile = outputfile(task, name)
+    pylab.savefig('%s.png'%(outfile))
 
 
 def plot_fentropy_ulevel(task):
@@ -184,15 +294,40 @@ def plot_fentropy_ulevel(task):
     pylab.savefig('%s/fxu_%s.png'%(outputdir, task))
 
 
-
-
 if __name__ == '__main__':
     for task in tasks:
         data = configure[task]
         for d in data:
             fdata = datafile(task, d)
             if d == 'qxu':
+                name='qdifficulty_x_ulevel'
                 plot_qxu(load_data(fdata), task)
-            elif d == 'qxfe':
-                plot_qxfe(load_data(fdata), task)
+            elif d in ['qxfe_high', 'qxfe_low', 'qxfe_mid']:
+                name = 'qdifficulty_%s_x_fentropy'%d.split('_')[1]
+                plot_qxfe(load_data(fdata), task, name)
+            elif d in ['qxfr_high', 'qxfr_low', 'qxfr_mid']:
+                name = 'qdifficulty_%s_x_frelevance'%d.split('_')[1]
+                plot_qxfr(load_data(fdata), task, name)
+            elif d in [
+                'qxfexfr_hxh', 'qxfexfr_mxh', 'qxfexfr_lxh',
+                'qxfexfr_hxm', 'qxfexfr_mxm', 'qxfexfr_lxm',
+                'qxfexfr_hxl', 'qxfexfr_mxl', 'qxfexfr_lxl',
+                ]:
+                name='qdifficutly_x_fentropy_%s_x_frelevance'%d.split('_')[1]
+                #plot_qxfexfr(load_data(fdata), task, name) 
+            elif d in [
+                'qxfrxfe_hxh', 'qxfrxfe_mxh', 'qxfrxfe_lxh',
+            #    'qxfrxfe_hxm', 'qxfrxfe_mxm', 'qxfrxfe_lxm',
+                'qxfrxfe_hxl', #'qxfrxfe_mxl', 
+                'qxfrxfe_lxl',
+                ]:
+                name='qdifficutly_x_frelevance_%s_x_fentropy'%d.split('_')[1]
+                plot_qxfrxfe(load_data(fdata), task, name) 
+            elif d in ['frxfe_high', 'frxfe_low']:
+                name='frelevance_x_fentropy_%s'%d.split('_')[1]
+                plot_frxfe(load_data(fdata), task, name)
+            elif d in ['frxq_high', 'frxq_low']:
+                name='frelevance_x_qdifficulty_%s'%d.split('_')[1]
+                plot_frxq(load_data(fdata), task, name)
+ 
     pylab.show()

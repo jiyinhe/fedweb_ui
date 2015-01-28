@@ -44,7 +44,8 @@ def make_data(basic_data, smooth_data, pa_b, pa, facet_entropy):
         b_data =  basic_data[b]
         # find correponding faceted simulation with the same task
         task_p = list(itertools.ifilter(lambda x: x[5]==task, pa))
-        D = [','.join(['diff', 'f_entropy', 'f_relevance', 'q_difficulty', 'u_quality'])]
+        D = [','.join(['diff', 'f_entropy', 'f_relevance', 'q_difficulty',
+'u_quality', 'f_relperc'])]
         for p in task_p:
             idx = p[0]
             s_data = smooth_data[idx]
@@ -56,12 +57,13 @@ def make_data(basic_data, smooth_data, pa_b, pa, facet_entropy):
                 # independent variable query difficulty
                 basic_performance = b_data[q][0]
                 # independent varialbe facet entropy
-                entropy, mean_ndcg = facet_entropy[q]
+                entropy, mean_ndcg, rel_perc = facet_entropy[q]
                 # dependent variable diff
                 diff = b_data[q] - np.median(s_data[q]) 
                 diff = int(diff[0]>0)
-
-                line = [str(diff), str(entropy), str(mean_ndcg), str(basic_performance), str(u_level)]
+    
+                line = [str(diff), str(entropy), str(mean_ndcg),
+str(basic_performance), str(u_level), str(rel_perc)]
                 D.append(','.join(line))
         f = open('%s/smooth_data_task%s.csv'%(outdir, task), 'w')
         f.write('\n'.join(D))
@@ -100,8 +102,8 @@ def prepare_data_sublists():
         ndcg_scores = [b[-1] for b in B]
         entropy = sublist_entropy(ndcg_scores)
         mean_ndcg_scores = np.mean(ndcg_scores)
-
-        facets_data[q[0]] = (entropy, mean_ndcg_scores)
+        rel_perc = sum([int(b>0) for b in ndcg_scores])/float(len(ndcg_scores))
+        facets_data[q[0]] = (entropy, mean_ndcg_scores, rel_perc)
     return facets_data 
 
 
