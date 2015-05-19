@@ -20,15 +20,15 @@ for l in [1, 0.1, 0.05, 0.01]:
 	for x in p_continue[1:]:
 		s = s*x
 		p_reach.append(x)
-	pylab.plot(X, p_reach, styles[i], linewidth=3.) 
+	pylab.plot(X, p_reach, styles[i], linewidth=4.) 
 	i += 1
 
 #pylab.legend(legends, bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=4, mode="expand", borderaxespad=0.)
 pylab.legend(legends)
 pylab.xlabel('Rank')
-pylab.ylabel('Probability of reaching rank $r$')
+pylab.ylabel('Visit probability')
  
-pylab.rc('text', fontsize=24)
+pylab.rc('text', fontsize=26)
 fig.tight_layout()
 pylab.show()
 
