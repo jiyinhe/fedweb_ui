@@ -15,7 +15,7 @@ from matplotlib import rc
 import operator
 import itertools
 
-rc('font', **{'size': 20})
+rc('font', **{'size': 24})
 
 
 runfile = '../../data/testruns/nodup/run13.ql.nodup'
@@ -124,14 +124,15 @@ def ndcg_distribution(data):
         U = kl_user
         smooth += 0.05
 
-    pylab.plot(X, Y, linewidth=2)
-    pylab.plot(X, Z, '--r', linewidth=2)
+    fig = pylab.figure()
+    pylab.plot(X, Y, linewidth=3)
+    pylab.plot(X, Z, '--r', linewidth=3)
     pylab.grid()
          
 #    for u in U:
 #        y = [u for i in range(len(X))]
 #        pylab.plot(X, y, ':b', linewidth=2)
-
+    fig.tight_layout()
     pylab.savefig('plots/smooth_shape.png')
 
 

@@ -163,6 +163,8 @@ def makeplot(D):
         # Legend
         pylab.ylim(pylab.ylim()[0], ymax*1.2)
         pylab.legend(legends)
+        pylab.xlabel('Effort')
+        pylab.ylabel(r'$\lambda$')
         #pylab.title(plot_name)
         
         # save figure

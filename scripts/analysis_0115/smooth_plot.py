@@ -17,7 +17,7 @@ from matplotlib.colors import BoundaryNorm
 from matplotlib.ticker import MaxNLocator
 
 #fontProperties = {'size': 16, 'family':'sans-serif','sans-serif':['Helvetica']}    
-rc('font', **{'size': 16})
+rc('font', **{'size': 24})
 #rc('text', usetex=True)
 
 # Plots to make:
@@ -115,7 +115,7 @@ def plot_qxu(data, task):
         y = [d[-1] for d in filtered]
         LL = [d[-2] for d in filtered]
         UL = [d[-3] for d in filtered]
-        pylab.plot(q_difficulty, y, color = colors[i], linestyle=lines[i], linewidth=2, label=legends[i])
+        pylab.plot(q_difficulty, y, color = colors[i], linestyle=lines[i], linewdith=3, label=legends[i])
         pylab.fill_between(q_difficulty,LL, UL, color = colors[i], alpha = 0.1)
         i += 1
 #    pylab.legend(legends)
@@ -139,7 +139,7 @@ def plot_qxfe(data, task, name):
         y = [d[-1] for d in filtered]
         LL = [d[-2] for d in filtered]
         UL = [d[-3] for d in filtered]
-        pylab.plot(X, y, color = colors[i], linestyle=lines[i], linewidth=2, label=legends[i])
+        pylab.plot(X, y, color = colors[i], linestyle=lines[i], linewdith=3, label=legends[i])
         pylab.fill_between(X, LL, UL, color = colors[i], alpha = 0.1)
         i += 1
     pylab.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
@@ -164,17 +164,22 @@ def plot_qxfr(data, task, name):
         y = [d[-1] for d in filtered]
         LL = [d[-2] for d in filtered]
         UL = [d[-3] for d in filtered]
-        pylab.plot(X, y, color = colors[i], linestyle=lines[i], linewidth=2, label=legends[i])
-        pylab.fill_between(X, LL, UL, color = colors[i], alpha = 0.1)
+        pylab.plot(X, y, color = colors[i], linestyle=lines[i], linewidth=3, label=legends[i])
+#        pylab.fill_between(X, LL, UL, color = colors[i], alpha = 0.1)
         i += 1
-    pylab.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
-           ncol=4, mode="expand", borderaxespad=0.) 
- 
+#    pylab.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
+#           ncol=4, mode="expand", borderaxespad=0.) 
+
+    if 'high' in name:
+        pylab.legend()
+    elif 'low' in name:
+        pylab.legend(loc=2)
     pylab.xlabel('Sublist relevance')
     pylab.xlim((min(X), max(X)))
     #pylab.ylim((0, 1))
     pylab.ylabel('Probability that RLR helps')
     outfile = outputfile(task, name)
+    fig.tight_layout()
     pylab.savefig('%s.png'%(outfile))
 
 def plot_frxq(data, task, name):
@@ -188,7 +193,7 @@ def plot_frxq(data, task, name):
         y = [d[-1] for d in filtered]
         LL = [d[-2] for d in filtered]
         UL = [d[-3] for d in filtered]
-        pylab.plot(X, y, color = colors[i], linestyle=lines[i], linewidth=2, label=legends[i])
+        pylab.plot(X, y, color = colors[i], linestyle=lines[i], linewdith=3, label=legends[i])
         pylab.fill_between(X, LL, UL, color = colors[i], alpha = 0.1)
         i += 1
     pylab.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
@@ -213,7 +218,7 @@ def plot_qxfexfr(data, task, name):
         y = [d[-1] for d in filtered]
         LL = [d[-2] for d in filtered]
         UL = [d[-3] for d in filtered]
-        pylab.plot(X, y, color = colors[i], linestyle=lines[i], linewidth=2, label=legends[i])
+        pylab.plot(X, y, color = colors[i], linestyle=lines[i], linewdith=3, label=legends[i])
         pylab.fill_between(X, LL, UL, color = colors[i], alpha = 0.1)
         i += 1
 #    pylab.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
@@ -237,17 +242,18 @@ def plot_qxfrxfe(data, task, name):
         y = [d[-1] for d in filtered]
         LL = [d[-2] for d in filtered]
         UL = [d[-3] for d in filtered]
-        pylab.plot(X, y, color = colors[i], linestyle=lines[i], linewidth=2, label=legends[i])
-        pylab.fill_between(X, LL, UL, color = colors[i], alpha = 0.1)
+        pylab.plot(X, y, color = colors[i], linestyle=lines[i], linewidth=3, label=legends[i])
+#       pylab.fill_between(X, LL, UL, color = colors[i], alpha = 0.1)
         i += 1
-    pylab.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
-           ncol=4, mode="expand", borderaxespad=0.) 
-#    pylab.legend()
+#    pylab.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
+#           ncol=4, mode="expand", borderaxespad=0.) 
+    pylab.legend(loc=3)
     pylab.xlabel('Sublist entropy')
     pylab.xlim((min(X), max(X)))
     pylab.ylim((0, 1.05))
     pylab.ylabel('Probability that RLR helps')
     outfile = outputfile(task, name)
+    fig.tight_layout()
     pylab.savefig('%s.png'%(outfile))
 
 def plot_frxfe(data, task, name):
@@ -261,7 +267,7 @@ def plot_frxfe(data, task, name):
         y = [d[-1] for d in filtered]
         LL = [d[-2] for d in filtered]
         UL = [d[-3] for d in filtered]
-        pylab.plot(X, y, color = colors[i], linestyle=lines[i], linewidth=2, label=legends[i])
+        pylab.plot(X, y, color = colors[i], linestyle=lines[i], linewdith=3, label=legends[i])
         pylab.fill_between(X, LL, UL, color = colors[i], alpha = 0.1)
         i += 1
     pylab.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3, ncol=4, mode="expand", borderaxespad=0.) 
@@ -284,7 +290,7 @@ def plot_fentropy_ulevel(task):
         filtered = list(itertools.ifilter(lambda x: x[2] == u_level[1], data))
         f_entropy = [d[1] for d in filtered]
         y = [d[8] for d in filtered]
-        pylab.plot(f_entropy, y, color=colors[i], linestyle=lines[i], linewidth=2, label=legends[i])
+        pylab.plot(f_entropy, y, color=colors[i], linestyle=lines[i], linewdith=3, label=legends[i])
         i += 1
     pylab.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
            ncol=4, mode="expand", borderaxespad=0.) 

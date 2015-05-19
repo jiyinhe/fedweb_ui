@@ -35,7 +35,7 @@ def generate_parameters():
  
 def load_categories(catefile):
 	f = open(catefile)
-	content = [d.split('\t') for d in f.readlines()]
+	content = [d.strip().split('\t') for d in f.readlines()]
 	f.close()
 	# category tuple: (site_id, category)	
 	categories = [(d[0], d[3].strip().split(',')) for d in content]
